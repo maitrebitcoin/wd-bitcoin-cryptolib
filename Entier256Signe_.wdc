@@ -1,0 +1,81 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Entier256Signe_
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1dffa9520a80cf4c
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      ZEntier256Signe_ est une Classe
+      	valAbs    est Entier256
+      	bNégatif est un booléen
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2161632515989819212
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Constructeur
+     procedure_id : 2161632515989819212
+     type_code : 27
+     code : |1+
+      Procédure constructeur(val entier sur 8 sans signe)
+      valAbs:val0 = val
+     type : 589825
+   -
+     name : Constructeur
+     procedure_id : 2161632515989819212
+     type_code : 27
+     code : |1-
+      PROCÉDURE Constructeur(val256 Entier256)
+      valAbs:val0 = val256:val0
+      valAbs:val1 = val256:val1
+      valAbs:val2 = val256:val2
+      valAbs:val3 = val256:val3
+     type : 589826
+   -
+     name : Destructeur
+     procedure_id : 2161632515989884748
+     type_code : 28
+     code : |1+
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : VersChaineHexa
+     procedure_id : 2161632515989950284
+     type_code : 12
+     code : |1+
+      // conversion en chaine hexadécimale de 64 caractères.
+      PROCÉDURE VersChaineHexa() : chaîne
+      
+      si :bNégatif ALORS
+      	renvoyer "-"+valAbs.VersChaineHexa()
+      sinon
+      	RENVOYER "+"+valAbs.VersChaineHexa()
+      FIN
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b9f3f541141c9f9
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

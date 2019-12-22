@@ -1,0 +1,191 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : EntierFlottant64
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1b9d52d10f33eb99
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      // représentation d'un entier de 2^N chiffre sous forme flottante 
+      // avec 32 bits de mantisse et 32 bits d'exposant
+      // donc N max = 2^32
+      EntierFlottant64 est une Classe
+      	dVal est un réel sur 8
+      	// valeur significative sur 52 bits. exposant toujours a 1
+      	//nMantisse est réél// entier sur 4 octets sans signe; 	
+      	// exposant (puisance de 2)
+      	// ex: 0x6186 => 16 
+      	//nExposant est entier sur 4 octets sans signe; 
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1989837668224396185
+     type_code : 27
+     code : |1+
+      // Init a partir d'un entier sur 256 bits
+      PROCEDURE Constructeur( nombre256 Entier256 )
+      
+      si nombre256.estEgalAZero() ALORS
+      	retour
+      FIN
+      
+      // conversion en double 64 bits
+      // bit 63     : signe
+      // bit 62..52 : exposant (11 bits)
+      // bit 51..0  : mantisse (52 bits)
+      
+      // recherche le 1er 0 en partant du poids fort
+      nExposant est un entier = nombre256.log2()
+      
+      // récup de 64 bits a cette position
+      nMantisse64 est un entier sur 8 octets sans signe //= nombre256._53Bits( nExposant )
+      nMantisse64_Low est un entier sur 8 octets sans signe 
+      nNumQword est un entier = nExposant / 64
+      nMantisse64 = nombre256._64Bits( nNumQword )
+      si nExposant>64 ALORS
+      	nMantisse64_Low = nombre256._64Bits( nNumQword - 1 )
+      FIN
+      
+      // conversion a 53 bits
+      tantque nMantisse64 >= 0x20000000000000 // si fait plus de de 53 bits
+      	nMantisse64 = bitDécaleDroite( nMantisse64, 1) & 0x7FFFFFFFFFFFFFFF // / 2;
+      
+      fin		
+      TANTQUE nMantisse64 < 0x10000000000000 // si fait moins de 53 bits
+      	nMantisse64 = nMantisse64*2 //bitDécaleGauche( nMantisse64, 1) & 0xFFFFFFFFFFFFFFFE // * 2;
+      	// si le bit de poids fort de <nMantisse64_Low> est a 1 on le met dans le poids faible de nMantisse64
+      	si nMantisse64_Low & 0x8000000000000000 ALORS
+      		_1_64 est entier sans signe sur 8 octets = 1
+      		nMantisse64 = nMantisse64 | _1_64;
+      	fin
+      	nMantisse64_Low = bitDécaleGauche( nMantisse64_Low, 1) & 0xFFFFFFFFFFFFFFFE // * 2;
+      
+      FIN		
+      
+      // conversion au format flottant 64 bits IIEE
+      // https://en.wikipedia.org/wiki/Double-precision_floating-point_format
+      //  Sign bit: 1 bit
+      //  Exponent: 11 bits
+      //  Significand precision: 53 bits (52 explicitly stored)
+      //dValTemp = nMantisse64
+      nbufiiee est un entier sur 8 octets sans signe = nMantisse64 & 0xFFFFFFFFFFFFF // le bit de poids fort a 1 est implicite
+      nExp64   est un entier sur 8 octets sans signe = nExposant + 1023 
+      nbufiiee = nbufiiee  + bitDécaleGauche( nExp64, 52)
+      dValTemp est un réel sur 8
+      Transfert( &dValTemp,&nbufiiee, 8)
+      
+      setDepuisReeldouble(dValTemp)
+     type : 589824
+   -
+     name : Constructeur
+     procedure_id : 1989837668224396185
+     type_code : 27
+     code : |1+
+      // init a 0
+      procédure Constructeur()
+     type : 589825
+   -
+     name : Destructeur
+     procedure_id : 1989837668224461721
+     type_code : 28
+     code : |1+
+      PROCEDURE Destructeur()
+      
+     type : 655360
+   -
+     name : setDepuisReeldouble
+     procedure_id : 1990027024768870415
+     type_code : 12
+     code : |1-
+      procédure setDepuisReeldouble( _dVal réel)
+      :dVal = _dVal
+     type : 458752
+   -
+     name : _extraitMantisseEtExposant
+     procedure_id : 1990028665446497327
+     type_code : 12
+     code : |1-
+      procédure _extraitMantisseEtExposant(dVal réel)
+      // extrait la mantisse et l'exposant d'un double IEEE 754
+      
+      // bit 63     : signe
+      // bit 62..52 : exposant (11 bits)
+      // bit 51..0  : mantisse (52 bits)
+      buf64 est entier sans signe sur 8 octets
+      Transfert(&buf64, &dVal, 8)
+      nExposant  est entier   = bitDécaleDroite(buf64,52)  -  1023- 52 // signé, 1023 représente 0
+      nMantisse est un entier sur 8 octets sans signe = buf64 &  0xFFFFFFFFFFFFF 
+      nMantisse = nMantisse | 0x10000000000000  // bit fort implicite
+      renvoyer (nMantisse, nExposant)
+     type : 458752
+   -
+     name : divisisePar
+     procedure_id : 1989837668224527257
+     type_code : 12
+     code : |1-
+      PROCÉDURE divisisePar( divisiseur EntierFlottant64 )  : EntierFlottant64
+      
+      resultat est EntierFlottant64
+      
+      // division en float
+      quotient est un réel sur 8 =  :dVal / divisiseur:dVal
+      // les entiers fractionnaires ne sont pas représentés
+      si quotient<1.0 ALORS
+      	renvoyer resultat // 0
+      FIN
+      resultat.setDepuisReeldouble(quotient)
+       
+      renvoyer resultat
+      
+      // conversion en entier256
+     type : 458752
+   -
+     name : versEntier256
+     procedure_id : 1990028162935272106
+     type_code : 12
+     code : |1-
+      procédure versEntier256() : Entier256
+      
+      si :dVal<1.0 ALORS
+      	renvoyer arithmetique._0_256
+      FIN
+      
+      // extrait la mantissee et l'exposant
+      nExposant est entier
+      nMantisse est un entier sur 8 octets sans signe 
+      (nMantisse, nExposant ) = _extraitMantisseEtExposant(:dVal)
+      // conv en entier
+      resultat est Entier256( nMantisse )
+      // décalage de bits selon l'exposant
+      si nExposant = 0 ALORS
+      	renvoyer resultat
+      FIN
+      si nExposant>0 alors
+      	resultat.mulitplieParUnePuissanceDe2(nExposant)
+      sinon
+      	resultat.diviseParUnePuissanceDe2(-nExposant)
+      fin
+      RENVOYER resultat
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b9cf6bc076d38d6
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

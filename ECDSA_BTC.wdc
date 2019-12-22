@@ -1,0 +1,221 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ECDSA_BTC
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1b79807b019b420d
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  internal_properties : BQAAAAUAAACmcEcPUOl8P88f4DqAteA6m/Mt111GGOClrNjaLJ9vO63bNEtdrqYoCCnjX1eG34p8AOi72Du5JSuppQ==
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      // gestion des point d'entrée pour la cryptographie ECDSA pour Bitcoin
+      ECDSA_BTC est une Classe
+      	courbeBtc    est CourbeElliptique_secp256k1 // pour opérations sur les points de la courbe a la norme secp256k1
+      	corpsECC     est CorpsModulaire dynamique // pointeur sur le corps utilisé par <courbeBtc> pour les points
+      	corpsOrdre   est CorpsModulaire dynamique // pointeur sur le corps utilisé pour l'ordre de la courbe ( pour signer/vérifier la signature )
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1979754777002394125
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur()
+      
+      // Init hasard (1s), fait dans un thread pour optim : ne pas attendre 1s dasn les appel ultérieurs (signature)
+      	Procédure interne _Init_Hasard()
+      		HasardCryptoBuffer(1)
+      	fin
+      	ThreadExécute(DonneGuid(),threadNormal,_Init_Hasard)
+      
+      corpsECC <-  courbeBtc.corps
+      corpsOrdre = allouer un CorpsModulaire( courbeBtc.Ordre.VersChaineHexa() )
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1979754777002459661
+     type_code : 28
+     code : |1+
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : DériveCléPubliqueDepuisCléPrivée
+     procedure_id : 1980737504169448104
+     type_code : 12
+     code : |1+
+      // renvoie la clé publique associée a une clé privée
+      // => la clé publique est la somme K fois du point générateur de la courbe
+      procédure DériveCléPubliqueDepuisCléPrivée( CléPrivée Entier256  ) : Point256
+      
+      
+      // division modulaire a chaque étape
+      //renvoyer courbeBtc.MultiplicationScalairePointGenérateur( CléPrivée )
+      renvoyer courbeBtc.MultiplicationScalairePointGenérateur_PrecalInv( CléPrivée )
+      //renvoyer courbeBtc.MultiplicationScalairePointGenérateur_Sans8x256( CléPrivée )
+      
+      ////@Version avec que des multiplication de fractions modulaires :
+      //ClePubliqueFraction est Point256  = courbeBtc.MultiplicationScalairePointGenérateurFraction( CléPrivée )
+      //
+      //
+      ////@Version avec que des multiplication de fractions modulaires Dans le domaine de montgomery :
+      //// la clé publique est la somme K fois du point générateur de la courbe
+      ////ClePubliqueFraction est PointFraction256 = courbeBtc.MultiplicationScalairePointGenérateurFraction( CléPrivée )
+      //
+      ////=>Division modulaire pour X et Y
+      //ClePublique est Point256  
+      //ClePublique.x = ClePubliqueFraction.x.VersEntier256(corpsECC);
+      //ClePublique.y = ClePubliqueFraction.y.VersEntier256(corpsECC);
+      
+      //renvoyer ClePublique;
+     type : 458752
+   -
+     name : SigneNombre
+     procedure_id : 1979755240859036207
+     type_code : 12
+     code : |1+
+      // signe <NombreASigner> avec la clé privée <CléPrivée>
+      procédure SigneNombre(  NombreASigner Entier256, CléPrivée Entier256 ) : signatureEcdsa
+      
+      recalculer:
+      // il faut tirer un nombre K au hasard
+      K est Entier256
+      K.affecteAvecBuffer(  HasardCryptoBuffer(32)  )
+      
+      // calcul du point P = K * G
+      P est Point256 = courbeBtc.MultiplicationScalairePointGenérateur( K )
+      // tant que le résultat est 0, on recommence
+      SI P.x.estEgalAZero()
+      	GOTO recalculer
+      FIN
+      // Astuce pour que l'encodage de la paire R,S soit de taille fixe :
+      // R doit être compris entre 0x01 et 0x7F.
+      tantque (P.X.val3 < 0x0100000000000000) _OU_ (P.x.val3 & 0x8000000000000000 <> 0)
+      	//K++
+      	K = additionAvecUn(K)
+      	// P = P + point générateur
+      	P = courbeBtc.pointPlusPoint(P, courbeBtc.pointGen )
+      FIN
+      
+      
+      ///1er nombre renvoyé
+      signature est SignatureEcdsa
+      signature.R = P.x //.VersEntier256( corpsECC )
+      // 2eme nombre
+      inverseDeK est Entier256 =corpsOrdre.inverseModulo( K ) // nombre L tel que L*K = 1 (mod N)
+      // y=K^-1(  H(m) + sx )
+      signature.S =  corpsOrdre.multiplicationModulo( inverseDeK, ...
+      	  			corpsOrdre.additionModulo(NombreASigner, ...
+      	   				corpsOrdre.multiplicationModulo( CléPrivée , P.x ) )) 
+      
+      si signature.S.estEgalAZero() ALORS
+      	goto recalculer
+      FIN
+      // BIP 62 / BIP 66 : on ne renvoie pas de valeur "négatives" pour S, ie on renvoie la plus petite entre S et -S
+      //=> if (sig[4] & 0x80) return false;
+      si signature.S.val3 & 0x8000000000000000 ALORS
+      	signature.S = corpsOrdre.négationModulo(signature.S)
+      FIN
+      dbgAssertion(signature.S.val3 & 0x8000000000000000 = 0)
+      // Astuce pour que l'encodage de la paire R,S soit de taille fixe :
+      // R doit être compris entre 0x01 et 0x7F.
+      si (signature.S.val3 < 0x0100000000000000) ALORS
+      	// on ré-essaie avec un autre nombre
+      	GOTO recalculer
+      FIN
+      
+      renvoyer signature
+     type : 458752
+   -
+     name : VerifieiSignature
+     procedure_id : 1979779374274356610
+     type_code : 12
+     code : |1+
+      // vérifique que <signature> est bien la singature de <Nombre> avec un clé correspondant a <CléPublique>
+      procédure VerifieiSignature( NombreSigné Entier256, CléPublique point256, signature SignatureEcdsa, erreurSiEchec_OUT est chaine  ) : booléen
+      //CléPubliqueFraction est PointFraction256( CléPublique )
+      
+      // vérification des pré-requis sur la clé publique
+      si CléPublique.estZéro() ALORS
+      	erreurSiEchec_OUT = "La clé publique est invalide : clé = 0."
+      	renvoyer faux
+      FIN
+      si pas courbeBtc.pointEstSurLaCourbe(CléPublique) ALORS
+      	erreurSiEchec_OUT = "La clé publique est invalide : elle n'est pas sur la courbe elliptique"
+      	renvoyer faux
+      FIN
+      //  N * CléPublique doit être équal a 0 @TODO
+      nQ est Point256 = courbeBtc.MultiplicationScalairePoint( CléPublique, courbeBtc.Ordre )
+      si pas nQ.x.estEgalAZéro() ALORS
+      	erreurSiEchec_OUT = "La clé publique est invalide : elle ne respecte par l'ordre de la courbe elliptique"
+      	RENVOYER Faux
+      FIN
+      
+      
+      // vérification des pré-requis sur la la signature
+      // x et y de la signature doivent être dans [1,n-1]
+      si signature.R.estEgalAZero() ALORS
+      	erreurSiEchec_OUT = "La signature est invalide : x = 0"
+      	renvoyer faux
+      FIN
+      SI signature.R.estEgalAZero() ALORS
+      	erreurSiEchec_OUT = "La signature est invalide : y = 0"
+      	RENVOYER Faux
+      FIN
+      SI signature.R.estSupérieurOuEgalA( corpsOrdre.P ) ALORS
+      	erreurSiEchec_OUT = "La signature est invalide : x trop grand"
+      	RENVOYER Faux
+      FIN
+      SI signature.R.estSupérieurOuEgalA( corpsOrdre.P ) ALORS
+      	erreurSiEchec_OUT = "La signature est invalide : y trop grand"
+      	RENVOYER Faux
+      FIN
+      
+      // calcul de Y^-1 : inversion modulaire
+      inverseDeY est Entier256 = corpsOrdre.inverseModulo( signature.S )
+      P1plusP2 est Point256
+      
+      // calcul du point : c1*G + c2*Q
+      Coef1 est Entier256 = corpsOrdre.multiplicationModulo(NombreSigné, inverseDeY)
+      Coef2 est Entier256 = corpsOrdre.multiplicationModulo(signature.R, inverseDeY)
+      P1 est Point256     = courbeBtc.MultiplicationScalairePointGenérateur( 	            Coef1 )
+      P2 est Point256     = courbeBtc.MultiplicationScalairePoint(           CléPublique, Coef2 ) 
+      // PRes = P1 + P2
+      P1plusP2 = courbeBtc.pointPlusPoint( P1 ,  P2)
+      PX est Entier256 = P1plusP2.x //.VersEntier256(corpsECC)
+      
+      // signature OK ssi X == S.R
+      si PAS PX.estEgalA( signature.R ) alors
+      	// signature pas OK
+      	erreurSiEchec_OUT = ChaîneConstruit( <§$0000§>, ...
+      										  NombreSigné.VersChaineHexa(), CléPublique.x.VersChaineHexa(), CléPublique.y.VersChaineHexa() )
+      	renvoyer faux	
+      fin
+      
+      // signature valide 						
+      RENVOYER Vrai
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b79807101981d00
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+  strings :
+   -
+     text :
+      fr-FR : "la signature est invalide : elle ne correspond pas a \r\n<%1> \r\nsigné pour la clé publique \r\n<%2,%3>."
+     index : 0
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

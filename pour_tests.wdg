@@ -1,0 +1,167 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : pour_tests
+ major_version : 25
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1b3efe68009326bf
+ internal_properties : BQAAAAUAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      
+     type : 720898
+  procedures :
+   -
+     name : VerifieOpérationBinaire
+     procedure_id : 1963286291824275359
+     type_code : 15
+     code : |1-
+      PROCÉDURE VerifieOpérationBinaire( opération est procédure, AFormaHexA est chaine, BFormaHexa est une chaîne, RésultatFormaHexa est chaine)
+      
+      nombreA est Entier256( AFormaHexA  )
+      nombreB est Entier256( BFormaHexa )
+      ResultatAttendu est Entier256(  RésultatFormaHexa )
+      
+      // calcul de R = A (op) B
+      ResultatObtenu  est Entier256 = opération( nombreA , nombreB )
+      
+      // vérifie que R = R2
+      si ResultatObtenu.estEgalA( ResultatAttendu ) ALORS
+      	// OK
+      	retour
+      FIN
+      
+      // récup de la ligne du test qui nous a lancé
+      sLigneOrigine est chaine = ExtraitChaîne( dbgInfo(dbgPile),1,rc,DepuisFin)
+      
+      //ERR
+      sErr est chaine = 	"Erreur de calcul. On devrait trouver X et on a Y"  ...
+      +RC + "X = " + ResultatAttendu.VersChaineHexa() + " (étalon)" ... 
+      +RC + "Y = " + ResultatObtenu.VersChaineHexa() ...
+      +RC + "Opérandes : " ...
+      +RC + "A= " + nombreA.VersChaineHexa() ...
+      +RC + "B= " + nombreB.VersChaineHexa() ...
+      +RC + sLigneOrigine
+      //trace(sErr)
+      
+      TestVérifie( faux, sErr )
+     type : 458752
+   -
+     name : VerifieOpérationUnaire
+     procedure_id : 1963293816607223186
+     type_code : 15
+     code : |1+
+      PROCÉDURE VerifieOpérationUnaire( opération est procédure, AFormaHexA est chaine, RésultatFormaHexa est chaine)
+      
+      nombreA est Entier256( AFormaHexA  )
+      ResultatAttendu est Entier256(  RésultatFormaHexa )
+      
+      // calcul de R = (op) A
+      ResultatObtenu  est Entier256 = opération( nombreA  )
+      
+      // vérifie que R = R2
+      si ResultatObtenu.estEgalA( ResultatAttendu ) ALORS
+      	// OK
+      	retour
+      FIN
+      
+      // ERREUR
+      
+      // récup de la ligne du test qui nous a lancé
+      sLigneOrigine est chaine = ExtraitChaîne( dbgInfo(dbgPile),1,rc,DepuisFin)
+      
+      //ERR
+      TestVérifie( faux, ...
+      	"Erreur de calcul. On devrait trouver X et on a Y"  ...
+      	+RC + "X = " + ResultatAttendu.VersChaineHexa() + " (étalon)"  ... 
+      	+RC + "Y = " + ResultatObtenu.VersChaineHexa()  ...
+      	+RC + "Opérandes : " ...
+      	+RC + "A= " + nombreA.VersChaineHexa() ...
+      	+RC + sLigneOrigine )
+     type : 458752
+   -
+     name : VerifieOpérationBinaire_Int
+     procedure_id : 1963299077942598979
+     type_code : 15
+     code : |1+
+      PROCÉDURE VerifieOpérationBinaire_Int( opération est procédure, AFormaHexA est chaine, nB est un entier sans signe sur 8, RésultatFormaHexa est chaine)
+      
+      nombreA est Entier256( AFormaHexA  )
+      nombreB est Entier256( nB )
+      ResultatAttendu est Entier256(  RésultatFormaHexa )
+      
+      // calcul de R = A (op) B
+      ResultatObtenu  est Entier256 = opération( nombreA , nB )
+      
+      // vérifie que R = R2
+      si ResultatObtenu.estEgalA( ResultatAttendu ) ALORS
+      	// OK
+      	retour
+      FIN
+      
+      // récup de la ligne du test qui nous a lancé
+      sLigneOrigine est chaine = ExtraitChaîne( dbgInfo(dbgPile),1,rc,DepuisFin)
+      
+      //ERR
+      TestVérifie( faux, ...
+      	"Erreur de calcul. On devrait trouver X et on a Y"  ...
+      	+RC + "X = " + ResultatAttendu.VersChaineHexa() + " (étalon)" ... 
+      	+RC + "Y = " + ResultatObtenu.VersChaineHexa() ...
+      	+RC + "Opérandes : " ...
+      	+RC + "A= " + nombreA.VersChaineHexa() ...
+      	+RC + "B= " + nombreB.VersChaineHexa() ...
+      	+RC + sLigneOrigine)
+     type : 458752
+   -
+     name : VerifieSoustraction_Corps
+     procedure_id : 1964762721187639433
+     type_code : 15
+     code : |1-
+      PROCÉDURE VerifieSoustraction_Corps( C est CorpsModulaire,  AFormaHexA est chaine, BFormaHexa est une chaîne, RésultatFormaHexa est chaine)
+      
+      nombreA est Entier256( AFormaHexA  )
+      nombreB est Entier256( BFormaHexa )
+      ResultatAttendu est Entier256(  RésultatFormaHexa )
+      
+      // calcul de R = A (op) B
+      ResultatObtenu  est Entier256 = C.soustractionModulo( nombreA , nombreB )
+      
+      // vérifie que R = R2
+      si ResultatObtenu.estEgalA( ResultatAttendu ) ALORS
+      	// OK
+      	retour
+      FIN
+      
+      // récup de la ligne du test qui nous a lancé
+      sLigneOrigine est chaine = ExtraitChaîne( dbgInfo(dbgPile),1,rc,DepuisFin)
+      
+      //ERR
+      sErr est chaine = 	"Erreur de calcul. On devrait trouver X et on a Y"  ...
+      +RC + "X = " + ResultatAttendu.VersChaineHexa() + " (étalon)" ... 
+      +RC + "Y = " + ResultatObtenu.VersChaineHexa() ...
+      +RC + "Opérandes : " ...
+      +RC + "A= " + nombreA.VersChaineHexa() ...
+      +RC + "B= " + nombreB.VersChaineHexa() ...
+      +RC + sLigneOrigine
+      //trace(sErr)
+      
+      TestVérifie( faux, sErr )
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : ProcéduresGlobales1
+resources :
+ string_res :
+  identifier : 0x1b3efe5c0091f82d
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

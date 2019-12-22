@@ -1,0 +1,1183 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CorpsModulaire
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1b3a8e5132bf57e3
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      // gestion des opérateur dans le corps des entiers (256 bits) modulo P avec P premier
+      CorpsModulaire est une Classe
+      	// modulo principal utilisé pour Z/PZ. doit doit être premier
+      	// ex : "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
+      	P est Entier256
+      	
+      	// OTIMS :
+      	// constantes et tables pour accélérer les calculs
+      	MaxInt256 est entier256  // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      	_1 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000001
+      	_0 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000000
+      	// 2^256^2 mod P, pour algorithme de Montgomery 
+      	_2P512ModP est Entier256 ///= 2^512 Mod P
+      	// P' tels que P'*P = -1 mod 2^256 ( ou 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF )
+      	invPmod2P256 est Entier256 	// ex: "c9bd1905155383999c46c2c295f2b761bcb223fedc24a059d838091dd2253531"  si P="0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
+      	// P' tels que P'*P = -1 mod 2^32  pour montgomery par bloc
+      	_2P32ModP est Entier256 ///= 2^32 Mod P
+      	invPmod2P32  est Entier256  // ex : "5f4a72907543367f61d0fb07f7f1ffa1c447723a87f9235090703845d2253531" si P="0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
+      	invPmod2P64  est Entier256  // ex : "5f4a72907543367f61d0fb07f7f1ffa1c447723a87f9235090703845d2253531" si P="0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
+      
+      	
+      	//  c = 2n −p : pour L’algorithme basé sur la retenue sortante d’Omura 
+      	DeuxPuissance256MoinsP est entier256
+      	// P - 2; pour inverse modulaire
+      	PMoins2 est Entier256
+      	
+      	
+      	// tableau de 2^N (mod P)
+      	TabPow2 	   est un tableau de entier256
+      	TabPow2_MoinsP est un tableau de entier256
+      	
+      	TabCacheA est un tableau de entier256
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1962037067068233699
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur( valeurHexa chaine )
+      
+      // Init P, modulo principal
+      p.affecteAvecChaineHexa( valeurHexa )
+      
+      // Init constantes 
+      MaxInt256.affecteAvecChaineHexa( Répète("F",64) )
+      _1.affecteAvecEntierPositif(1)
+      
+      // Init constantes en fonction de P
+      DeuxPuissance256MoinsP = soustraction (MaxInt256, P ) 
+      DeuxPuissance256MoinsP = additionAvecUn(DeuxPuissance256MoinsP )
+      // P-2
+      deux est Entier256(2)
+      PMoins2 = soustraction (P, deux ) 
+      
+      
+      // calcul de  P' tels que P'*P = -1 mod 2^256
+      _moins1moduloP est Entier256 = negation( P )
+      phi_moins1_256 est Entier256 ( "0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" )
+      invPmod2P256 = puissance256_256( _moins1moduloP, phi_moins1_256 )
+      // calcul de  P' tels que P'*P = -1 mod 2^32
+      phi_moins1_32 est Entier256 ( "0x7FFFFFFF" )
+      phi_moins1_64 est Entier256 ( "0x7FFFFFFFFFFFFFFF" )
+      invPmod2P32 = puissance256_256( _moins1moduloP, phi_moins1_32 )
+      
+      invPmod2P64 = puissance256_256( _moins1moduloP, phi_moins1_64 )
+      
+      // pow2
+      n est Entier256( 1 )
+      pour i = 1 à 256
+      	TabPow2.Ajoute( n)
+      	n = multiplicationPar2Modulo(n)
+      	//Trace(n.VersChaineHexa())
+      FIN
+      // Multiples de (2^N-P) mod P
+      k2N_P est Entier256 = DeuxPuissance256MoinsP
+      POUR i = 1 à 256
+      	TabPow2_MoinsP.Ajoute( k2N_P )
+      	k2N_P = additionModulo(k2N_P, DeuxPuissance256MoinsP )
+      	//Trace(n.VersChaineHexa())
+      FIN
+      
+      // 2^512 Mod P
+      _2P512ModP  = multiplicationModulo_PourContstructeur(DeuxPuissance256MoinsP,DeuxPuissance256MoinsP)
+      dbgAssertion(pas _2P512ModP.estEgalAZero())
+      // 2^32  Mod P
+      _2P32ModP.affecteAvecChaineHexa("0x100000000")
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1962037067068299235
+     type_code : 28
+     code : |1+
+      PROCEDURE Destructeur()
+      
+      
+     type : 655360
+   -
+     name : additionModulo
+     procedure_id : 1962037479385255214
+     type_code : 12
+     group : 1
+     code : |1+
+      // renvoie A + B ( mod P )
+      Procédure additionModulo( nombreA entier256, nombreB entier256) : Entier256
+      
+      // S = A + B
+      retenue est un booléen
+      resultat est Entier256 = addition(nombreA,nombreB, retenue)
+      SI retenue  ALORS
+      	// ajout le résultat du modulo pour 2^256
+      	resultat =  addition( resultat,DeuxPuissance256MoinsP)
+      FIN
+      si resultat.estSupérieurOuEgalA(P) ALORS
+      	renvoyer soustraction(resultat, P)
+      FIN
+      renvoyer resultat
+     type : 458752
+   -
+     name : additionFractionModulo
+     procedure_id : 1979352772337396860
+     type_code : 12
+     code : |1+
+      // addtion de A/X + B/Y = C/Z (mod N)
+      PROCÉDURE additionFractionModulo( nombreA Fraction256, nombreB Fraction256) : Fraction256
+      
+      résultat est Fraction256 
+      // si meme dénominateur (y compris 1)
+      si nombreA.dénominateur.EstEgalA( nombreB.dénominateur ) ALORS
+      	// C = (A +B ) / X
+      	résultat.numérateur   = additionModulo(nombreA.numérateur, nombreB.numérateur )
+      	résultat.dénominateur = nombreA.dénominateur
+      	renvoyer résultat
+      FIN
+      
+      // C = (A*Y + B*X) / X*Y
+      résultat.numérateur   = additionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
+      										multiplicationModulo( nombreB.numérateur , nombreA.dénominateur ))
+      résultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
+      RENVOYER résultat
+      
+     type : 458752
+   -
+     name : additionFractionModulo
+     procedure_id : 1979352772337396860
+     type_code : 12
+     code : |1+
+      // addtion de A/X + B = C/Z (mod N)
+      PROCÉDURE additionFractionModulo( FractionA Fraction256, nombreB entier256) : Fraction256
+      
+      résultat est Fraction256 
+      // C = (A + B*X) / X
+      résultat.numérateur   = additionModulo( FractionA.numérateur, ...
+      										multiplicationModulo( nombreB , FractionA.dénominateur ))
+      résultat.dénominateur = FractionA.dénominateur 
+      RENVOYER résultat
+      
+     type : 458753
+   -
+     name : négationModulo
+     procedure_id : 1962039966171440705
+     type_code : 12
+     code : |1+
+      // renvoie B = -A (mod P), cad tel que A +B = 0 (mod P)
+      PROCÉDURE négationModulo( nombre entier256 ) : entier256
+      dbgAssertion(P.estSupérieurOuEgalA(nombre))
+      RENVOYER soustraction ( P, nombre )
+      //RENVOYER additionModulo ( P, negation(nombre))
+     type : 458752
+   -
+     name : négationFractionModulo
+     procedure_id : 1979374139808077144
+     type_code : 12
+     code : |1+
+      Procédure  négationFractionModulo( X Fraction256 ) : Fraction256
+      
+      résultat est Fraction256
+      résultat.numérateur   = négationModulo( X.numérateur )
+      résultat.dénominateur =  X.dénominateur
+      renvoyer résultat
+     type : 458752
+   -
+     name : négationFractionModulo_mon
+     procedure_id : 1984578420410862917
+     type_code : 12
+     code : |1-
+      procédure négationFractionModulo_mon( X Fraction256 ) : Fraction256
+      
+      résultat est Fraction256
+      résultat.numérateur   = négationModulo( X.numérateur )
+      résultat.dénominateur =  X.dénominateur
+      RENVOYER résultat
+     type : 458752
+   -
+     name : soustractionModulo
+     procedure_id : 1964419115212207273
+     type_code : 12
+     code : |1+
+      // renvoie A - B ( mod P )
+      Procédure soustractionModulo( nombreA Entier256, nombreB Entier256) : Entier256
+      
+      si nombreA.estSupérieurOuEgalA( nombreB ) ALORS
+      	renvoyer soustraction(nombreA,nombreB)
+      sinon
+      	moinsR est Entier256 = soustraction ( nombreB, nombreA  )
+      	renvoyer négationModulo( moinsR )
+      fin
+     type : 458752
+   -
+     name : soustractionFractionModulo
+     procedure_id : 1979373302287424776
+     type_code : 12
+     code : |1+
+      // renvoie A/X - B/Y ( mod P )
+      procédure soustractionFractionModulo( nombreA Fraction256, nombreB Fraction256) : Fraction256
+      
+      
+      résultat est Fraction256 
+      // si meme dénominateur (y compris 1)
+      SI nombreA.dénominateur.estEgalA( nombreB.dénominateur ) ALORS
+      	// C = (A - B ) / X
+      	résultat.numérateur   = soustractionModulo(nombreA.numérateur, nombreB.numérateur )
+      	résultat.dénominateur = nombreA.dénominateur
+      	RENVOYER résultat
+      FIN
+      
+      // C = (A*Y - B*X) / X*Y
+      résultat.numérateur   = soustractionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
+      											multiplicationModulo( nombreB.numérateur , nombreA.dénominateur ))
+      résultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
+      RENVOYER résultat
+      
+     type : 458752
+   -
+     name : multiplicationModulo_DEBUG
+     procedure_id : 1962047327745723262
+     type_code : 12
+     group : 1
+     code : |1-
+      // renvoie A * B ( mod P )
+      // version lente pour test en debug
+      procédure multiplicationModulo_DEBUG(  nombreA entier256, nombreB entier256) : Entier256
+      
+      resultat est un entier256
+      zero est un entier256 //TEST
+      
+      pour i = 255 a 0 pas -1
+      	// r = r * 2
+      	si pas resultat.estEgalAZero() alors
+      		resultat = multiplicationPar2Modulo(resultat)
+      	fin
+      	
+      	// r = r + A
+      	si nombreB.bit( i ) alors
+      		resultat = additionModulo(resultat, nombreA )
+      	sinon
+      		resultat = additionModulo(resultat, zero )
+      	FIN
+      	
+      
+      
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : multiplicationModulo
+     procedure_id : 1962192921991122669
+     type_code : 12
+     group : 1
+     code : |1+
+      // renvoie A * B ( mod P )
+      procédure virtuelle multiplicationModulo(  nombreA entier256, nombreB entier256) : Entier256
+      dbgAssertion(faux) // normalmenet dérivée
+      
+      // cas particulier de la multiplication par 1 (fractions)
+      si nombreA.EstEgalA1() ALORS
+      	renvoyer nombreB
+      FIN 
+      SI nombreB.estEgalA1() ALORS
+      	RENVOYER nombreA
+      FIN 
+      
+      //@Test
+      renvoyer MultiplicationModulo_Montgomery( nombreA, nombreB)
+      
+      resultat est un entier256
+      // calcul d'un cache des valeur de A * K pour K de 0 a 255
+      si TabCacheA..Occurrence>0 _et_ PAS TabCacheA[1].estEgalA(nombreA)
+      	TabCacheA.SupprimeTout()
+      fin
+      si TabCacheA.Occurrence()=0 ALORS
+      	nCur est Entier256 = nombreA
+      	pour i = 1 a 256
+      		TabCacheA.Ajoute( nCur )
+      		nCur = additionModulo( nCur, nombreA )
+      	FIN
+      FIN
+      
+      pour i = 31 a 0 pas -1
+      	// r = r * 256
+      	resultat = multiplicationPar256Modulo(resultat)
+      	// r = r + k * A
+      	kB est entier = nombreB._8Bits( i ) 
+      	si kB<>0 alors
+      		// récup de A * K en cache
+      		AMultK est un Entier256 = TabCacheA[kB]
+      		resultat = additionModulo(resultat, AMultK)
+      	fin
+      
+      
+      FIN
+      
+      resultatDBG est Entier256 =  MultiplicationModulo_Montgomery( nombreA, nombreB)
+      si pas resultatDBG.estEgalA( resultat) alors
+      	dbgAssertion(faux, resultatDBG.VersChaineHexa() + RC + resultat.VersChaineHexa() )
+      fin
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : multiplicationFractionModulo
+     procedure_id : 1979358450288630103
+     type_code : 12
+     code : |1+
+      // calcul de A/X* B/Y
+      procédure multiplicationFractionModulo( fractionA Fraction256, fractionB Fraction256) : Fraction256
+      
+      // = A*B/X*Y
+      résultat est Fraction256
+      résultat.numérateur   = multiplicationModulo(fractionA.numérateur,   fractionB.numérateur) 
+      résultat.dénominateur = multiplicationModulo(fractionA.dénominateur, fractionB.dénominateur)
+      renvoyer  résultat
+     type : 458752
+   -
+     name : carréModulo
+     procedure_id : 1964406591087343535
+     type_code : 12
+     group : 1
+     code : |1+
+      
+      procédure carréModulo( nombre est Entier256 ) : entier256
+      
+      renvoyer multiplicationModulo(nombre,nombre)
+     type : 458752
+   -
+     name : carréFractionModulo
+     procedure_id : 1979368719555531470
+     type_code : 12
+     code : |1-
+      PROCÉDURE carréFractionModulo( X Fraction256 ) : Fraction256
+      
+      RENVOYER multiplicationFractionModulo(X,X)
+     type : 458752
+   -
+     name : cubeModulo
+     procedure_id : 1964412170249914761
+     type_code : 12
+     code : |1+
+      Procédure cubeModulo( nombre est Entier256 ) : entier256
+      
+      RENVOYER multiplicationModulo( multiplicationModulo(nombre,nombre), nombre)
+      
+     type : 458752
+   -
+     name : cubeFractionModulo
+     procedure_id : 1979369024498281158
+     type_code : 12
+     code : |1+
+      procédure cubeFractionModulo( X fraction256 ) : Fraction256
+      
+      // = A*B/X*Y
+      résultat est Fraction256
+      résultat.numérateur   = cubeModulo(X.numérateur)
+      résultat.dénominateur = cubeModulo(X.dénominateur)
+      RENVOYER  résultat
+      
+     type : 458752
+   -
+     name : multiplicationPar2Modulo
+     procedure_id : 1962194124583490858
+     type_code : 12
+     code : |1+
+      // renvoie A * 2 ( mod P )
+      // =>décalage de bits
+      procédure multiplicationPar2Modulo(  nombreA entier256) : Entier256
+      
+      
+      
+      // décalage de bits
+      resultat est un entier256 
+      resultat.val0 = nombreA.val0*2
+      resultat.val1 = nombreA.val1*2 // + (bitDécaleDroite(nombreA.val0, 63) & 1)
+      // récup bit de poids faible a partir de celui de poids fort du précédent
+      si (nombreA.val0 & 0x8000000000000000) <> 0 ALORS
+      	resultat.val1++
+      FIN
+      resultat.val2 = nombreA.val2*2 // + (bitDécaleDroite(nombreA.val1, 63) & 1)
+      SI (nombreA.val1 & 0x8000000000000000) <> 0 ALORS
+      	resultat.val2++
+      FIN
+      resultat.val3 = nombreA.val3*2 // + (bitDécaleDroite(nombreA.val2, 63) & 1)
+      SI (nombreA.val2 & 0x8000000000000000) <> 0 ALORS
+      	resultat.val3++
+      FIN
+      // dépassement sir le bit de poids fort est a 1
+      dépassement est un booléen = (nombreA.val3 & 0x8000000000000000) <> 0
+      											 
+      si dépassement <> 0 alors
+      	// ajout le résultat du modulo pour 2^256
+      	resultat = additionModulo( resultat,DeuxPuissance256MoinsP)
+      FIN
+      si resultat.estSupérieurOuEgalA( P ) ALORS
+      	resultat = soustraction(resultat, P )
+      FIN
+      // TEST pour debug
+      resultat_DBG est un entier256  = additionModulo(nombreA,nombreA)
+      dbgAssertion(resultat.estEgalA(resultat_DBG), resultat.VersChaineHexa() + RC + resultat_DBG.VersChaineHexa()  )
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : multiplicationPar2FractionModulo
+     procedure_id : 1979369419635297979
+     type_code : 12
+     code : |1+
+      procédure multiplicationPar2FractionModulo( X Fraction256) : Fraction256
+      
+      // = A*B/X*Y
+      résultat est Fraction256
+      résultat.numérateur   = multiplicationPar2Modulo(X.numérateur)
+      résultat.dénominateur = X.dénominateur
+      RENVOYER  résultat
+      
+     type : 458752
+   -
+     name : MultiplicationPar3Modulo
+     procedure_id : 1964419553298908132
+     type_code : 12
+     code : |1+
+      Procédure MultiplicationPar3Modulo( nombre Entier256 ) : entier256
+      
+      renvoyer additionModulo( multiplicationPar2Modulo(nombre), nombre)
+     type : 458752
+   -
+     name : multiplicationPar256Modulo
+     procedure_id : 1962539719127474187
+     type_code : 12
+     code : |1+
+      // renvoie A * 256 ( mod P )
+      // =>décalage de 8 bits +  gestion du modulo
+      procédure multiplicationPar256Modulo( nombreA entier256 ) : Entier256 
+      
+      // récup du nombre dans un buffer low endian
+      sbufA est un buffer = nombreA.versbuffer( Entier256::BUF_LOW_ENDIAN )
+      nPoidsFortRestant est un entier = asc( sbufA[32] ) // LE : 32 = poids fort
+      sbufAmul256 est un buffer =  caract(0)  + Milieu(sbufA,1,31) 
+      
+      // récup partie basse
+      resultat est un entier256 
+      resultat.affecteAvecBuffer(sbufAmul256)
+      SI resultat.estSupérieurOuEgalA( P ) ALORS
+      	RENVOYER soustraction(resultat, P)
+      FIN
+      
+      // ajout partie haute avec une table pré-calculé du reste modulaire des puissance de 2 a partir de 256
+      si nPoidsFortRestant <> 0 alors
+      	pr est Entier256 = TabPow2_MoinsP[ nPoidsFortRestant ]
+      	renvoyer additionModulo( resultat, pr )
+      fin
+      
+      
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : puissanceModulo
+     procedure_id : 1964422602725873770
+     type_code : 12
+     code : |1+
+      // envoie A^B (mod p)
+      procédure puissanceModulo(  nombreA entier256,  nombreB entier256) : Entier256
+      
+      pow2	 est Entier256 = nombreA
+      résultat est Entier256(1)
+      pour  i = 0 a 255
+      	si nombreB.bit(i) alors
+      		résultat = multiplicationModulo( résultat, pow2 )
+      	FIN
+      	pow2 = carréModulo(pow2)
+      FIN
+      
+      renvoyer résultat
+     type : 458752
+   -
+     name : puissanceModulo_Montgomery
+     procedure_id : 1967015199648228841
+     type_code : 12
+     code : |1+
+      // envoie A^B (mod p)
+      // en utilisant la méthode de montgomery 
+      procédure puissanceModulo_Montgomery( nombreA entier256,  nombreB entier256) : Entier256
+      
+      //	Procédure interne X_to_monX(X)
+      //		renvoyer REDC_Montgomery( X, _2P512ModP )
+      //	fin
+      //	PROCÉDURE INTERNE monX_to_X(X)
+      //		RENVOYER REDC_Montgomery( X, _1 )
+      //	FIN
+      	
+      // tranformation de A en mon(A) = RECD( A, R2 )
+      //mon_A est Entier256 = REDC_Montgomery( nombreA, PAuCarre )
+      mon_A est Entier256 = X_to_monX( nombreA )
+      
+      // test, devrait être égaux
+      //t_dbg est Entier256 = monX_to_X( mon_A )
+      //si pas t_dbg.estEgalA(nombreA ) alors
+      //	trace(nombreA.VersChaineHexa())
+      //	trace(t_dbg.VersChaineHexa())
+      //	RENVOYER _0
+      //fin
+      // calcul de mon_A ^nombreB
+      //R512 est Entier512
+      mon_ApowI2	 est Entier256 	  = mon_A // valeur successive de mon( A ^(2*i) )
+      mon_résultat est Entier256   =  X_to_monX( _1 )
+      POUR  i = 0 a 255
+      	// si le bit I est a 1,
+      	SI nombreB.bit(i) ALORS
+      		// mon_résultat = mon_résultat * mon_résultat^(2*I)
+      		mon_résultat =REDC_Montgomery(mon_résultat, mon_ApowI2 )
+      
+      	FIN
+      	// calcul cumulatif de A^(2*I)
+      	mon_ApowI2 = REDC_Montgomery(mon_ApowI2, mon_ApowI2)
+      FIN
+      
+      //  mpn( résultat ) => résultat
+      renvoyer  monX_to_X( mon_résultat )
+      
+     type : 458752
+   -
+     name : MultiplicationModulo_Montgomery
+     procedure_id : 1979739813333047969
+     type_code : 12
+     code : |1+
+      // renvoie A * B mod P
+      // utilise la réduction de montgomery
+      procédure MultiplicationModulo_Montgomery( nombreA entier256,  nombreB entier256) : Entier256
+      
+      mon_A est Entier256 = REDC_Montgomery( nombreA,_2P512ModP )
+      mon_B est Entier256 = REDC_Montgomery( nombreB,_2P512ModP )
+      //mon_A est Entier256 = X_to_monX( nombreA )
+      //mon_B est Entier256 = X_to_monX( nombreB )
+      
+      mon_Résultat est Entier256 = REDC_Montgomery( mon_A, mon_B)
+      
+      //renvoyer monX_to_X( mon_Résultat )
+      RENVOYER  REDC_Montgomery( mon_Résultat, _1 )
+      
+     type : 458752
+   -
+     name : inverseModulo
+     procedure_id : 1964420450947150377
+     type_code : 12
+     code : |1+
+      // renvoie l'inverse modulaire d'un nombre A.
+      // cas un nombre I tel que A * I = 1 (mod P)
+      Procédure inverseModulo( nombre entier256 ) : entier256
+      
+      inverseMod est Entier256
+      
+      inverseMod = inverseModulaire_HGCD256( P, nombre  )
+      // si echec
+      si inverseMod.estEgalAZero() ALORS
+      	// calcul par le théorème d’Euler :
+      	//  inverse(A) = A ^ (P-2)
+      	inverseMod  = puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
+      sinon
+      	//gère le cas ou l'on obtient P-X au lieu de X
+      	SI pas multiplicationModulo( nombre, inverseMod ).val0 = 1 ALORS
+      		inverseMod = négationModulo( inverseMod ) // soustraction( inverseDex, gCorps.P )
+      		//inverseModinverseDex = additionAvecUn(inverseDex)
+      		SI pas multiplicationModulo( nombre, inverseMod ).val0 = 1 ALORS
+      			// Pb
+      			dbgAssertion(faux,"nombre*inverseMod <>1."+rc+"nombre = "+nombre.VersChaineHexa())
+      			// calcul par le théorème d’Euler :
+      			//  inverse(A) = A ^ (P-2)
+      			inverseMod  = puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
+      		FIN
+      	FIN
+      
+      fin
+      
+      
+      // calcul par le théorème d’Euler :
+      //  inverse(A) = A ^ (P-2)
+      //inverseMod  = puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
+      //trace( inverseMod.VersChaineHexa())
+      // Calcul par Euclide étendu
+      //inverseMod est Entier256 =  PGCD_Etendu(nombre, :P)
+      //inverseMod est Entier256 =  inverseModuloParPartie(nombre, :P)
+      // c'est l'inverse modulaire au signe près
+      //inverseMod est Entier256
+      //si u.bNégatif alors
+      //	inverseMod = négationModulo(u.valAbs)
+      //sinon
+      //	inverseMod =  u.valAbs
+      //FIN
+      //
+      //@TEST en debug  on vérifie qu'on a bien trouvé l'inverse modulaire
+      si pas gbModeBench _et_ EnModeTest() 
+      	DBG_1 est Entier256 = multiplicationModulo( inverseMod, nombre )
+      	dbgAssertion( DBG_1.estEgalA1(), nombre.VersChaineHexa() + rc + inverseMod.VersChaineHexa() + rc + DBG_1.VersChaineHexa() )
+      fin
+      
+      renvoyer inverseMod
+      
+      
+      // calcul par le théorème d’Euler :
+      //  inverse(A) = A ^ (P-2)
+      //InverseDeNombre est Entier256 = puissanceModulo( nombre, PMoins2 )
+      // OPTIM : utilisation de l'algorithme de _Montgomery
+      //RENVOYER  puissanceModulo_MontgomeryParBloc32( nombre, PMoins2 )
+      //RENVOYER  puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
+      
+      
+     type : 458752
+   -
+     name : divisionModulo
+     procedure_id : 1964420506781804621
+     type_code : 12
+     code : |1+
+      // renvoie A / B (mod P), cas un nombre C tel que C*B = A (mod P)
+      Procédure divisionModulo( nombreA entier256, nombreB entier256 ) : Entier256
+      
+      renvoyer multiplicationModulo( nombreA, inverseModulo(nombreB))
+      
+     type : 458752
+   -
+     name : divisionFractionModulo
+     procedure_id : 1979369922146654287
+     type_code : 12
+     code : |1+
+      // renvoie (A/X) / (B/Y)
+      PROCÉDURE divisionFractionModulo( X Fraction256, Y Fraction256): Fraction256
+      dbgAssertion( pas Y.estEgalAZero())
+      
+      // = A*Y/B*X
+      résultat est Fraction256
+      résultat.numérateur   = multiplicationModulo(X.numérateur, Y.dénominateur)
+      résultat.dénominateur = multiplicationModulo(Y.numérateur, X.dénominateur)
+      RENVOYER  résultat
+     type : 458752
+   -
+     name : divisionFractionModulo_mon
+     procedure_id : 1982589824775160005
+     type_code : 12
+     code : |1-
+      // renvoie mon(A/X) / mon( B/Y )
+      PROCÉDURE divisionFractionModulo_mon( mon_X Fraction256, mon_Y Fraction256): Fraction256
+      dbgAssertion( PAS mon_Y.estEgalAZero())
+      
+      // = A*Y/B*X
+      résultat est Fraction256
+      résultat.numérateur   = REDC_Montgomery(mon_X.numérateur, mon_Y.dénominateur)
+      résultat.dénominateur = REDC_Montgomery(mon_Y.numérateur, mon_X.dénominateur)
+      RENVOYER  résultat
+     type : 458752
+   -
+     name : REDC_Montgomery
+     procedure_id : 1965140729853810839
+     type_code : 12
+     code : |1-
+      // opérateur de réduction de Montgomery
+      // renvoie t = A*B*P'
+      //  avec
+      //    P' tels que P'*P = -1 mod 2^256
+      //    R = 2^256
+      Procédure REDC_Montgomery(  nombreA entier256, nombreB entier256 ) : Entier256
+      
+      //@Test
+      renvoyer REDC_MontgomeryParBloc64(nombreA,nombreB)
+      
+      
+      // calcul de
+      // T = A*B (sur 512 bits)
+      AB512 est Entier512
+      // OPTIM cas sortie de _MON
+      si nombreB.estEgalA( _1 ) alors
+      	AB512.valPoidsFaible = nombreA
+      sinon
+      	AB512 = multiplication256x256_512(nombreA,nombreB)
+      fin
+      
+      // calcul de 
+      // m = ((A*B mod R)*P′') mod R
+      m est un Entier512 		  = multiplication256x256_512(AB512.valPoidsFaible, invPmod2P256 )
+      m_mod2N  est un Entier256 = m.valPoidsFaible // modulo R
+      
+      // calcul de
+      //  t = (T + m*P) /  2^256 
+      mP est un Entier512 	  = multiplication256x256_512( m_mod2N, P )
+      retenue_out est un booléen
+      T_mp est Entier512 		  = addition512(AB512, mP , retenue_out)
+      // division par   2^256 ( OK car T_mp.poidsFaible = 0 )
+      dbgAssertion( T_mp.valPoidsFaible.estEgalAZero() )
+      resultat est Entier256    = T_mp.valPoidsFort
+      
+      si retenue_out alors
+      	renvoyer soustraction(resultat,P)
+      FIN
+      si resultat.estSupérieurOuEgalA( P ) ALORS
+      	renvoyer  soustraction(resultat,P)
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : REDC_MontgomeryParBloc32
+     procedure_id : 1968871836660312042
+     type_code : 12
+     code : |1-
+      // opérateur de réduction de Montgomery
+      // renvoie t = A*B*P'
+      //  avec
+      //    P' tels que P'*P = -1 mod 2^256
+      //    R = 2^32
+      Procédure REDC_MontgomeryParBloc32(  nombreA entier256, nombreB entier256 ) : Entier256
+      
+      // calcul de
+      // T = A*B (sur 512 bits)
+      T est Entier512
+      // OPTIM cas sortie de _MON
+      si nombreB.estEgalA( _1 ) alors
+      	T.valPoidsFaible = nombreA
+      sinon
+      	T = multiplication256x256_512(nombreA,nombreB)
+      fin
+      
+      x est un entier sur 8 sans signe
+      c est un entier sur 4 sans signe
+      m est un entier sur 4 sans signe
+      	
+      // N = invPmod2P32
+      Nprime est un entier sur 4 sans signe = invPmod2P32._32Bits(0)
+      
+      
+      pour i = 0 a 7
+      	// rendre T divisible par 2^32(i+1)
+      		
+      	//  m ← T[i] *⋅ N′ mod B
+      	m  = T._32Bits(i)  * Nprime // x3 & 0xFFFFFFFF // poids faible = modulo
+      
+      	POUR j = 0 a 7
+      		// addition des mots de poids faible + retenue de l'étage précédent
+      		x  =  T._32Bits(i + j) +   P._32Bits(j)*m  + c 
+      		T.set32Bits( i + j, (x)     ) // poids faible
+      		// retenue pour les 32 bits suivant
+      		c = bitDécaleDroite(x,32) //  poids fort
+      	
+      	fin
+      	// ajout des retenues
+      	POUR j = 8 a 15-i
+      		SI c = 0 ALORS
+      			SORTIR
+      		FIN
+      		x = T._32Bits(i + j) + c
+      		T.set32Bits( i + j,    (x) )
+      		c = bitDécaleDroite(x, 32) //  poids fort
+      	FIN
+      FIN
+      
+      retenue_out est un booléen = c
+      resultat est Entier256    = T.valPoidsFort
+      
+      si retenue_out alors
+      	renvoyer soustraction(resultat,P)
+      FIN
+      si resultat.estSupérieurOuEgalA( P ) ALORS
+      	renvoyer  soustraction(resultat,P)
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : puissanceModulo_MontgomeryParBloc32
+     procedure_id : 1968880813142150325
+     type_code : 12
+     code : |1+
+      // envoie A^B (mod p)
+      // en utilisant la méthode de montgomery 
+      procédure puissanceModulo_MontgomeryParBloc32( nombreA entier256,  nombreB entier256) : Entier256
+      
+      //	Procédure interne X_to_monX(X)
+      //		renvoyer REDC_MontgomeryParBloc32( X, _2P512ModP )
+      //	fin
+      //	PROCÉDURE INTERNE monX_to_X(X)
+      //		RENVOYER REDC_MontgomeryParBloc32( X, _1 )
+      //	FIN
+      	
+      // transformation de A en mon(A) = RECD( A, R2 )
+      mon_A est Entier256 = X_to_monX( nombreA )
+      
+      // calcul de mon_A ^nombreB
+      mon_ApowI2	 est Entier256 	  = mon_A // valeur successive de mon( A ^(2*i) )
+      mon_résultat est Entier256   =  X_to_monX( _1 )
+      POUR  i = 0 a 254
+      	// si le bit I est a 1,
+      	SI nombreB.bit(i) ALORS
+      		// mon_résultat = mon_résultat * mon_résultat^(2*I)
+      		mon_résultat =REDC_MontgomeryParBloc32(mon_résultat, mon_ApowI2 )
+      	FIN
+      	// calcul cumulatif de A^(2*I)
+      	mon_ApowI2 = REDC_MontgomeryParBloc32(mon_ApowI2, mon_ApowI2)
+      FIN
+      SI nombreB.bit(255) ALORS
+      	// mon_résultat = mon_résultat * mon_résultat^(2*I)
+      	mon_résultat =REDC_MontgomeryParBloc32(mon_résultat, mon_ApowI2 )
+      FIN
+      
+      
+      //  mpn( résultat ) => résultat
+      renvoyer  monX_to_X( mon_résultat )
+     type : 458752
+   -
+     name : REDC_MontgomeryParBloc64
+     procedure_id : 1969261931373429511
+     type_code : 12
+     code : |1-
+      // opérateur de réduction de Montgomery 
+      // renvoie t = A*B*P'
+      //  avec
+      //    P' tels que P'*P = -1 mod 2^256
+      // par bloc de 64 bits
+      Procédure REDC_MontgomeryParBloc64(  nombreA entier256, nombreB entier256 ) : Entier256
+      
+      // calcul de
+      // T = A*B (sur 512 bits)
+      AB512 est Entier512
+      // OPTIM cas sortie de _MON
+      si nombreA.estEgalA( _1) alors
+      	AB512.valPoidsFaible = nombreB
+      sinon si nombreB.estEgalA( _1 ) alors
+      	AB512.valPoidsFaible = nombreA
+      sinon
+      	AB512 = multiplication256x256_512(nombreA,nombreB)
+      fin
+      
+      x0 est un entier sur 8 sans signe
+      x1 est un entier sur 8 sans signe // poids fort
+      //x128 est Entier256
+      c est un entier sur 8 sans signe
+      m est un entier sur 8 sans signe
+      Tij est un entier sur 8 sans signe
+      iPlusj est un entier
+      	
+      // N' tel que P * N' = 0xFFFFFFFFFFFFFFFF
+      Nprime est un entier sur 8 sans signe = invPmod2P64.val0
+      
+      
+      pour i = 0 a 3
+      	// rendre T divisible par 2^32(i+1)
+      		
+      	//  m ← T[i] *⋅ N′ mod B
+      	m  = AB512._64Bits(i)  * Nprime // x3 & 0xFFFFFFFF // poids faible = modulo
+      
+      	POUR j = 0 a 3
+      		iPlusj = i + j
+      		// addition des mots de poids faible + retenue de l'étage précédent
+      		(x0,x1)= multiplication64x64_128HL( P._64Bits(j), m)
+      		Tij = AB512._64Bits( iPlusj )
+      		x0 += Tij
+      		si (x0 <  Tij) x1++
+      		x0 += c
+      		SI (x0 <  c) x1++
+      		AB512.set64Bits( i + j, x0      ) // poids faible
+      		// retenue pour les 32 bits suivant
+      		c = x1 
+      	
+      	fin
+      	// ajout des retenues
+      	POUR j = 4 a 7-i
+      		SI c = 0 ALORS
+      			SORTIR
+      		FIN
+      		Tij = AB512._64Bits(i + j) 
+      		x1  = 0
+      		//x0 = addition64_64_retenueCumulative( Tij, c,  x1)
+      		x0 = Tij + c
+      		si (x0 < Tij _ou_ x0 < c) x1++
+      
+      		AB512.set64Bits( i + j,    x0 )
+      		c =  x1 
+      	FIN
+      FIN
+      
+      //retenue_out est un booléen = c
+      resultat est Entier256    = AB512.valPoidsFort
+      
+      si c alors
+      	renvoyer soustraction(resultat,P)
+      FIN
+      si resultat.estSupérieurOuEgalA( P ) ALORS
+      	renvoyer  soustraction(resultat,P)
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : puissanceModulo_MontgomeryParBloc64
+     procedure_id : 1969265015160142079
+     type_code : 12
+     code : |1+
+      // envoie A^B (mod p)
+      // en utilisant la méthode de montgomery 
+      procédure puissanceModulo_MontgomeryParBloc64( nombreA entier256,  nombreB entier256) : Entier256
+      
+      //	Procédure interne X_to_monX(X)
+      //		renvoyer REDC_MontgomeryParBloc64( X, _2P512ModP )
+      //	fin
+      //	PROCÉDURE INTERNE monX_to_X(X)
+      //		RENVOYER REDC_MontgomeryParBloc64( X, _1 )
+      //	FIN
+      	
+      // transformation de A en mon(A) = RECD( A, R2 )
+      mon_A est Entier256 = X_to_monX( nombreA )
+      
+      // calcul de mon_A ^nombreB
+      mon_ApowI2	 est Entier256 	  = mon_A // valeur successive de mon( A ^(2*i) )
+      mon_résultat est Entier256   =  X_to_monX( _1 )
+      POUR  i = 0 a 254
+      	// si le bit I est a 1,
+      	SI nombreB.bit(i) ALORS
+      		// mon_résultat = mon_résultat * mon_résultat^(2*I)
+      		mon_résultat =REDC_Montgomery(mon_résultat, mon_ApowI2 )
+      	FIN
+      	// calcul cumulatif de A^(2*I)
+      	mon_ApowI2 = REDC_Montgomery(mon_ApowI2, mon_ApowI2)
+      FIN
+      SI nombreB.bit(255) ALORS
+      	// mon_résultat = mon_résultat * mon_résultat^(2*I)
+      	mon_résultat =REDC_Montgomery(mon_résultat, mon_ApowI2 )
+      FIN
+      
+      
+      //  mpn( résultat ) => résultat
+      renvoyer  monX_to_X( mon_résultat )
+     type : 458752
+   -
+     name : multiplicationPar3FractionModulo
+     procedure_id : 1979369600024032275
+     type_code : 12
+     code : |1+
+      procédure multiplicationPar3FractionModulo( X Fraction256) : Fraction256
+      
+      // = A*B/X*Y
+      résultat est Fraction256
+      résultat.numérateur   = multiplicationPar3Modulo(X.numérateur)
+      résultat.dénominateur = X.dénominateur
+      RENVOYER  résultat
+      
+     type : 458752
+   -
+     name : X_to_monX
+     procedure_id : 1980741588694062355
+     type_code : 12
+     code : |1+
+      // entrée dans mon()
+      PROCÉDURE X_to_monX(X entier256) : entier256
+      	RENVOYER REDC_Montgomery( X, _2P512ModP )
+     type : 458752
+   -
+     name : X_to_monX
+     procedure_id : 1980741588694062355
+     type_code : 12
+     code : |1-
+      PROCÉDURE X_to_monX(X Fraction256) : Fraction256
+      res est Fraction256
+      res.numérateur   =  REDC_Montgomery( X.numérateur,   _2P512ModP )
+      //res.dénominateur = REDC_Montgomery( X.dénominateur, _2P512ModP )	
+      res.dénominateur = REDC_Montgomery( X.dénominateur, _2P512ModP )	
+      renvoyer res
+     type : 458753
+   -
+     name : X_to_monX
+     procedure_id : 1980741588694062355
+     type_code : 12
+     code : |1-
+      PROCÉDURE X_to_monX(P PointFraction256) : PointFraction256
+      
+      Pres est PointFraction256
+      Pres.x = monX_to_X(P.x)
+      Pres.y = monX_to_X(P.y)
+      RENVOYER Pres
+     type : 458754
+   -
+     name : monX_to_X
+     procedure_id : 1980741640233681594
+     type_code : 12
+     code : |1+
+      // sortie de mon()
+      PROCÉDURE monX_to_X(X entier256) : entier256
+      	RENVOYER REDC_Montgomery( X, _1 )
+     type : 458752
+   -
+     name : monX_to_X
+     procedure_id : 1980741640233681594
+     type_code : 12
+     code : |1-
+      PROCÉDURE monX_to_X(X Fraction256) : Fraction256
+      
+      res est Fraction256
+      res.numérateur   = REDC_Montgomery( X.numérateur,   _1 )	
+      res.dénominateur = REDC_Montgomery( X.dénominateur, _1 )	
+      renvoyer res
+     type : 458753
+   -
+     name : monX_to_X
+     procedure_id : 1980741640233681594
+     type_code : 12
+     code : |1-
+      PROCÉDURE monX_to_X(P PointFraction256) : PointFraction256
+      
+      Pres est PointFraction256
+      Pres.x = monX_to_X( P.x )
+      Pres.Y = monX_to_X( P.y )
+      RENVOYER Pres
+      
+      
+      // calcul de A/X* B/Y
+     type : 458754
+   -
+     name : carréFractionModulo_mon
+     procedure_id : 1989266381505910660
+     type_code : 12
+     code : |1+
+      PROCÉDURE carréFractionModulo_mon( fractionA Fraction256) : Fraction256
+      
+      // = A*B/X*Y
+      résultat est Fraction256
+      résultat.numérateur   =  REDC_Montgomery(fractionA.numérateur,  fractionA.numérateur )
+      résultat.dénominateur = REDC_Montgomery(fractionA.dénominateur, fractionA.dénominateur)
+      RENVOYER  résultat
+     type : 458752
+   -
+     name : multiplicationFractionModulo_mon
+     procedure_id : 1982587101756937566
+     type_code : 12
+     code : |1+
+      // calcul de A/X* B/Y
+      procédure multiplicationFractionModulo_mon( fractionA Fraction256, fractionB Fraction256) : Fraction256
+      
+      // = A*B/X*Y
+      résultat est Fraction256
+      résultat.numérateur   =  REDC_Montgomery(fractionA.numérateur,   fractionB.numérateur )
+      résultat.dénominateur = REDC_Montgomery(fractionA.dénominateur, fractionB.dénominateur)
+      renvoyer  résultat
+     type : 458752
+   -
+     name : additionFractionModulo_mon
+     procedure_id : 1982587995112570936
+     type_code : 12
+     code : |1+
+      // addtion de mon( A/X ) + mon( B/Y ) = mon ( C/Z ) (mod N)
+      PROCÉDURE additionFractionModulo_mon( mon_nombreA Fraction256, mon_nombreB Fraction256) : Fraction256
+      
+      résultat est Fraction256 
+      // si meme dénominateur (y compris 1)
+      si mon_nombreA.dénominateur.EstEgalA( mon_nombreB.dénominateur ) ALORS
+      	// C = (A +B ) / X
+      	résultat.numérateur   = additionModulo(mon_nombreA.numérateur, mon_nombreB.numérateur )
+      	résultat.dénominateur = mon_nombreA.dénominateur
+      	renvoyer résultat
+      FIN
+      
+      // C = (A*Y + B*X) / X*Y
+      résultat.numérateur   = additionModulo( REDC_Montgomery( mon_nombreA.numérateur , mon_nombreB.dénominateur ), ...
+      								  		REDC_Montgomery( mon_nombreB.numérateur , mon_nombreA.dénominateur ))
+      résultat.dénominateur = REDC_Montgomery( mon_nombreA.dénominateur , mon_nombreB.dénominateur )
+      RENVOYER résultat
+     type : 458752
+   -
+     name : soustractionFractionModulo_mon
+     procedure_id : 1984908192309207431
+     type_code : 12
+     code : |1-
+      // / renvoie mon(A/X) - mon( B/Y ) = mon( C/Z ) ( mod P )
+      PROCÉDURE soustractionFractionModulo_mon( mon_nombreA Fraction256, mon_nombreB Fraction256) : Fraction256
+      
+      
+      résultat est Fraction256 
+      // si meme dénominateur (y compris 1)
+      SI mon_nombreA.dénominateur.estEgalA( mon_nombreB.dénominateur ) ALORS
+      	// C = (A +B ) / X
+      	résultat.numérateur   = soustractionModulo(mon_nombreA.numérateur, mon_nombreB.numérateur )
+      	résultat.dénominateur = mon_nombreA.dénominateur
+      	RENVOYER résultat
+      FIN
+      
+      // C = (A*Y - B*X) / X*Y
+      résultat.numérateur   = soustractionModulo( REDC_Montgomery( mon_nombreA.numérateur , mon_nombreB.dénominateur ), ...
+      									 	    REDC_Montgomery( mon_nombreB.numérateur , mon_nombreA.dénominateur ))
+      résultat.dénominateur = REDC_Montgomery( mon_nombreA.dénominateur , mon_nombreB.dénominateur )
+      RENVOYER résultat
+     type : 458752
+   -
+     name : multiplicationModulo_PourContstructeur
+     procedure_id : 1993357917700109077
+     type_code : 12
+     group : 1
+     code : |1+
+      // renvoie A * B ( mod P )
+      // version non optimisée n'utilisant pas les constantes pré-calculées dans le constructeur
+      procédure multiplicationModulo_PourContstructeur(  nombreA entier256, nombreB entier256) : Entier256
+      
+      // cas particulier de la multiplication par 1 (fractions)
+      si nombreA.EstEgalA1() ALORS
+      	renvoyer nombreB
+      FIN 
+      SI nombreB.estEgalA1() ALORS
+      	RENVOYER nombreA
+      FIN 
+      
+      
+      resultat est un entier256
+      // calcul d'un cache des valeur de A * K pour K de 0 a 255
+      si TabCacheA..Occurrence>0 _et_ PAS TabCacheA[1].estEgalA(nombreA)
+      	TabCacheA.SupprimeTout()
+      fin
+      si TabCacheA.Occurrence()=0 ALORS
+      	nCur est Entier256 = nombreA
+      	pour i = 1 a 256
+      		TabCacheA.Ajoute( nCur )
+      		nCur = additionModulo( nCur, nombreA )
+      	FIN
+      FIN
+      
+      pour i = 31 a 0 pas -1
+      	// r = r * 256
+      	resultat = multiplicationPar256Modulo(resultat)
+      	// r = r + k * A
+      	kB est entier = nombreB._8Bits( i ) 
+      	si kB<>0 alors
+      		// récup de A * K en cache
+      		AMultK est un Entier256 = TabCacheA[kB]
+      		resultat = additionModulo(resultat, AMultK)
+      	fin
+      
+      
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b3a8e2532bcacde
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

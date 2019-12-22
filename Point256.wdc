@@ -1,0 +1,70 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Point256
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1b42f4200027ea93
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      Point256 est une Classe
+      	x est Entier256
+      	y est Entier256
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1964400805765769875
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1964400805765835411
+     type_code : 28
+     code : |1+
+      PROCEDURE Destructeur()
+      
+     type : 655360
+   -
+     name : PointestEgalA
+     procedure_id : 1968102247238636034
+     type_code : 12
+     code : |1+
+      PROCEDURE PointEstEgalA( autrePoint est Point256 ) : booléen
+      
+      renvoyer autrePoint.x.estEgalA( x ) _et_ autrePoint.y.estEgalA(  y )
+      
+     type : 458752
+   -
+     name : estZéro
+     procedure_id : 1968102689620567568
+     type_code : 12
+     code : |1+
+      PROCEDURE estZéro() : booléen
+      
+      renvoyer x.estEgalAZero() _et_ y.estEgalAZero()
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b42f4170024c577
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

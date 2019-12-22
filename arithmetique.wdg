@@ -1,0 +1,2806 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : arithmetique
+ major_version : 25
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1b39b9ee327fc18f
+ internal_properties : BQAAAAUAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      
+      
+      // OPTIM : récup d'un version en assembleur de ces opérations
+      addrprocAddition256p256_256c    est entier systeme = pGetprocAddition256p256_256c_ASM()
+      addrprocSoustraction256p256_256 est entier systeme = pGetprocSoustraction256p256_256_ASM()
+      addrprocMult128x128_256_ASM     est entier systeme = pGetprocMult128x128_256_ASM()
+      addrprocMult64x64_128_ASM       est entier système = pGetprocMult64x64_128_ASM()
+      addrprocMult256x32_256_ASM      est entier système = pGetprocMult256x32_256_ASM()
+      addrprocDivPar2_256_ASM     	est entier système = pGetprocDivisePar2_256()
+      addrprocMoyenne_256_ASM     	est entier système = pGetprocMoyenne256_ASM()
+      // ok que en mode 64 bits
+      addrprocMult256x64_256_ASM      est entier système
+      si EnMode64bits() ALORS
+      	addrprocMult256x64_256_ASM = addrprocMult256x32_256_ASM
+      FIN
+      
+      
+      _2_Puissance64 est un numérique  (38,0)  = 0x100000000
+      _2_Puissance64  = _2_Puissance64  * _2_Puissance64 
+      
+      // constantes 0 et 1 du type entier256
+      _0_256 est Entier256(0)
+      _1_256 est Entier256(1)
+      _2_256 est Entier256(2)
+      _3_256 est Entier256(3)
+      _4_256 est Entier256(4)
+      _Moins1_256 est Entier256("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+      
+      // nombre au delas duquel on considère les  poids forts comme négatifs dans l'algorithme HGCD
+      constant LIMIT_UI64_POSITIF = 0x7FFFFFFFFFFFFFFF
+      
+      STInfoCache est une structure
+      	U0 est entier sur 8 octets sans signe
+      	U1 est entier sur 8 octets sans signe
+      	V0 est entier SUR 8 octets sans signe
+      	V1 est entier SUR 8 octets sans signe
+      	AReste est entier SUR 8 octets sans signe
+      	BReste est entier SUR 8 octets sans signe
+      	b  est booleen
+      fin
+      tabCache_HGCD32  est un tableau de 256 par 256 STInfoCache 
+      bTabCacheInit est un booléen = faux
+     type : 720896
+   -
+     code : |1-
+      
+     type : 720898
+  procedures :
+   -
+     name : addition
+     procedure_id : 1961803648476388730
+     type_code : 15
+     code : |1+
+      // renvoie S = A + B (mod 2^256 ).
+      PROCÉDURE addition(nombreA entier256, nombreB entier256, retenue_out est un booléen =0) : Entier256
+      
+      resultat est Entier256 = nombreA
+      
+      // OPTIM: version ASM
+      dbgAssertion( addrprocAddition256p256_256c<>0 )
+      retenue_out = api(addrprocAddition256p256_256c, &resultat, &nombreB )
+      renvoyer resultat
+      
+      ///@@@Ancien code
+      retenue0 est un entier
+      retenue1 est un entier
+      retenue2 est un entier
+      retenue3 est un entier
+      //retenue est un entier
+      
+      // 64 bits poids faible
+      resultat.val0 = nombreA.val0 + nombreB.val0
+      //retenue0 =  resultat.val0 < nombreB.val0 _ou_ resultat.val0 < nombreA.val0 
+      si resultat.val0 < nombreB.val0 _OU_ resultat.val0 < nombreA.val0 ALORS
+      	retenue0++
+      FIN
+      // 64..128
+      resultat.val1 = nombreA.val1 + nombreB.val1 
+      //retenue1 = resultat.val1 < nombreB.val1 _ou_ resultat.val1 < nombreA.val1 
+      si resultat.val1 < nombreB.val1 _ou_ resultat.val1 < nombreA.val1 ALORS
+      	retenue1++
+      FIN
+      si retenue0 ALORS
+      	resultat.val1++
+      	si resultat.val1= 0 alors retenue1=1
+      
+      FIN
+      // 128..196
+      resultat.val2 = nombreA.val2 + nombreB.val2 
+      //retenue2 = resultat.val2 < nombreA.val2 _OU_ resultat.val2 < nombreB.val2
+      si resultat.val2 < nombreA.val2 _OU_ resultat.val2 < nombreB.val2 ALORS
+      	retenue2++
+      FIN
+      SI retenue1 ALORS
+      	resultat.val2++
+      	SI resultat.val2= 0 ALORS retenue2=1
+      FIN
+      // 196..256
+      resultat.val3 = nombreA.val3 + nombreB.val3 
+      //retenue3 = resultat.val3 < nombreA.val3 _OU_ resultat.val3 < nombreB.val3
+      si  resultat.val3 < nombreA.val3 _OU_ resultat.val3 < nombreB.val3 ALORS
+      	retenue3++
+      FIN
+      SI retenue2 ALORS
+      	resultat.val3++
+      	SI resultat.val3= 0 ALORS retenue3=1
+      FIN
+      
+      retenue_out = retenue3
+      renvoyer resultat
+     type : 458752
+   -
+     name : negation
+     procedure_id : 1961815528356663975
+     type_code : 15
+     code : |1+
+      // renvoie -N
+      PROCEDURE negation( nombre entier256 ) : entier256
+      
+      // calcule le complément à 2
+      complement est Entier256
+      // OPTIM :
+      // OUExclusifBinaire(nombre.val0 ,0xFFFFFFFFFFFFFFFF) remplacé par  -1-nombre.val0
+      complement.val0 = -1-nombre.val0 
+      complement.val1 = -1-nombre.val1 
+      complement.val2 = -1-nombre.val2 
+      complement.val3 = -1-nombre.val3 
+      
+      renvoyer additionAvecUn( complement )
+      
+     type : 458752
+   -
+     name : soustraction
+     procedure_id : 1961820635075016636
+     type_code : 15
+     code : |1+
+      // renvoie S = A - B (mod 2^256 ).
+      PROCÉDURE soustraction(nombreA Entier256, nombreB Entier256) : Entier256
+      
+      Resultat est Entier256 = nombreB
+      // OPTIM ASM
+      si addrprocSoustraction256p256_256<>0
+      	Resultat = nombreB
+      	//procSoustraction256p256_256( &nombreA, &Resultat)
+      	api( addrprocSoustraction256p256_256,  &nombreA, &Resultat)
+      	renvoyer Resultat
+      fin
+      
+      // calcule le complément à 2
+      complement est Entier256
+      // OPTIM :
+      // OUExclusifBinaire(nombre.val0 ,0xFFFFFFFFFFFFFFFF) remplacé par  -1-nombre.val0
+      complement.val0 = -1-nombreB.val0 
+      complement.val1 = -1-nombreB.val1 
+      complement.val2 = -1-nombreB.val2 
+      complement.val3 = -1-nombreB.val3 
+      RENVOYER addition(nombreA,  additionAvecUn(complement))
+     type : 458752
+   -
+     name : addition256_64
+     procedure_id : 1962551070728090613
+     type_code : 15
+     code : |1+
+      // renvoie S = A + B (mod 2^256 ).
+      PROCÉDURE addition256_64(nombreA entier256, petitNombreB entier sur 8 sans signe) : Entier256
+      
+      resultat est Entier256
+      
+      // 64 bits poids faible
+      resultat.val0 = nombreA.val0 + petitNombreB
+      // 64..128
+      resultat.val1 = nombreA.val1
+      resultat.val2 = nombreA.val2
+      resultat.val3 = nombreA.val3
+      // retenue en cascade
+      //retenue0 = resultat.val0 < nombreA.val0 _OU_ resultat.val0 < petitNombreB
+      si resultat.val0 < nombreA.val0 _OU_ resultat.val0 < petitNombreB
+      	resultat.val1++
+      	si resultat.val1= 0 alors 
+      		resultat.val2++
+      		SI resultat.val2= 0 ALORS 
+      				resultat.val3++
+      		FIN
+      	FIN
+      fin
+      
+      renvoyer resultat
+      
+     type : 458752
+   -
+     name : additionAvecUn
+     procedure_id : 1962555305566109683
+     type_code : 15
+     code : |1+
+      // renvoie S = A + 1
+      PROCÉDURE additionAvecUn(nombreA entier256 ) : Entier256
+      
+      resultat est Entier256 = nombreA
+      retenue0 est un entier
+      
+      // 64 bits poids faible
+      resultat.val0++ // = nombreA.val0 + 1
+      retenue0 = resultat.val0 = 0
+      // 64..128
+      //resultat.val1 = nombreA.val1
+      //resultat.val2 = nombreA.val2
+      //resultat.val3 = nombreA.val3
+      si retenue0 = 0 ALORS
+      	RENVOYER resultat
+      fin
+      // retenue en cascade
+      resultat.val1++
+      si resultat.val1= 0 alors 
+      	resultat.val2++
+      	SI resultat.val2= 0 ALORS 
+      			resultat.val3++
+      	FIN
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : addition64_64_retenueCumulative
+     procedure_id : 1969267781119200227
+     type_code : 15
+     code : |1+
+      Procédure addition64_64_retenueCumulative( nombreA entier sur 8 sans signe, nombreB entier sur 8 sans signe, retenueCumulative_InOut entier sur 8 sans signe  ): entier sur 8 sans signe
+      
+      resultat est entier sur 8 sans signe = nombreA  + nombreB
+      si resultat<nombreA _ou_ resultat<nombreB ALORS
+      	// retenue
+      	retenueCumulative_InOut++
+      FIN
+      renvoyer resultat
+     type : 458752
+   -
+     name : addition512
+     procedure_id : 1965523531700715201
+     type_code : 15
+     code : |1+
+      // ajouter 2 nombres de 512 bits
+      Procédure addition512( nombreA Entier512, nombreB Entier512, retenue_out booleen) : Entier512
+      
+      // Addition du poids faible
+      retenue est booléen
+      sommeRésultat est Entier512 
+      sommeRésultat.valPoidsFaible = addition(nombreA.valPoidsFaible, nombreB.valPoidsFaible, retenue )
+      
+      // Addition des poids forts
+      sommeRésultat.valPoidsFort = addition(nombreA.valPoidsFort, nombreB.valPoidsFort,  retenue_out )
+      si retenue alors
+      	sommeRésultat.valPoidsFort = additionAvecUn( sommeRésultat.valPoidsFort )
+      fin
+      renvoyer sommeRésultat
+     type : 458752
+   -
+     name : multiplication64x64_128
+     procedure_id : 1965531705024465813
+     type_code : 15
+     code : |1+
+       // multiplication de 2 entiers 64 bits non signés.
+      // renvoie un entier 128 bits sous forme de 2 entiers 64 bits ( poids faible, poids fort )
+      procédure multiplication64x64_128( nombreA entier sans signe SUR 8 octet, nombreB Entier sans signe sur 8 octet  ) : entier256 // ( entier sans signe SUR 8 octet, entier sans signe SUR 8 octet)
+      
+      si nombreA=0 _ou_ nombreB=0 ALORS
+      	renvoyer _0_256
+      FIN
+      
+      //OPIM ASM
+      resultat est entier256
+      API(addrprocMult64x64_128_ASM, &nombreA, &nombreB, &resultat)
+      renvoyer resultat
+      
+      //@TEST OPTIM:
+      // utilisation du type numérique qui calcule sur 128 Bits
+      nAB est un numérique   (38,0) = nombreA 
+      nAB = nAB * nombreB
+      Transfert(&resultat.val0,&nAB,8)
+      Transfert(&resultat.val1,&nAB+8,8)
+      renvoyer resultat
+      
+     type : 458752
+   -
+     name : multiplication64x64_128HL
+     procedure_id : 1986300496158442668
+     type_code : 15
+     code : |1+
+      PROCÉDURE multiplication64x64_128HL( nombreA entier sans signe sur 8 octet, nombreB entier sans signe sur 8 octet  ) :( entier sans signe SUR 8 octet, entier sans signe SUR 8 octet)
+      
+      //OPTIM
+      SI nombreA=0 _OU_ nombreB=0 ALORS
+      	RENVOYER (0,0)
+      FIN
+      
+      //OPTIM:
+      // utilisation du type numérique qui calcule sur 128 Bits
+      nAB est un numérique   (38,0) = nombreA 
+      nAB = nAB * nombreB
+      
+      poidFaible est  entier sans signe sur 8 octet
+      poidFort   est  entier sans signe sur 8 octet
+      Transfert(&poidFaible ,&nAB,  8)
+      Transfert(&poidFort   ,&nAB+8,8)
+      
+      // renvoie poids faible, poids fort
+      rENVOYER (  poidFaible, poidFort )
+      
+      
+      // formule de knuth 4.3.3:
+      // A*B = (2^2N + 2^N)A1*B1 + 2^N(A1-A0)*(B0-B1)+(2^N +1)*B0*A0 
+      // équivalent a :
+      // A*B =         B0*A0  
+      //      + 2^N* ( B0*A0 + A1*B1 + (A1-A0)*(B0-B1) )
+      //      + 2^2N*  A1*B1
+      // équivalent a :
+      // A*B =        poidsfaible(B0*A0) 											// bits  0 a 31
+      //      + 2^N* ( B0*A0 + A1*B1 + (A1-A0)*(B0-B1) ) + poidsfort(B0*A0)		// bits 32 a 64 
+      //      + 2^2N*  A1*B1
+      
+      
+      // extrait les poids faibles et fort de A et B ( 2x32 bits ). gardé en 64 pour récupération des débordements
+      A0 est entier sans signe SUR 4 octet  =  nombreA //& 0x0FFFFFFFF 		// poids  faible
+      A1 est entier sans signe SUR 4 octet  =  bitDécaleDroite(nombreA,32) // & 0x0FFFFFFFF  // poids fort
+      //A1 = A1 & 0x0FFFFFFFF //@Contourne une bug de la VM  
+      B0 est entier sans signe sur 4 octet  =  nombreB //& 0xFFFFFFFF 			// poids  faible
+      B1 est entier sans signe SUR 4 octet  =  bitDécaleDroite(nombreB, 32) //& 0x0FFFFFFFF   // poids fort
+      //B1 = B1 & 0x0FFFFFFFF //@Contourne une bug de la VM
+       
+      // calcul des mots de 32/64 bits résultat
+      R0  est entier sans signe SUR 8 octet  = A0 * B0 // bits 0 .. 31
+      R1  est entier sans signe SUR 8 octet  		     // bits 32.. 63
+      R2  est entier sans signe SUR 8 octet  = A1 * B1 // bits 64..127
+      // débordement de A0*B0 pour R1 (bits  32 à 63)
+      poidsFortR0 est un entier sur 4 octets sans signe = bitDécaleDroite( R0 , 32 ) // & 0xFFFFFFFF //  32 bits de poids fort = retenue
+      //poidsFortR0 = poidsFortR0 & 0xFFFFFFFF //@Contourne une bug de la VM
+      
+      // gestion du signe de (A1-A0)*(B0-B1)
+      bNegatif est un booléen = OUExclusifBinaire( ( A1 < A0 ) , ( B0 < B1 ))
+      // calcul de (A1-A0)*(B0-B1), positif
+      a1_a0_b0_b1  est entier sans signe SUR 8 octet // = (A1-A0)*(B0-B1)
+      a1_a0_b0_b1 = ( A1 < A0 ) ? (A0-A1) sinon (A1-A0)
+      a1_a0_b0_b1 = ( B1 < B0 ) ? a1_a0_b0_b1* (B0-B1) SINON a1_a0_b0_b1*(B1-B0)
+      // calcul de R1 :
+      //R1  = R0 + R2  +  (A1-A0)(B0-B1) + poidsFortR0
+      retenueR1 est un entier sans signe SUR 8 octet  // partie au delà des 64 bits de R1
+      R1_a est  un entier sans signe SUR 8 octet 
+      R1_b est  un entier sans signe SUR 8 octet 
+      // R0 + R2 avec retenue
+      R1_a = R0 + R2 
+      retenueR1 = R1_a< R0 _OU_ R1_a < R2 ? 0x100000000 SINON 0
+      R1_b =  R1_a + poidsFortR0 
+      retenueR1 = R1_b < R1_a _OU_ R1_b <poidsFortR0 ? retenueR1 + 0x100000000 SINON retenueR1
+      // + (A1-A0)(B0-B1) 
+      R1 = R1_b
+      //R1 =  R1_0 +  retenueR1
+      si bNegatif ALORS
+      	// SI les 64 bits cumulé sont plus petits que a1_a0_b0_b1, comme le résultat est forcément positif, veut dire qu'il faut prendre dans le bit 65 (débordement)
+      	// -a1_a0_b0_b1 est a comprendre = le complément a 1 sur 64 bits => entier positif
+      	moins_a1_a0_b0_b1 est un entier sans signe SUR 8 octet  = - a1_a0_b0_b1
+      	si a1_a0_b0_b1  > R1 alors
+      		retenueR1 -= 0x100000000
+      		// addition avec débordement ignoré
+      		R1  +=  moins_a1_a0_b0_b1
+      	sinon
+      		// soustraction sans retenue
+      		R1  += moins_a1_a0_b0_b1
+      	fin
+      sinon
+      	// addition 64 bits avec retenue
+      	R1 +=  a1_a0_b0_b1 
+      	retenueR1 = 	R1 < R1_b _OU_ R1 < a1_a0_b0_b1 ? retenueR1 + 0x100000000 SINON retenueR1
+      fin
+      // calcul final de R2 avec les bits de poids fort de R1
+      poidsFortR1 est un entier sur 8 octets sans signe = bitDécaleDroite(R1,32) // / 0x100000000  // 32 bits de poids fort = retenue
+      poidsFortR1 = poidsFortR1 & 0xFFFFFFFF  //@Contourne une bug de la VM
+      
+      // construit le résultat :
+      //R2  += poidsFortR1 + retenueR1 * 0x100000000
+      // reconstruit 1 INT64 pour le poids faible
+      //ResPoidsFaible_64 est un entier sans signe SUR 8 octet  = (R0 & 0xFFFFFFFF) + (R1 & 0xFFFFFFFF) * 0x100000000
+      
+      renvoyer ((R0 & 0xFFFFFFFF) + (R1 & 0xFFFFFFFF) * 0x100000000, R2 + poidsFortR1 + retenueR1  )
+      //RENVOYER resultat
+     type : 458752
+   -
+     name : multiplication128x128_256
+     procedure_id : 1965750821371953232
+     type_code : 15
+     code : |1+
+      // calcul du A * B  avec A et B sur 128 bits. 
+      // résultat sur 256 bits (sans signe)
+      procédure multiplication128x128_256( nombreA Entier256, nombreB Entier256) : Entier256
+      R2 est Entier256 
+      
+      // OPTIM : version en assembleur
+      API( addrprocMult128x128_256_ASM,&nombreA,&nombreB,&R2 )
+      renvoyer R2
+      
+      
+      // calcul des mots de 64/128 bits résultat
+      A0B0  est entier256 =  multiplication64x64_128(  nombreA.val0, nombreB.val0 )
+      //(A0B0.val0,A0B0.val1 ) = multiplication64x64_128(  nombreA.val0, nombreB.val0 )
+      A1B1 est Entier256  = multiplication64x64_128(  nombreA.val1, nombreB.val1 )
+      
+      retenue0 est un entier sur 8 octets sans signe = A0B0.val1 // R0 / 0x100000000 // 32 bits de poids fort = retenue
+      
+      
+      a1_a0 est Entier sans signe sur 8 octets 
+      // gestion du signe
+      bNegatif est un booléen 
+      si ( nombreA.val1 >= nombreA.val0 ) alors //, nombreB.val1 > nombreB.val0  )
+      	a1_a0 =  nombreA.val1  - nombreA.val0
+      sinon
+      	a1_a0 =  nombreA.val0  - nombreA.val1
+      	bNegatif = vrai
+      FIN
+      b0_b1 est Entier sans signe sur 8 octets //= nombreB.val0 - nombreB.val1 
+      SI ( nombreB.val0 >= nombreB.val1 ) ALORS //, nombreB.val1 > nombreB.val0  )
+      	b0_b1 =  nombreB.val0 - nombreB.val1
+      SINON
+      	b0_b1 =  nombreB.val1  - nombreB.val0
+      	bNegatif = pas bNegatif
+      FIN
+      R1_a1a0b0b1 est Entier256  =  multiplication64x64_128(  a1_a0, b0_b1 )
+      
+      
+      R1  est entier256 
+      R1 = addition(			 A1B1,   		A0B0		)
+      R1 = addition256_64(     R1, 			retenue0    )
+      si bNegatif ALORS
+      	si R1.estSupérieurOuEgalA(R1_a1a0b0b1) ALORS
+      		R1 =  soustraction(		 R1,		  	R1_a1a0b0b1	)
+      	sinon
+      		R1 = soustraction(		 R1,		  	R1_a1a0b0b1	)
+      	fin
+      sinon
+      	R1 = addition(			 R1,		  	R1_a1a0b0b1	)
+      fin
+      
+      //retenue1 est un entier sur 8 octets = R1.val1 + R1.val2 * 2^64
+      
+      R2 = addition256_64(A1B1, 		 R1.val1)
+      si R1.val2 alors
+      	dbgAssertion(R1.val2=1)
+      	R2.val1++// = addition256_32(A1B1, 		 R1.val2)
+      fin
+      
+      //OPTIM
+      A0B0.val1 = R1.val0
+      A0B0.val2 = R2.val0
+      A0B0.val3 = R2.val1
+      
+      RENVOYER  A0B0
+      
+     type : 458752
+   -
+     name : multiplication256x256_512
+     procedure_id : 1965755782059220750
+     type_code : 15
+     code : |1+
+      // multiplication de 2 nombre de 256 bits => 1 nombre de  512 bits
+      procédure multiplication256x256_512(   nombreA Entier256, nombreB Entier256) : Entier512
+      
+      Résultat   est Entier512 
+      
+      // extrait les poids faibles (A0,B0) et fort (A1,B1) de A et B ( 2x128 bits ).
+      A0  est Entier256
+      A0.val0 = nombreA.val0
+      A0.val1 = nombreA.val1
+      A1  est Entier256
+      A1.val0 = nombreA.val2
+      A1.val1 = nombreA.val3
+      B0  est Entier256
+      B0.val0 = nombreB.val0
+      B0.val1 = nombreB.val1
+      B1  est Entier256
+      B1.val0 = nombreB.val2
+      B1.val1 = nombreB.val3
+      
+      // calcul des mots de 128/256 bits résultat
+      R0  est entier256
+      // OPTIM , inline de R0   = multiplication128x128_256(  A0, B0 )
+      API( addrprocMult128x128_256_ASM,&A0,&B0,&R0 )
+      retenue0 est Entier256
+      retenue0.val0 = R0.val2
+      retenue0.val1 = R0.val3
+      R2  est entier256 // = multiplication128x128_256(  A1, B1 )
+      // OPTIM , inline de R2   = multiplication128x128_256(  A1, B1 )
+      API( addrprocMult128x128_256_ASM,&A1,&B1,&R2 )
+      //R1  est entier sans signe SUR 8 octet  = (A1*B1 + (A1-A0)*(B0-B1) + B0*A0)  + c0
+      R1 est Entier256
+      R1_a1a0b0b1 est Entier256 
+      a1_a0 est Entier256
+      
+      b0_b1 est Entier256
+      
+      // gestion du signe
+      bNegatif est un booléen 
+      SI  A1.estSupérieurOuEgalA(A0) ALORS 
+      	a1_a0 = soustraction(A1,A0)
+      SINON
+      	a1_a0 = soustraction(A0,A1)
+      	bNegatif = Vrai
+      FIN
+      SI  B0.estSupérieurOuEgalA(B1) ALORS
+      	b0_b1 = soustraction(B0,B1)
+      SINON
+      	b0_b1 = soustraction(B1,B0)
+      	bNegatif = PAS bNegatif
+      FIN
+      
+      // OPTIM, inline de R1_a1a0b0b1 =  multiplication128x128_256(  a1_a0,  b0_b1 )
+      API( addrprocMult128x128_256_ASM,&a1_a0,&b0_b1,&R1_a1a0b0b1 )
+      bretenue est un booléen //entier sur 8 octets sans signe
+      retenueR1 est entier sur 8 octets sans signe
+      R1 = addition( R0,		   R2, bretenue)
+      //R1 = R0
+      //bretenue = procAddition256p256_256c( &R1, &R2)  // R1 = R1 + R2
+      si bretenue alors retenueR1++
+      si bNegatif alors
+      	SI R1_a1a0b0b1.estSupérieurStrictA( R1 ) ALORS
+      		retenueR1--
+      	fin
+      	R1 = soustraction( R1, R1_a1a0b0b1)
+      sinon
+      	R1 = addition( R1, 	   R1_a1a0b0b1, bretenue)
+      	SI bretenue ALORS retenueR1++
+      fin
+      //bR est un booléen
+      //R1 = addition( R1, 		retenue0, bretenue)
+      bretenue = API( addrprocAddition256p256_256c, &R1, 		&retenue0) // (R1, c ) = R1 + retenue0
+      SI bretenue ALORS retenueR1++
+      
+      retenue1 est un entier256 // + 128 bit de retenue
+      retenue1.val0   = R1.val2
+      retenue1.val1   = R1.val3
+      retenue1.val2   = retenueR1
+      R2 = addition(R2,   retenue1)
+      
+      // construire le résultat 2x128 bits + 1x256bits
+      Résultat.valPoidsFaible.val0 = R0.val0
+      Résultat.valPoidsFaible.val1 = R0.val1  
+      Résultat.valPoidsFaible.val2 = R1.val0
+      Résultat.valPoidsFaible.val3 = R1.val1
+      Résultat.valPoidsFort		 = R2
+      
+      renvoyer Résultat 
+     type : 458752
+   -
+     name : multiplication256x256_256
+     procedure_id : 1967014615532277582
+     type_code : 15
+     code : |1+
+      // renvoie les 256 bits de poids faibles de la multiplication de 2 entiers 256 bits non signés
+      procédure multiplication256x256_256(  nombreA Entier256, nombreB Entier256) : Entier256
+      
+      Résultat   est Entier256
+      
+      // extrait les poids faibles (A0,B0) et fort (A1,B1) de A et B ( 2x128 bits ).
+      A0  est Entier256
+      A0.val0 = nombreA.val0
+      A0.val1 = nombreA.val1
+      A1  est Entier256
+      A1.val0 = nombreA.val2
+      A1.val1 = nombreA.val3
+      B0  est Entier256
+      B0.val0 = nombreB.val0
+      B0.val1 = nombreB.val1
+      B1  est Entier256
+      B1.val0 = nombreB.val2
+      B1.val1 = nombreB.val3
+      
+      // calcul des mots de 128/256 bits résultat
+      R0  est entier256  = multiplication128x128_256(  A0, B0 )
+      retenue0 est Entier256
+      retenue0.val0 = R0.val2
+      retenue0.val1 = R0.val3
+      R2  est entier256  = multiplication128x128_256(  A1, B1 )
+      //R1  est entier sans signe SUR 8 octet  = (A1*B1 + (A1-A0)*(B0-B1) + B0*A0)  + c0
+      R1 est Entier256
+      R1_a1a0b0b1 est Entier256 
+      a1_a0 est Entier256
+      b0_b1 est Entier256
+      
+      // gestion du signe
+      bNegatif est un booléen = A0.estSupérieurStrictA( A1 )
+      si bNegatif ALORS
+      	a1_a0 = soustraction(A0,A1)
+      sinon
+      	a1_a0 = soustraction(A1,A0)
+      FIN
+      SI  B0.estSupérieurOuEgalA(B1) ALORS
+      	b0_b1 = soustraction(B0,B1)
+      SINON
+      	b0_b1 = soustraction(B1,B0)
+      	bNegatif = PAS bNegatif
+      FIN
+      
+      R1_a1a0b0b1 =  multiplication128x128_256(  a1_a0,  b0_b1 )
+      R1 = addition( R0,		   R2)
+      
+      SI bNegatif ALORS
+      	R1 = soustraction( R1, R1_a1a0b0b1)
+      SINON
+      	R1 = addition(     R1, R1_a1a0b0b1)
+      FIN
+      // R1 = R1 + retenue0
+      API(addrprocAddition256p256_256c,  &R1, &retenue0) 
+      
+      // construire le résultat 2x128 bits
+      Résultat.val0 = R0.val0
+      Résultat.val1 = R0.val1  
+      Résultat.val2 = R1.val0
+      Résultat.val3 = R1.val1
+      
+      RENVOYER Résultat 
+     type : 458752
+   -
+     name : multiplication256x32_512
+     procedure_id : 1965527818079009339
+     type_code : 15
+     code : |1+
+      procédure multiplication256x32_512(nombreA Entier256, nombreB Entier sans signe sur 4 octet) : Entier512
+      
+      Résultat   est Entier512 
+      r64 	   est entier sans signe sur 8 
+      retenue    est entier sans signe sur 4
+      //
+      pour i = 0 a 7
+      	r64  		=  nombreA._32Bits(i)  *  nombreB + retenue
+      	retenue     =  bitDécaleDroite(r64, 32)  & 0xFFFFFFFF  // 32 bit de poids fort = retenue
+      	// affecter 32 bits du résultat
+      	Résultat.valPoidsFaible.set32Bits(i, ( r64 & 0xFFFFFFFF ) )// 32 bit de poids faible
+      fin
+      
+      //r128 	   est entier256
+      //retenue    est entier sans signe sur 8
+      //
+      //pour i = 0 a 3
+      //	// r128  		=  Ai  * Bi + retenue
+      //	( r128.val0, r128.val1 )= multiplication64x64_128( nombreA._64its(i),  nombreA._64Bits(i) )
+      //	r128 = additionPetitEntier(r128,retenue)
+      //	retenue     =  r128.val1 // 64 bit de poids fort = retenue
+      //	
+      //	// affecter 64 bits du résultat
+      //	//	Résultat.valPoidsFaible.set32Bits(i, ( r64 & 0xFFFFFFFF ) )// 32 bit de poids faible
+      //FIN
+      
+      
+      renvoyer Résultat
+     type : 458752
+   -
+     name : puissance256_256
+     procedure_id : 1967373816541459297
+     type_code : 15
+     code : |1+
+      // calcule les 256 bits de foids faible de (nombre ^ _puissance)
+      PROCEDURE puissance256_256( nombre Entier256, _puissance  Entier256   ) : Entier256
+      pow2	 est Entier256 = nombre// (  nombre.val0 & 0xFFFFFFFF )
+      
+      résultat est Entier256(1)
+      POUR  i = 0 À 255
+      	bitI est un booléen = _puissance.bit(i)
+      	SI bitI ALORS// _puissance.bit(i) ALORS
+      		résultat = multiplication256x256_256(résultat, pow2)
+      	FIN
+      	pow2 = multiplication256x256_256(pow2,pow2)
+      FIN
+      RENVOYER  résultat
+     type : 458752
+   -
+     name : multiplication64x64_num
+     procedure_id : 1985937464018273321
+     type_code : 15
+     code : |1+
+      PROCÉDURE multiplication64x64_num( nombreA entier sans signe sur 8 octet, nombreB entier sans signe sur 8 octet  ) 
+      
+      //OPTIM:
+      // utilisation du type numérique qui calcule sur 128 Bits
+      nA est un numérique   (38,0) = nombreA
+      nB est un numérique   (38,0) = nombreB
+      nAB est un numérique   (38,0) = nombreA* nombreB
+      renvoyer nAB
+     type : 458752
+   -
+     name : PoidsFaibleFort64FromNumerique128
+     procedure_id : 1986296351495818098
+     type_code : 15
+     code : |1+
+      // renvoyer les poids faibles et forts d'un numérique sur 128 bits
+      PROCEDURE PoidsFaibleFort64FromNumerique128(num128 ) 
+      
+      sRes est chaine =  NumériqueVersChaîne(num128,"32X")
+      //Résultat.val0 = modulo( nAB, 	arithmetique._2_Puissance64 )
+      //Résultat.val0 = HexaVersEntier(Droite(sRes,16)) 
+      ////si taille(sRes)>16 alors
+      //Résultat.val1 = HexaVersEntier(Gauche(sRes,Taille(sRes)- 16))
+      
+      //nPoidsFaible64 est un entier sur 8 octets sans signe = num  & 0xFFFFFFFFFFFFFFFF
+      //nPoidsFort64   est un entier sur 8 octets sans signe = bitDécaleDroite(num , 64 )
+      
+      nPoidsFaible64 est un entier sur 8 octets sans signe = HexaVersEntier(Droite(sRes,16)) 
+      nPoidsFort64   est un entier sur 8 octets sans signe = HexaVersEntier(gauche(sRes,16)) 
+      
+      renvoyer (nPoidsFaible64, nPoidsFort64)
+     type : 458752
+   -
+     name : division256_f64
+     procedure_id : 1989744677761485896
+     type_code : 15
+     code : |1+
+      // division rapide d'un entier 256 par un entier flottant sur 256
+      procédure division256_f64( nombreA Entier256, diviseur64 EntierFlottant64 ) : Entier256
+      
+      // conversion de A en flottant aussi
+      
+      nombre64 est EntierFlottant64( nombreA )
+      // division en passant par des flottants
+      q64 est EntierFlottant64 = nombre64.divisisePar( diviseur64 )
+      
+      renvoyer q64.versEntier256()
+     type : 458752
+   -
+     name : divisionEuclidienne256
+     procedure_id : 1989692554033719588
+     type_code : 15
+     code : |1+
+      // calcul du reste et du quotient de  A / B.
+      // renvoie (quotient, reste)
+      PROCÉDURE divisionEuclidienne256( nombreA Entier256, diviseur entier256 ) : (Entier256,  entier256)
+      
+      
+      // cas particuliers
+      dbgAssertion(PAS diviseur.estEgalAZero(),"Division par 0")
+      SI diviseur.estEgalA1() ALORS
+      	// A/1 = A 
+      	RENVOYER ( nombreA, _0_256 )
+      FIN
+      SI nombreA.estEgalAZero() ALORS
+      	// 0/B = 0 
+      	RENVOYER ( _0_256, _0_256 )
+      FIN
+      SI nombreA.estEgalA(diviseur) ALORS
+      	// A/A = 1 
+      	RENVOYER ( _1_256, _0_256 )
+      FIN                 
+      SI diviseur.estSupérieurStrictA(nombreA) ALORS
+      	// A/B = 0 + A  ( si B > & )
+      	RENVOYER ( _0_256, nombreA )
+      FIN
+      // teste rapidement si 1 est la solution, cas TRES fréquent
+      resteTest    est Entier256 = soustraction(nombreA, diviseur )
+      si diviseur.estSupérieurStrictA( resteTest ) alors
+      	RENVOYER ( _1_256, resteTest )
+      FIN
+      // teste rapidement si 2, 3 ou sont solution, cas fréquent
+      resteTest = soustraction(resteTest, diviseur )
+      SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      	RENVOYER ( _2_256, resteTest )
+      FIN
+      resteTest = soustraction(resteTest, diviseur )
+      SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      	RENVOYER ( _3_256, resteTest )
+      FIN
+      resteTest = soustraction(resteTest, diviseur )
+      SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      	RENVOYER ( _4_256, resteTest )
+      FIN
+      
+      quotient est Entier256 
+      reste    est Entier256
+      QxD 	 est Entier256
+      
+      // test rapide avec une division du poids fort
+      si nombreA.val3<>0 _et_ diviseur.val3<>0 ALORS
+      	quotient.val0 = nombreA.val3 / diviseur.val3
+      fin
+      SI nombreA.val3=0 _ET_ diviseur.val3=0 ALORS
+      	SI nombreA.val2<>0 _ET_ diviseur.val2<>0 ALORS
+      		quotient.val0 = nombreA.val2 / diviseur.val2
+      	fin
+      	SI nombreA.val2=0 _ET_ diviseur.val2=0 ALORS
+      		SI nombreA.val1<>0 _ET_ diviseur.val1<>0 ALORS
+      			quotient.val0 = nombreA.val1 / diviseur.val1
+      		FIN
+      		SI nombreA.val1=0 _ET_ diviseur.val1=0 ALORS
+      			// val4 est forcément pas a 0.
+      			quotient.val0 = nombreA.val0 / diviseur.val0
+      		fin
+      	FIN
+      	
+      fin
+      si quotient.val0 <> 0 alors		
+      	//QxD  =  multiplication256x256_256(quotient, diviseur)
+      	QxD  =  multiplication256x64_256(diviseur, quotient.val0)
+      	bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
+      	SI bResteNegatif ALORS
+      		// Q = Q - 1
+      		//quotient = addition( quotient,  _Moins1_256);
+      		// 	QxD = 	QxD - diviseur 
+      		//QxD   = soustraction(   QxD, diviseur )
+      		reste = soustraction(   QxD, nombreA  )
+      	SINON
+      		reste = soustraction(   nombreA , QxD )
+      	FIN
+      	// si le reste est inférieur au diviseur
+      	SI PAS reste.estSupérieurOuEgalA(diviseur) ALORS
+      		// on a Trouvé !
+      		SI bResteNegatif ALORS
+      			// Q = Q - 1
+      			quotient = addition( quotient,  _Moins1_256);
+      			// R = R + D
+      			reste    = soustraction( diviseur, reste )
+      		FIN
+      		RENVOYER (quotient,reste)
+      	FIN
+      	
+      FIN
+      
+      
+      // cas général 
+      // algorithme de Newton–Raphson
+      // https://en.wikipedia.org/wiki/Division_algorithm
+      
+      // conversion en "flottant" pour obtenir une estimation rapide d'un quotient proche du résultat
+      diviseur64 est EntierFlottant64( diviseur )
+      quotient  = division256_f64( nombreA,   diviseur64 ) ;
+      
+      
+      nbTour est entier
+      QuotientN  est Entier256 
+      TANTQUE vrai// reste.estSupérieurOuEgalA(diviseur)
+      	// R = N – (Q * D)
+      	QxD  =  multiplication256x256_256(quotient, diviseur)
+      
+      	// si a a évaluté un quotient trop grand de 1
+      	bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
+      	SI bResteNegatif ALORS
+      		// Q = Q - 1
+      		reste = soustraction(   QxD, nombreA  )
+      	SINON
+      		reste = soustraction(   nombreA , QxD )
+      	FIN
+      
+      	// si le reste est inférieur au diviseur
+      	si pas reste.estSupérieurOuEgalA(diviseur) ALORS
+      		// on a Trouvé !
+      		SI bResteNegatif ALORS
+      			// Q = Q - 1
+      			quotient = addition( quotient,  _Moins1_256);
+      			// R = R + D
+      			reste    = soustraction( diviseur, reste )
+      		FIN
+      		RENVOYER (quotient,reste)
+      	FIN
+      		
+      	// Qn = Q + R / A
+      	RsurA est Entier256 = division256_f64( reste, diviseur64 );
+      	dbgAssertion(PAS RsurA.estEgalAZero())
+      	SI bResteNegatif ALORS
+      		QuotientN  = soustraction( quotient, RsurA );
+        	SINON
+      		QuotientN  = addition(     quotient , RsurA  );
+      	FIN
+      	
+      	// Q = (Q + Qn) / 2
+      	newQ est un entier256  = addition( quotient, QuotientN)
+      	newQ.divisePar2();
+      	// anti-boucle infinie si en /2 on retombe sur le même
+      	SI newQ.estEgalA(quotient) _ET_ reste.estSupérieurOuEgalA(diviseur) ALORS
+      		 newQ = additionAvecUn( newQ )
+      	FIN
+      	
+      	nbTour++
+      	dbgAssertion(nbTour <= 356,"quotient="+quotient.VersChaineHexa()+rc+"reste ="+reste.VersChaineHexa() + rc+ "nombreA="+nombreA.VersChaineHexa()+rc+"diviseur="+diviseur.VersChaineHexa());
+      	quotient = newQ
+      FIN
+      
+     type : 458752
+   -
+     name : PGCD_Etendu
+     procedure_id : 1989838449926975996
+     type_code : 15
+     code : |1+
+      // calcul du PGCD de 2 nombre par l'algorithme d'Euclide étendu
+      // renvoie  x (mais pas y) tels que A*x + B*y = PGCD
+      // x est inverse modulaire de A modulo B au signe pràs.
+      PROCÉDURE PGCD_Etendu( nombreA Entier256, nombreB Entier256 ) : Entier256
+      
+      // Algorithme d'euclide étendu
+      s est Entier256
+      r est Entier256
+      sOld est Entier256
+      rOld est Entier256
+      sTemp est  Entier256
+      
+      // Init
+      //s	  = _0_256s;
+      sOld  = _1_256;
+      r	  = nombreB;
+      rOld  = nombreA;
+      
+      // var temps. hors la boucle pour optim d'allocs
+      quotient64 est Entier sur 8 octets sans signe
+      reste  est Entier256
+      i est un entier
+      tantque pas r.estEgalAZero()
+      	
+      	// Division Euclidienne de rOld par r.
+      	// quotient = rOld / r + reste;
+      	( quotient64, reste ) = divisionEuclidienneSimplifiee64( rOld, r )
+      	
+      //	Trace(i + " -------- ")
+      	i++
+      	dbgAssertion(i<1000)
+      	//TRACE( " " + rOld.VersChaineHexa() + "/" +  r.VersChaineHexa()  )
+      	//TRACE( "=" + quotient64 + "  reste= " + reste.VersChaineHexa() )
+      //	QR est Entier256 = multiplication256x64_256(r, quotient64)
+      //	QRplusReste est Entier256 = addition(QR , reste)
+      //	dbgAssertion( QRplusReste.estEgalA( rOld), rOld.VersChaineHexa()  )
+      	
+      	// sauver les valeur précédentes
+      	sTemp  = sOld;
+      	rOld   = r;
+      	sOld   = s;
+      	r = reste;
+      	
+      	// OPTIM cas particulier Q = 1
+      	SI quotient64=0 ALORS
+      		s = sTemp
+      	sinon si quotient64=1 ALORS
+      		s =  addition( sTemp, sOld)
+      	SINON SI quotient64=2 ALORS
+      		soldFois2 est Entier256 = sOld 
+      		soldFois2.multipliePar2()
+      		s =  addition( sTemp, soldFois2 )		
+      	sinon
+      		// cas général
+      		// s = sOld -Q*s
+      		s = addition( sTemp, multiplication256x64_256(s, quotient64 ) )
+      	fin
+      	
+      FIN
+      
+      si estimpair(i) ALORS
+      	RENVOYER soustraction( nombreB, sOld )
+      FIN
+      
+      // renvoyer  u
+      renvoyer  sOld 
+     type : 458752
+   -
+     name : multiplication256x64_256
+     procedure_id : 1991872193988783777
+     type_code : 15
+     code : |1+
+      // multiplication de 1 nombre de 256 bits x 64 buts => 1 nombre de 256 bits
+      procédure multiplication256x64_256(   nombreA Entier256, nombreB entier sur 8 sans signe) : Entier256
+      
+      Résultat   est Entier256	
+      
+      
+      // récup  A * BLow32bits
+      API(addrprocMult256x32_256_ASM, &nombreA, &nombreB, &Resultat )
+      // si que 32 bits ou en mode 64 bits, optim
+      SI nombreB<0x100000000 _ou_ EnMode64bits() ALORS
+      	RENVOYER Resultat
+      FIN
+      // récup  A * BHihg32bits
+      ABHigh32 est Entier256	
+      API(addrprocMult256x32_256_ASM, &nombreA, &nombreB+4, &ABHigh32 )
+      // décalage de 32 bit vers les poids forts
+      ABHigh32decale est Entier256	
+      Transfert(&ABHigh32decale+4,&ABHigh32, 28 )
+      
+      	
+      renvoyer addition(Résultat, ABHigh32decale)
+      
+      
+      // extrait les poids faibles (A0,B0) et fort (A1,B1) de A et B ( 2x128 bits ).
+      A0  est Entier256
+      A0.val0 = nombreA.val0
+      A0.val1 = nombreA.val1
+      A1  est Entier256
+      A1.val0 = nombreA.val2
+      A1.val1 = nombreA.val3
+      B0  est Entier256
+      B0.val0 = nombreB
+      
+      
+      // calcul des mots de 128/256 bits résultat
+      R0  est entier256  = multiplication128x128_256(  A0, B0 )
+      retenue0 est Entier256
+      retenue0.val0 = R0.val2
+      retenue0.val1 = R0.val3
+      
+      //R1  est entier sans signe SUR 8 octet  = (A1*B1 + (A1-A0)*(B0-B1) + B0*A0)  + c0
+      R1 est Entier256
+      R1_a1a0b0b1 est Entier256 
+      a1_a0 est Entier256
+      
+      b0_b1 est Entier256
+      
+      // gestion du signe
+      bNegatif est un booléen 
+      SI  A1.estSupérieurOuEgalA(A0) ALORS 
+      	a1_a0 = soustraction(A1,A0)
+      SINON
+      	a1_a0 = soustraction(A0,A1)
+      	bNegatif = Vrai
+      FIN
+      //SI  B0.estSupérieurOuEgalA(B1) ALORS
+      //b0_b1 = soustraction(B0,B1)
+      b0_b1 = B0 
+      //SINON
+      //	b0_b1 = soustraction(B1,B0)
+      //	bNegatif = PAS bNegatif
+      //FIN
+      
+      R1_a1a0b0b1 =  multiplication128x128_256(  a1_a0,  b0_b1 )
+      bretenue est un booléen //entier sur 8 octets sans signe
+      retenueR1 est entier sur 8 octets sans signe
+      //R1 = addition( R0,		   R2, bretenue)
+      R1 = R0
+      //si bretenue alors retenueR1++
+      si bNegatif alors
+      	SI R1_a1a0b0b1.estSupérieurStrictA( R1 ) ALORS
+      		retenueR1--
+      	fin
+      	R1 = soustraction( R1, R1_a1a0b0b1)
+      sinon
+      	R1 = addition( R1, 	   R1_a1a0b0b1, bretenue)
+      	SI bretenue ALORS retenueR1++
+      fin
+      //bR est un booléen
+      R1 = addition( R1, 		retenue0, bretenue)
+      //SI bretenue ALORS retenueR1++
+      
+      //retenue1 est un entier256 // + 128 bit de retenue
+      //retenue1.val0   = R1.val2
+      //retenue1.val1   = R1.val3
+      //retenue1.val2   = retenueR1
+      //R2 = addition(R2,   retenue1)
+      
+      // construire le résultat 2x128 bits + 1x256bits
+      Résultat.val0 = R0.val0
+      Résultat.val1 = R0.val1  
+      Résultat.val2 = R1.val0
+      Résultat.val3 = R1.val1
+      
+      // si c'est le psesudo mercene pour ECDSA
+      //Résultat_DBG est Entier256
+      //SI nombreB = 0x1000003d0 ALORS
+      //	procMult256x32_256_ASM( &nombreA, &nombreB, &Résultat_DBG )
+      //	temp est Entier256 = nombreA
+      //	temp.mulitplieParUnePuissanceDe2(32)
+      //	Résultat_DBG = addition(resultat,temp)
+      //	si pas Résultat_DBG.estEgalA(resultat) alors
+      //		trace(Résultat_DBG.VersChaineHexa())
+      //		trace(resultat.VersChaineHexa())
+      //		stop
+      //	fin
+      //	RENVOYER resultat
+      //FIN
+      
+      
+      //procMult256x32_256_ASM( &nombreA, &nombreB, &Résultat_DBG )
+      //si pas Résultat_DBG.estEgalA(Résultat) alors
+      //	trace(Résultat_DBG.VersChaineHexa())
+      //	trace(Résultat.VersChaineHexa())
+      //	stop
+      //fin
+      
+      //nombreB_DBG est Entier256( nombreB )
+      //Résultat_DBG est Entier512 = multiplication256x256_512(nombreA,nombreB_DBG)
+      //si pas Résultat_DBG.valPoidsFaible.estEgalA(Résultat) alors
+      //	trace(Résultat_DBG.valPoidsFaible.VersChaineHexa())
+      //	trace(Résultat.VersChaineHexa())
+      //	stop
+      //FIN
+      
+      renvoyer Résultat 
+     type : 458752
+   -
+     name : divisionEuclidienneSimplifiee64
+     procedure_id : 1993349731482804325
+     type_code : 15
+     code : |1+
+      // calcul du reste et du quotient de  A / B.
+      // renvoie au max un entier 64 bits et possiblement inférieur quotient théorique.
+      // OK pour le PGDC rapide
+      // renvoie (quotient, reste)
+      PROCÉDURE divisionEuclidienneSimplifiee64( nombreA Entier256, diviseur entier256 ) : ( entier sur 8 sans signe, Entier256)
+      
+      
+      // cas particuliers
+      //dbgAssertion(PAS diviseur.estEgalAZero(),"Division par 0")
+      SI diviseur.estEgalA1() ALORS
+      	// A/1 = A 
+      	RENVOYER ( nombreA.val0, _0_256 )
+      FIN
+      //SI nombreA.estEgalAZero() ALORS
+      //	// 0/B = 0 
+      //	RENVOYER ( 0, _0_256 )
+      //FIN
+      //SI nombreA.estEgalA(diviseur) ALORS
+      //	// A/A = 1 
+      //	RENVOYER ( 1, _0_256 )
+      //FIN                 
+      SI diviseur.estSupérieurStrictA(nombreA) ALORS
+      	// A/B = 0 + A  ( si B > & )
+      	RENVOYER ( 0, nombreA )
+      FIN
+      // teste rapidement si 1 est la solution, cas TRES fréquent
+      resteTest    est Entier256 = soustraction(nombreA, diviseur )
+      si diviseur.estSupérieurStrictA( resteTest ) alors
+      	RENVOYER ( 1, resteTest )
+      FIN
+      // teste rapidement si 2, 3 ou sont solution, cas fréquent
+      resteTest = soustraction(resteTest, diviseur )
+      SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      	RENVOYER ( 2, resteTest )
+      FIN
+      resteTest = soustraction(resteTest, diviseur )
+      SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      	RENVOYER ( 3, resteTest )
+      FIN
+      resteTest = soustraction(resteTest, diviseur )
+      SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      	RENVOYER ( 4, resteTest )
+      FIN
+      
+      quotient64 est un entier sur 8 octets sans signe 
+      reste    est Entier256
+      QxD 	 est Entier256
+      
+      //quotient256 est Entier256
+      
+      // test rapide avec une division du poids fort
+      si nombreA.val3<>0 _et_ diviseur.val3<>0 ALORS
+      	quotient64 = nombreA.val3 / diviseur.val3
+      fin
+      SI nombreA.val3=0 _ET_ diviseur.val3=0 ALORS
+      	SI nombreA.val2<>0 _ET_ diviseur.val2<>0 ALORS
+      		quotient64 = nombreA.val2 / diviseur.val2
+      	fin
+      	SI nombreA.val2=0 _ET_ diviseur.val2=0 ALORS
+      		SI nombreA.val1<>0 _ET_ diviseur.val1<>0 ALORS
+      			quotient64 = nombreA.val1 / diviseur.val1
+      		FIN
+      		SI nombreA.val1=0 _ET_ diviseur.val1=0 ALORS
+      			// val4 est forcément pas a 0.
+      			quotient64 = nombreA.val0 / diviseur.val0
+      		fin
+      	FIN
+      	
+      fin
+      si quotient64 <> 0 alors		
+      	//QxD  =  multiplication256x256_256(quotient, diviseur)
+      	QxD  =  multiplication256x64_256(diviseur, quotient64)
+      	bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
+      	SI bResteNegatif ALORS
+      		// Q = Q - 1
+      		//quotient = addition( quotient,  _Moins1_256);
+      		// 	QxD = 	QxD - diviseur 
+      		//QxD   = soustraction(   QxD, diviseur )
+      		reste = soustraction(   QxD, nombreA  )
+      	SINON
+      		reste = soustraction(   nombreA , QxD )
+      	FIN
+      	// si le reste est inférieur au diviseur
+      	SI PAS reste.estSupérieurOuEgalA(diviseur) ALORS
+      		// on a Trouvé !
+      		SI bResteNegatif ALORS
+      			// Q = Q - 1
+      			quotient64-- // = addition( quotient,  _Moins1_256);
+      			// R = R + D
+      			reste    = soustraction( diviseur, reste )
+      		FIN
+      		RENVOYER (quotient64,reste)
+      	sinon
+      //		SI bResteNegatif ALORS
+      //			// Q = Q - 1
+      //			quotient64-- // = addition( quotient,  _Moins1_256);
+      //			reste    = soustraction( diviseur, reste )
+      //		fin
+      //		RENVOYER (quotient64,reste)
+      	FIN
+      	
+      FIN
+      
+      
+      // cas général 
+      // algorithme de Newton–Raphson
+      // https://en.wikipedia.org/wiki/Division_algorithm
+      
+      // conversion en "flottant" 
+      quotient est Entier256
+      diviseur64 est EntierFlottant64( diviseur )
+      quotient  = division256_f64( nombreA,   diviseur64 ) ;
+      //reste    est Entier256 //= diviseur  
+      //addition256_64( reste,1) // pour ne pas entrer dans la boucle
+      
+      
+      nbTour est entier
+      //QxD est Entier256
+      QuotientN  est Entier256 
+      TANTQUE vrai// reste.estSupérieurOuEgalA(diviseur)
+      	// R = N – (Q * D)
+      	QxD  =  multiplication256x256_256(quotient, diviseur)
+      	
+      	// si a a évaluté un quotient trop grand de 1
+      	bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
+      	SI bResteNegatif ALORS
+      		// Q = Q - 1
+      		//quotient = addition( quotient,  _Moins1_256);
+      		// 	QxD = 	QxD - diviseur 
+      		//QxD   = soustraction(   QxD, diviseur )
+      		reste = soustraction(   QxD, nombreA  )
+      	SINON
+      		reste = soustraction(   nombreA , QxD )
+      	FIN
+      	// si le reste est inférieur au diviseur
+      	si pas reste.estSupérieurOuEgalA(diviseur) ALORS
+      		// on a Trouvé !
+      		SI bResteNegatif ALORS
+      			// Q = Q - 1
+      			quotient = addition( quotient,  _Moins1_256);
+      			// R = R + D
+      			reste    = soustraction( diviseur, reste )
+      		FIN
+      		RENVOYER (quotient.val0,reste)
+      	FIN
+      		
+      	// Qn = Q + R / A
+      	RsurA est Entier256 = division256_f64( reste, diviseur64 );
+      	SI bResteNegatif ALORS
+      		QuotientN  = soustraction( quotient, RsurA );
+        	SINON
+      		QuotientN  = addition(     quotient , RsurA  );
+      	FIN
+      	
+      	// Q = (Q + Qn) / 2
+      	newQ est un entier256  = addition( quotient, QuotientN)
+      	newQ.divisePar2();
+      	
+      	// anti-boucle infinie si en /2 on retombe sur le même
+      	SI newQ.estEgalA(quotient) _ET_ reste.estSupérieurOuEgalA(diviseur) ALORS
+      		 newQ = additionAvecUn( newQ )
+      	FIN
+      	
+      	nbTour++
+      	dbgAssertion(nbTour <= 200 +256);
+      	quotient = newQ
+      FIN
+      //trace(nbTour + ":" + quotient.VersChaineHexa())
+      
+      //R = N – (Q * D)    calcul de la valeur finale
+      //QxD  =  multiplication256x256_512(quotient, diviseur)
+      //dbgAssertion(QxD.valPoidsFort.estEgalAZero())
+      //bResteNegatif est un booléen = QxD.valPoidsFaible.estSupérieurStrictA( nombreA )
+      //SI bResteNegatif
+      //	reste = soustraction(   QxD.valPoidsFaible, nombreA )
+      //SINON
+      //	reste = soustraction(   nombreA , QxD.valPoidsFaible )
+      //FIN
+      //si bResteNegatif alors
+      //	// Q = Q - 1
+      //	quotient = addition( QuotientN,  _Moins1_256);
+      //	// R = R + D
+      //	reste = addition( reste,  diviseur )
+      //fin
+      //
+      //RENVOYER (quotient,reste)
+     type : 458752
+   -
+     name : _AppliqueCoefQ_EulideEtendu256
+     procedure_id : 1995960225494214888
+     type_code : 15
+     code : |1+
+      // calcule le résultat de la suite de coefs de l'algorithme d'euclide étendu :
+      // X[N]  = X[N-2] + Q[N] * X[N-1]
+      PROCEDURE _AppliqueCoefQ_EulideEtendu256( TabQ est un tableau d'entiers sur 8 sans signe) : Entier256
+      
+      
+      // si le tableau est vide
+      nNbQ est un entier = TabQ..Occurrence
+      SI nNbQ = 0 ALORS
+      	renvoyer _0_256
+      FIN
+      SI nNbQ = 1 ALORS
+      	renvoyer _1_256
+      FIN
+      
+      X_N0  est un entier256 // = 0
+      X_N1  est un entier256(1) // = 1
+      X_N2  est un entier256(TabQ[2] )  
+      
+      // tours 1 
+      // NB : TabQ[1] est inutile...
+      //X_N2 =  _1  // X_N0+ TabQ[i] * X_N1
+      //// vers tour 2 (suivant)
+      ////X_N0 = 	0 // X_N1 
+      //X_N1 = 	1 // X_N2
+      
+      // tour 2
+      //X_N2 =  TabQ[2] // * X_N1
+      // tour suivant
+      X_N0 = 	X_N1 
+      X_N1 = 	X_N2
+      
+      // tours suppl.
+      POUR i = 3 _À_ TabQ..Occurrence-1
+      	si  TabQ[i]=1 ALORS
+      		X_N2 =  addition( X_N0,  X_N1  )
+      	sinon SI  TabQ[i]=2 ALORS
+      		X_N2 =  addition( X_N0,  X_N1  ) 
+      		X_N2 =  addition( X_N2,  X_N1  ) 
+      	SINON SI  TabQ[i]=3 ALORS
+      		X_N2 =  addition( X_N0,  X_N1  ) 
+      		X_N2 =  addition( X_N2,  X_N1  ) 		
+      		X_N2 =  addition( X_N2,  X_N1  ) 		
+      	sinon
+      		X_N2 =  addition( X_N0, multiplication256x64_256( X_N1, TabQ[i]))
+      	fin
+      	// tour suivant
+      	X_N0 = 	X_N1 
+      	X_N1 = 	X_N2
+      FIN
+      
+      
+      renvoyer X_N2
+      
+     type : 458752
+   -
+     name : inverseModuloParPartie
+     procedure_id : 1996334746645342995
+     type_code : 15
+     code : |1-
+      // renvoie l'inverse modualire de nA mod Nb avec calcul par parties
+      PROCÉDURE inverseModuloParPartie( nA entier256 , nB entier256 )
+      
+      // coef du PCDG
+      TabQ est un tableau d'entier sur 8 sans signe
+      
+      // calcul de tous les coef. nécessaire pour calcul du PGCD sans <TabQ>
+      _CalculeCoefQ_EulideEtendu( nA, nB, TabQ)
+      
+      //@A voir compression
+      //nCompress est entier = 0
+      //POUR i=1 _a_ TabQ..Occurrence //  a 1 pas -1
+      //	trace( TabQ[i] ) 
+      
+      //	SI TabQ[i]=1 ALORS
+      //		//		nCompress++
+      //		//		TabQ[i+1] = TabQ[i+1] + 1
+      //		//		TableauSupprime(TabQ,i)
+      //	FIN
+      //
+      //FIN
+      
+      // résultat : calcul du dernier élément de la suite X[N]  = X[N-2] + Q[N] * X[N-1]
+      u est un entier256 = _AppliqueCoefQ_EulideEtendu256(TabQ)
+      
+      // selon le signe prévu du ceof :
+      SI EstImpair(TabQ..Occurrence) 
+      	RENVOYER  soustraction( nB, u )
+      FIN
+      RENVOYER u
+     type : 458752
+   -
+     name : _CalculeCoefQ_EulideEtendu
+     procedure_id : 1996335055884108868
+     type_code : 15
+     code : |1+
+      
+      // tabQ : IN/OUT
+      PROCEDURE _CalculeCoefQ_EulideEtendu( local nA Entier256 , LOCAL nB Entier256 ,  tabQ est un tableau d'entiers sur 8 sans signe ) 
+      
+      nA_PoidsFort,nB_PoidsFort sont entier sur 8 sans signe
+      
+      // <nNumMot> : indice du mot de poids fort. 3 = Max, 0 = poids faible, taille de mots = 64 bits
+      nNumMot est entier 
+      //
+      //POUR nNumMot = 3 À 1 PAS -1
+      //	
+      //	nA_PoidsFort = nA._64Bits(nNumMot)
+      //	nB_PoidsFort = nB._64Bits(nNumMot)
+      //	
+      //	// clacule des indices avec juste les poids forts 
+      //	iStart est un entier = tabQ..Occurrence  + 1
+      //	_PGCD_I8VersTaQ(nA_PoidsFort,nB_PoidsFort,tabQ)
+      //	
+      //	// calcul les reste avec ces coefs.
+      //	// tabQ : IN/OU
+      //	//r, r_ sont entier256
+      //	(nB, nA ) = _CalcResteSelonCoefEtCorrigeTabQ(nA, nB, tabQ, iStart, nNumMot )
+      //	// on devrait avoir des nombre plus petit maintenant
+      //	dbgAssertion( nB._64Bits(nNumMot) =0)
+      //	dbgAssertion( nA._64Bits(nNumMot) =0)
+      //	
+      //FIN 
+      
+      /// fin de  : calcul avec des entier "petits"
+      //_PGCD_I8VersTaQ(nA.val0,nB.val0, tabQ)
+      //retour
+      
+      pour nNumMot = 6 a 1 pas -1
+      	
+      	nA_PoidsFort = nA._64Bits_AligneSur32(nNumMot)
+      	nB_PoidsFort = nB._64Bits_AligneSur32(nNumMot)
+      	
+      	// clacule des indices avec juste les poids forts 
+      	iStart est un entier = tabQ..Occurrence  + 1
+      	_PGCD_I8VersTaQ(nA_PoidsFort,nB_PoidsFort,tabQ)
+      	
+      	// calcul les reste avec ces coefs.
+      	// tabQ : IN/OU
+      	//r, r_ sont entier256
+      	(nB, nA ) = _CalcResteSelonCoefEtCorrigeTabQ(nA, nB, tabQ, iStart, nNumMot )
+      	// on devrait avoir des nombre plus petit maintenant
+      	dbgAssertion( nB._64Bits_AligneSur32(nNumMot) < 0x100000000)
+      	dbgAssertion( nA._64Bits_AligneSur32(nNumMot) < 0x100000000)
+      
+      fin 
+      
+      /// fin de  : calcul avec des entier "petits"
+      _PGCD_I8VersTaQ(nA.val0,nB.val0, tabQ)
+      
+     type : 458752
+   -
+     name : _PGCD_I8VersTaQ
+     procedure_id : 1996335498265778289
+     type_code : 15
+     code : |1+
+      // calcul les valeur de la sériqe d'eurclide étendue pour A et B jusqu'a ce que le reste ne soit plus que sur 32 bits
+      PROCEDURE _PGCD_I8VersTaQ( nA entier sur 8 sans signe, nB entier sur 8 sans signe, tabQ est un tableau d'entier sur 8 sans signe)
+      
+      rTemp , r, r_  sont des entiers sur 8 sans signe
+      //reste est un entier
+      quotient est entier sur 8 sans signe
+      //TableauSupprimeTout(tabQ)
+      // init
+      r  = nA 
+      r_ = nB
+      
+      tantque r_ <>0 // 0xFFFFFFFF // Plus de 32 bits
+          quotient =  r / r_
+          TableauAjoute(tabQ, quotient)
+              
+          // sauver les valeur précédentes
+          rTemp = r;
+          r     = r_
+           
+          // calcul du reste
+      	r_ 	 =  rTemp- r_*quotient
+      	dbgAssertion(r_>=0)
+      fin
+      
+     type : 458752
+   -
+     name : _CalcResteSelonCoefEtCorrigeTabQ
+     procedure_id : 1996335730194066210
+     type_code : 15
+     code : |1+
+      // TabQ: IN/OUT
+      PROCEDURE _CalcResteSelonCoefEtCorrigeTabQ( nA entier256, nB entier256,  TabQ est un tableau d'entiers sur 8 sans signe, iDébut entier, local nNumMot est entier)
+      
+      rTemp , r, r_  sont des entier256
+      //reste est un entier
+      quotient est entier sur 8 sans signe
+      
+      // init
+      r  = nA 
+      r_ = nB
+      
+      	procédure interne _divisionEuclidienne( numerateur_ Entier256, diviseur_ entier256 )
+      		Quotient64 est un entier sans signe sur 8 = numerateur_._64Bits_AligneSur32(nNumMot) / diviseur_._64Bits_AligneSur32(nNumMot)
+      		Reste256 est Entier256 
+      		 Reste256 = soustraction(numerateur_, multiplication256x64_256(diviseur_,Quotient64))
+      		renvoyer (Quotient64, Reste256)
+      	fin
+      
+      
+      	procédure interne _CorrigeTabQ( iFrom entier, TabQ_INOUT est un tableau d'entiers sur 8 sans signe  )
+      		POUR i = iFrom  _a_ 10000 // TabQ_INOUT..Occurrence
+      			// calcul quotient exact
+      			quotient256 est Entier256
+      			reste256    est Entier256
+      			//( quotient256, reste256) = divisionEuclidienne256( r , r_ )
+      			( quotient256.val0, reste256) = _divisionEuclidienne( r , r_ )
+      			SI i <=  TabQ_INOUT..Occurrence ALORS
+      				//TRace( ChaîneConstruit("[%1] Correction (%2/%5) %3=>%4 (%6:%7)", nNumMot, i,  TabQ_INOUT[i], quotient256.val0, TabQ_INOUT..Occurrence, r.val0, r_.val0 ))
+      				TabQ_INOUT[i] = quotient256.val0
+      			sinon
+      				// si on avait pas assez de coef
+      				TableauAjoute(TabQ_INOUT, quotient256.val0 )
+      				//Trace( ChaîneConstruit("[%1] Ajout (%2) %3", nNumMot, i,  TabQ_INOUT[i] ))
+      			fin
+      			dbgAssertion(quotient256.val1 = 0)
+      			dbgAssertion(quotient256.val2 = 0)
+      			dbgAssertion(quotient256.val3 = 0)
+      	
+      			// sauver les valeur précédentes
+      			rTemp = r;
+      			r =r_
+      			dbgAssertion(i<1000)
+      			
+      			// calcul du reste
+      			r_ 	 =  reste256 //rTemp- r*quotient
+      			si r._64Bits_AligneSur32(nNumMot) < 0x100000000 ALORS
+      //			si r._64Bits(nNumMot) = 0 ALORS
+      				// si on avait top de coef.
+      				tantque i < TabQ_INOUT..Occurrence 
+      					TableauSupprime(TabQ_INOUT,TabQ_INOUT..Occurrence)// le dernier
+      				FIN
+      				RENVOYER (r_, r)
+      			FIN
+      	
+      		FIN
+      	FIN
+      
+      
+      i est entier
+      pour i = iDébut  _a_ TabQ..Occurrence
+      	quotient =  TabQ[i]
+      
+      	// sauver les valeur précédentes
+      	rTemp = r;
+      	r =r_
+      		
+      	// calcul du reste
+      	qr 	est Entier256 
+      	si quotient= 1 alors
+      		qr 	 =  r 
+      	sinon
+      		qr 	 = multiplication256x64_256( r, quotient)
+      	fin
+      	r_ 	 =  soustraction( rTemp, qr )
+      	// l'eval par poids fort n'est pas correcte
+      	//si r <0 _ou_  r_ > r ALORS
+      	si qr.estSupérieurStrictA(rTemp) _ou_  r_.estSupérieurStrictA( r ) ALORS
+      		// marche arrière de 1
+      		r_ = r
+      		r  = rTemp
+      		RENVOYER _CorrigeTabQ(i, TabQ )
+      	FIN
+      FIN
+      // si l'accumulation des opérations n'a pas suffit
+      si  r._64Bits_AligneSur32(nNumMot) > 0x100000000 ALORS
+      //si  r._64Bits(nNumMot) <> 0 ALORS
+      	RENVOYER _CorrigeTabQ(i, TabQ )
+      FIN
+      
+      renvoyer (r_, r)
+     type : 458752
+   -
+     name : _HGDC64vers32_AvecCache
+     procedure_id : 2018367993298585794
+     type_code : 15
+     code : |1+
+      //@A mettre au point
+      procédure _HGDC64vers32_AvecCache(A1 entier sur 8 sans signe,    B1 entier sur 8 sans signe)
+      
+      stInfo est STInfoCache
+      SI pas bTabCacheInit ALORS
+      	// Init cache
+      	BI, AI sont Entier 
+      //	AReste, BReste  sont des entiers sur 8 sans signe
+      	
+      	pour AI = 1 a 255
+      		POUR BI = 1 a AI-1
+      			
+      			(  stInfo.U0, stInfo.V1,  stInfo.U1, stInfo.V1, stInfo.AReste, stInfo.BReste, stInfo.b ) = _HGDC8vers4(AI, BI)
+      			tabCache_HGCD32[ AI , BI ] = stInfo 
+      		FIN
+      	FIN
+      	bTabCacheInit = vrai
+      FIN
+      
+      // récup de coef en cache pour faire moins de tours de boucle
+      nAH est un entier  = bitDécaleDroite(A1, 24) & 0xFF
+      nBH est un entier  = bitDécaleDroite(B1, 24) & 0xFF
+      //stInfo= tabCache_HGCD32[ nAH , nBH]
+      (  stInfo.U0, stInfo.V1,  stInfo.U1, stInfo.V1, stInfo.AReste, stInfo.BReste, stInfo.b ) = _HGDC8vers4(nAH, nBH)
+      
+      // restes successifs
+      r0 , r1, r2  sont des entiers sur 8 sans signe
+      quotient est entier sur 8 sans signe
+      
+      // coef de la matrice M
+      U0, U1, U2 sont des entiers sur 8 sans signe
+      V0, V1, V2 sont des entiers sur 8 sans signe
+      // Init coef
+      V1=1//MPrec1 // 1
+      //V0=MPrec0 // 0
+      //U1=NPrec1 // 0
+      U0=1//NPrec0 // 1
+      
+      U0 = stInfo.U0
+      U1 = stInfo.U1
+      V0 = stInfo.V0
+      V1 = stInfo.V1
+      nbEtape est un entier = stInfo.b
+      
+      // init restes
+      r1 = A1 * U0  - B1 * V1 // A1
+      r2 = B1 * V1  - A1 * U1 // B1
+      SI stInfo.b ALORS
+      	//    A2 = U1*A1 - V1*B1 
+      	//    B2 = V2*B1 - U2*A1 
+      	//AReste =  U1*A1 - V1*B1  // soustraction( multiplication64x64_128(A1, U1), multiplication64x64_128(B1, V1))
+      	//BReste =  V2*B1 - U2*A1  // soustraction( multiplication64x64_128(B1, V2), multiplication64x64_128(A1, U2))
+      	r1 = B1 * V1  - A1 * U0  // A1
+      	r2 = A1 * U1 -  B1 * V1   // B1	
+      SINON
+      	//    A2 = V1*B1 - U1*A1 
+      	//    B2 = V2*B1 - U2*A1
+      	r1 = A1 * U0  - B1 * V1 // A1
+      	r2 = B1 * V1  - A1 * U1 // B1
+      FIN
+      
+      
+      BOUCLE
+      	quotient =  r1 / r2
+      	
+      	// sauver les restes précédents
+      	r0 = r1;
+      	r1 = r2
+      	
+      	// calcul du reste
+      	r2 =  r0- r2*quotient
+      	
+      	// calcul du membre suivant de la suite des coefs de la matrice
+      	V2 = V0 + quotient * V1
+      	U2 = U0 + quotient * U1
+      	
+      	// condition de fin de boucle : il va rester moins de 32 bits
+      	//dbgAssertion(r2>=0)
+      	SI r2 <  0x100000000 ALORS
+      		SORTIR
+      	FIN	
+      	
+      	// tour suivant
+      	V0 = V1
+      	V1 = V2
+      	U0 = U1
+      	U1 = U2
+      	
+      	nbEtape++
+      FIN
+      b est un booléen = EstImPair(nbEtape)
+      
+      AReste est un entier sur 8 octets sans signe
+      BReste est un entier sur 8 octets sans signe
+      //si A64_Test.val3<>0 ALORS
+      SI b ALORS
+      	//    A2 = U1*A1 - V1*B1 
+      	//    B2 = V2*B1 - U2*A1 
+      	AReste =  U1*A1 - V1*B1  // soustraction( multiplication64x64_128(A1, U1), multiplication64x64_128(B1, V1))
+      	BReste =  V2*B1 - U2*A1  // soustraction( multiplication64x64_128(B1, V2), multiplication64x64_128(A1, U2))
+      SINON
+      	//    A2 = V1*B1 - U1*A1 
+      	//    B2 = V2*B1 - U2*A1
+      	AReste =  V1*B1 - U1*A1  //soustraction( multiplication64x64_128(B1, V1), multiplication64x64_128(A1, U1))
+      	BReste =  U2*A1 - V2*B1  //soustraction( multiplication64x64_128(A1, U2), multiplication64x64_128(B1, V2))
+      FIN
+      dbgAssertion(AReste < 0xFFFF000000000 ) 
+      dbgAssertion(BReste < 0xFFFF000000000 )
+      
+      si gbModeTest ALORS
+      	 U1_DBG, V1_DBG, U2_DBG, V2_DBG  sont des entiers sur 8 sans signe
+      	( U1_DBG, V1_DBG, U2_DBG, V2_DBG) = _HGDC64vers32( A1, B1)
+      	dbgAssertion(  U1_DBG = U1 )
+      	dbgAssertion(  V1_DBG = V1 )
+      	dbgAssertion(  U2_DBG = U2 )
+      	dbgAssertion(  V2_DBG = V2 )
+      FIN
+      
+      
+      RENVOYER (  U1, V1,  U2, V2, AReste, BReste, b )
+      
+      
+     type : 458752
+   -
+     name : _HGDC64vers32
+     procedure_id : 1997829455445221183
+     type_code : 15
+     code : |1+
+      // renvoie la matrice de réduction de 32 bits de 2 entier 64 bits :
+      // ( U1 U2 V1 V2 b) tels que
+      //    A2 = abs( U1*A1 - V1*B1 )
+      //    B2 = abs( U2*A1 - V2*B1 )
+      // soient des entiers de 32 bits ( ou un peu plus ). 
+      // algorithme d'Euclide étendu qui stoppe des qu'on a obtenu un reste de 32 bits ou moins
+      // prérequis : A1  >= B1 et B1 > 0
+      PROCEDURE _HGDC64vers32( A1 entier sur 8 sans signe,    B1 entier sur 8 sans signe)
+      
+      dbgAssertion( A1 >= B1 )
+      dbgAssertion( B1 >   0 )
+      
+      
+      // restes successifs
+      r0 , r1, r2  sont des entiers sur 8 sans signe
+      quotient est entier sur 8 sans signe
+      // init
+      r1 = A1 
+      r2 = B1
+      // coef de la matrice M
+      U0, U1, U2 sont des entiers sur 8 sans signe
+      V0, V1, V2 sont des entiers sur 8 sans signe
+      // Init coef
+      V1=1
+      U0=1
+      
+      nbEtape est un entier
+      
+      boucle
+          quotient =  r1 / r2
+              
+          // sauver les restes précédents
+          r0 = r1;
+          r1 = r2
+           
+          // calcul du reste
+      	r2 =  r0- r2*quotient
+      
+      	// calcul du membre suivant de la suite des coefs de la matrice
+      	V2 = V0 + quotient * V1
+      	U2 = U0 + quotient * U1
+      
+      	// condition de fin de boucle : il va rester moins de 32 bits
+      	//dbgAssertion(r2>=0)
+      	SI r2 <  0x100000000 ALORS
+      		SORTIR
+      	FIN	
+      	
+      	// tour suivant
+      	V0 = V1
+      	V1 = V2
+      	U0 = U1
+      	U1 = U2
+      	
+      	nbEtape++
+      fin
+      b est un booléen = EstImPair(nbEtape)
+      
+      AReste est un entier sur 8 octets sans signe
+      BReste est un entier sur 8 octets sans signe
+      //si A64_Test.val3<>0 ALORS
+      si b ALORS
+      	//    A2 = U1*A1 - V1*B1 
+      	//    B2 = V2*B1 - U2*A1 
+      	AReste =  U1*A1 - V1*B1  // soustraction( multiplication64x64_128(A1, U1), multiplication64x64_128(B1, V1))
+      	BReste =  V2*B1 - U2*A1  // soustraction( multiplication64x64_128(B1, V2), multiplication64x64_128(A1, U2))
+      sinon
+      	//    A2 = V1*B1 - U1*A1 
+      	//    B2 = V2*B1 - U2*A1
+      	AReste =  V1*B1 - U1*A1  //soustraction( multiplication64x64_128(B1, V1), multiplication64x64_128(A1, U1))
+      	BReste =  U2*A1 - V2*B1  //soustraction( multiplication64x64_128(A1, U2), multiplication64x64_128(B1, V2))
+      FIN
+      
+      renvoyer (  U1, V1,  U2, V2, AReste, BReste, b )
+     type : 458752
+   -
+     name : _HGCD128vers64
+     procedure_id : 1997966671093980050
+     type_code : 15
+     code : |1+
+      // renvoie la matrice de réduction de 64 bits de 2 entier 128 bits A et B.
+      // ( U1 U2 V1 V2 ) tels que :
+      //    A2 = abs(U1*A1 - V1*B1)
+      //    B2 = abs(U2*A1 - V2*B1)
+      // soient des entiers de 64 bits ( ou un peu plus )
+      // avec A >= B et B>0
+      procédure _HGCD128vers64( local A1 est Entier256, LOCAL B1 est Entier256  )
+      dbgAssertion(A1.val2=0 ) // sur 128 bits
+      dbgAssertion(B1.val2=0 )
+      dbgAssertion(A1.estSupérieurOuEgalA(B1) )
+      si B1.val1=0 ALORS
+      	// ERR : non géré
+      	RENVOYER ( 0, 0, 0, 0  )
+      FIN
+      
+      // calcul de la matrice de réduction de taille de 32 bits
+      // pour les 64 bits de poids fort de A et B
+        U1, V1, U2, V2, RA1, RB1 sont des entiers sur 8 sans signe
+        b est un booléen
+      ( U1, V1, U2, V2, RA1, RB1,b ) = _HGDC64vers32( A1.val1, B1.val1 )
+      bSigneOppose est un booléen = Faux
+      
+      // recalcul de A et B avec ces coef : entier de ~96 bits
+      A96 est Entier256 // A1*U1 - B1*V1 = soustraction( multiplication256x64_256(A1, U1), multiplication256x64_256(B1, V1) )
+      B96 est Entier256 // A1*U2 - B2*V2 = soustraction( multiplication256x64_256(A1, U2), multiplication256x64_256(B1, V2) )
+      // partie venant des poids faibles
+      A96 = soustraction( multiplication64x64_128(  A1.val0 , U1) , multiplication64x64_128( B1.val0 , V1))
+      B96 = soustraction( multiplication64x64_128(  A1.val0 , U2) , multiplication64x64_128( B1.val0 , V2))   //.val0 = A1.val0 * U2 - B1.val0 * V2
+      // partie venant des restes de poids fort sur les bits 32 a 64
+      si b alors
+      	A96.val1 += RA1
+      	B96.val1 -= RB1
+      sinon
+      	A96.val1 -= RA1
+      	B96.val1 += RB1 
+      fin
+      // extensions du signe sur les bits 192 a 255
+      si A96.val1>LIMIT_UI64_POSITIF alors
+      	A96.val2 = 0xFFFFFFFFFFFFFFFF
+      	A96.val3 = 0xFFFFFFFFFFFFFFFF
+      sinon
+      	A96.val2 = 0
+      	A96.val3 = 0
+      FIN
+      SI B96.val1>LIMIT_UI64_POSITIF ALORS
+      	B96.val2 = 0xFFFFFFFFFFFFFFFF
+      	B96.val3 = 0xFFFFFFFFFFFFFFFF
+      sinon
+      	B96.val2 = 0
+      	B96.val3 = 0
+      FIN
+      si gbModeTest alors
+      	A96_DBG est Entier256  = soustraction( multiplication256x64_256(A1, U1), multiplication256x64_256(B1, V1) )
+      	dbgAssertion(A96_DBG.estEgalA(A96))
+      	B96_DBG est Entier256  = soustraction( multiplication256x64_256(A1, U2), multiplication256x64_256(B1, V2) )
+      	dbgAssertion(B96_DBG.estEgalA(B96))
+      fin
+      
+      // selon les poids faible le résultat peut être négatif, veut dire que
+      // les coef  U/V sont de signe négatif. 
+      si A96.val3>=LIMIT_UI64_POSITIF ALORS
+      	 A96    = negation( A96 ) // A2 =  V1*B1 - U1*A1
+      	 bSigneOppose= Vrai
+      FIN
+      SI B96.val3>=LIMIT_UI64_POSITIF ALORS
+      	B96    = negation( B96 )  // B2 =  V2*B1 - U2*A1
+      	bSigneOppose = pas bSigneOppose
+      FIN
+      // avec les coef real une inversion peut se produire.
+      SI PAS A96.estSupérieurOuEgalA(B96) ALORS
+      	// échange A et B
+      	A96 <=> B96
+      	U1   <=> U2
+      	V1   <=> V2
+      FIN
+      dbgAssertion(A96.val3 =  0 )
+      dbgAssertion(A96.val2 =  0 )
+      dbgAssertion(A96.estSupérieurOuEgalA(B96) )
+      
+      // on continue un peu le calcul tant qu'on est pas vraiment < 96 bits
+      Q est un entier sur 8 sans signe
+      R96 est un entier256
+      tantque  A96.val1 > 0x100000000 _ou_  B96.val1 > 0x100000000
+      
+      	Q = A96.val1 / B96.val1
+      	R96    = soustraction( A96 ,  multiplication256x64_256(B96, Q ) )
+      	// Arrive si le ratio Q est grand est que les bits de poids faible font que ca dépasse sur le poids fort
+      	tantque R96.val3 > LIMIT_UI64_POSITIF _et_ Q > 0
+      		Q--
+      		R96    = addition( R96 ,  B96 ) // recalcul
+      	FIN
+      	dbgAssertion(R96.val3<=LIMIT_UI64_POSITIF )
+      	A96    = B96
+      	B96    = R96
+      	dbgAssertion(Q>0)
+      	dbgAssertion(A96.estSupérieurOuEgalA(B96) )
+      
+      	U2_next est un entier sur 8 octets sans signe
+      	V2_next est un entier sur 8 octets sans signe
+      	si bSigneOppose ALORS
+      		U2_next = U1 + Q*U2	
+      		V2_next = V1 + Q*V2
+      	sinon 
+      		U2_next = Q*U2 - U1	
+      		V2_next = Q*V2 - V1
+      		bSigneOppose= vrai
+      	FIN
+      
+      	U1 = U2
+      	U2 = U2_next		
+      	V1 = V2
+      	V2 = V2_next
+      
+      FIN
+      
+      //@@Test
+      si gbModeTest alors
+      	A2_TEst est Entier256  = soustraction( multiplication256x64_256(A1, U1), multiplication256x64_256(B1, V1) )
+      	si A2_TEst.val3>LIMIT_UI64_POSITIF  ALORS
+      		A2_TEst= negation(A2_TEst)
+      	FIN
+      	dbgAssertion(A2_TEst.estEgalA(A96))
+      	B96_TEst est Entier256  = soustraction( multiplication256x64_256(A1, U2), multiplication256x64_256(B1, V2) )
+      	SI B96_TEst.val3>LIMIT_UI64_POSITIF  ALORS
+      		B96_TEst= negation(B96_TEst)
+      	FIN
+      	dbgAssertion(B96_TEst.estEgalA(B96))
+      fin
+      
+      // récup des 64 bits de poids fort après les 32 bits a 0
+      A96h est un entier sur 8 octets sans signe// = bitDécaleDroite( nA96.val1,32 )
+      Transfert(&A96h,&A96.val0+4,8)
+      B96h est un entier sur 8 octets sans signe// = bitDécaleDroite( nA96.val1,32 )
+      Transfert(&B96h,&B96.val0+4,8)
+      
+      SI B96h=0 ALORS
+      	// ERR : non géré
+      	RENVOYER ( 0, 0, 0, 0  )
+      FIN
+      
+      // 2eme calcul de M pour le poids fort de A et B
+        U3, V3, U4, V4  sont des entiers sur 8 sans signe
+      ( U3, V3, U4, V4  ) =_HGDC64vers32(A96h, B96h) 
+      SI U3=0 ALORS
+      	// arrive si B96 est déjà sur 64 bits.
+      	// ex:
+      	// A1=00000000000000000000000000000000ffffffffffffffffffffffffffffffff
+      	// B1=00000000000000000000000000000000d83ab8e9c2b5cd3aec2afb9ab1718eb0
+      	//=>
+      	// A96=0000000000000000000000000000000000000000026a4c56b8917763f22441aa
+      	// B96=000000000000000000000000000000000000000000000000e382ee50346be4df
+      	// on n'aura pas une meilleure matrice que la 1er
+      	RENVOYER ( U2, V2, U1, V1  )
+      	
+      	//	U5 = U2
+      	//	V5 = V2
+      	//	U6 = U1
+      	//	V6 = V1
+      FIN
+      // recalcul de A et B avec le produit matriciel des coef :
+      // A3 = (U3*U1*S1 + V3*U2*S2)*A1 
+      //    - (U3*V1*S1 + V3*V2*S2)*B1
+      U5 est entiers sur 8 sans signe = (U3*U1 + V3*U2) 
+      V5 est entiers sur 8 sans signe = (U3*V1 + V3*V2)
+      U6 est entiers sur 8 sans signe = U4*U1 + V4*U2
+      V6 est entiers sur 8 sans signe = V4*V2 + U4*V1
+      
+      
+      si gbModeTest alors
+      	// recalcul de A et B avec ces coef : entier de ~96 bits
+      	nA64 est Entier256
+      	nB64 est Entier256
+      	nA64 = soustraction( multiplication256x64_256( A1, U5),  multiplication256x64_256( B1, V5)    )
+      	SI nA64.val3>=LIMIT_UI64_POSITIF ALORS
+      		nA64 = negation( nA64 )
+      	FIN
+      	nB64 = soustraction( multiplication256x64_256 (A1, U6 ), multiplication256x64_256( B1, V6 )   )
+      	SI nB64.val3>=LIMIT_UI64_POSITIF ALORS
+      		nB64 = negation( nB64 )
+      	FIN
+      
+      	// résultat sur 64 bits environ
+      	dbgAssertion(nA64.val3 =0)
+      	dbgAssertion(nA64.val2 =0)
+      	dbgAssertion(nA64.val1 < 0x100000)
+      	dbgAssertion(nB64.val3 =0)
+      	dbgAssertion(nB64.val2 =0,"nB64="+nB64.VersChaineHexa())
+      	dbgAssertion(nB64.val1 < 0x100000)
+      fin
+      
+      
+      RENVOYER ( U5, V5, U6, V6  )
+     type : 458752
+   -
+     name : nLog2_64
+     procedure_id : 2000537449452368398
+     type_code : 15
+     code : |1-
+      // renvoie l'indice du 1er bit de poids fort a 1. renvoie 0 si 0.
+      PROCÉDURE nLog2_64( nombre est un entier sur 8 octets sans signe)
+      si nombre = 0 ALORS
+      	renvoyer 0
+      FIN
+      si nombre & 0x8000000000000000 alors renvoyer 63
+      //renvoyer log(nombre)/log(2)
+      nTest est entier sur 8 sans signe = 0x4000000000000000
+      pour i = 63 a 0 pas -1
+      	si nombre & nTest alors
+      		 renvoyer i
+      	FIN
+      	nTest = bitDécaleDroite(nTest,1)
+      FIN
+      dbgAssertion(faux)
+      renvoyer 0
+      
+      //nRes   est un entier = 32
+      //nRange est un entier = 31
+      ////// rech dichotomique
+      //nTest est entier sur 8 sans signe = 0x100000000
+      //si nombre>nTest ALORS
+      //	// valeur entre [nRes + nRange,  nRange+1]
+      //	nRes += nRange 
+      //	nTest = bitDécaleGauchenTest
+      //FIN
+      //
+      //si nombre & 0x8000000000000000 alors renvoyer 63
+      //si nombre & 0x4000000000000000 alors renvoyer 62
+      //si nombre & 0x2000000000000000 alors renvoyer 61
+      //si nombre & 0x1000000000000000 alors renvoyer 60
+      //
+      //renvoye 0
+     type : 458752
+   -
+     name : nLog2_256
+     procedure_id : 2000536891106554876
+     type_code : 15
+     code : |1+
+      // renvoie l'indice du 1er bit de poids fort a 1. renvoie 0 si 0.
+      PROCEDURE nLog2_256( nombre est Entier256)
+      
+      si nombre.val3 <> 0 ALORS
+      	renvoyer 196 + nLog2_64( nombre.val3 )
+      FIN
+      SI nombre.val2 <> 0 ALORS
+      	RENVOYER 128 + nLog2_64( nombre.val2 )
+      FIN
+      SI nombre.val1 <> 0 ALORS
+      	RENVOYER 64 + nLog2_64( nombre.val1 )
+      FIN
+      renvoyer  nLog2_64( nombre.val0 )
+      
+      
+      
+     type : 458752
+   -
+     name : inverseModuloParRightShift
+     procedure_id : 2007949536486758810
+     type_code : 15
+     code : |1+
+      // calcule l'inverse de A_ modulo P
+      // méthode de right shift. (division par 2 tant que les reste sont pair)
+      PROCEDURE inverseModuloParRightShift( nombre est entier256, P est entier256) 
+      
+      dbgAssertion("on passe ici ?")
+      
+      soit u = P
+      soit v = nombre
+      r est entier256// 0 
+      s est entier256 ( 1 )
+      //bRetenue est un booléen
+      
+      
+      boucle	
+      
+      	//si (  estPair(u.val0) ) alors
+      	si u.val0 & 1 = 0 alors
+      		//si  ( EstPair(r.val0) ) alors
+      		si  (r.val0 & 1) = 0 alors
+      			 API(addrprocDivPar2_256_ASM,&u) // u.divisePar2()// = u/2
+      			 API(addrprocDivPar2_256_ASM,&r) // .divisePar2() // = r/2
+      		sinon
+      			 API(addrprocDivPar2_256_ASM,&u) // u.divisePar2()// = u/2
+      			 //r = _moyenne(r,P) // (r + p)/2,
+      			 API(addrprocMoyenne_256_ASM,&r,&P)
+      			 
+      		fin
+      	//sinon si ( estpair(v.val0)) alors
+      	sinon si v.val0 & 1 = 0 alors
+      		//si ( estpair(s.val0)) alors
+      		si s.val0 & 1 = 0 alors
+      			API( addrprocDivPar2_256_ASM ,&v) // v.divisePar2() // v = v/2
+      			API( addrprocDivPar2_256_ASM,&s)// s.divisePar2() // = s/2
+      		sinon
+      			API( addrprocDivPar2_256_ASM,&v )// v.divisePar2()// = v/2
+      			API( addrprocMoyenne_256_ASM,&s,&P)
+      		fin
+      		si v.estEgalAZero() ALORS
+      			sortir
+      		FIN
+      	sinon
+      	 	si  u.estSupérieurStrictA(v) alors
+      			u = soustraction(u , v)  // u-v
+      		 	
+      	 	 	si r.estSupérieurOuEgalA(s)  alors
+      	 	 		r = soustraction(r, s) // r - s)
+      	 	 	sinon
+      			 	r = addition( r, soustraction(P, s))
+      			 fin
+      		sinon
+      			v = soustraction(v , u)  //v =  -x
+      			si  s.estSupérieurOuEgalA(r) alors
+      				s = soustraction(s, r)
+      			sinon
+      				s = addition(s, soustraction(P, r))
+      			fin
+      			SI v.estEgalAZero() ALORS
+      				SORTIR
+      			FIN					
+      		fin
+      //		SI v.estEgalAZero() ALORS
+      //			SORTIR
+      //		FIN		
+      	fin
+      	
+      	
+      fin // tant que
+      
+      SI r.estSupérieurStrictA(P) ALORS
+      	r = soustraction(r , P)
+      FIN
+      //si (r < 0) alors
+      //	 r = r + P
+      //fin
+      renvoyer r // and k
+      
+      
+      
+      
+     type : 458752
+   -
+     name : inverseModulaire_HGCD256
+     procedure_id : 2014523499385575273
+     type_code : 15
+     code : |1+
+      // renvoie l'inverse modulaire de B256 modulo A256
+      // ( U1 U2 V1 V2 ) tels que :
+      //    A2 = U1*A - V1*B
+      //    B2 = U2*A - V2*B
+      // soient des entiers de 64 bits ( ou un peu plus )
+      // avec A >= B 
+      // algorithme le plus rapide pour l'instant en WL.
+      procédure inverseModulaire_HGCD256( local A256 est Entier256, LOCAL B256 est Entier256  )
+      dbgAssertion(A256.estSupérieurOuEgalA(B256) )
+      
+      // calcul de la matrice de réduction de taille de 64 bits
+      // pour les 128 bits de poids fort de A et B
+      A128h est Entier256
+      A128h.val1 = A256.val3
+      A128h.val0 = A256.val2
+      B128h est Entier256
+      B128h.val1 = B256.val3
+      B128h.val0 = B256.val2
+        U1, V1, U2, V2  sont des Entier256
+      ( U1.val0, V1.val0, U2.val0, V2.val0 ) =_HGCD128vers64( A128h, B128h )
+      bSigneOppose est un booléen = faux
+      
+      // recalcul de A et B avec ces
+      // coef : entier de ~224 bits
+      A224 est Entier256
+      B224 est Entier256
+      A224 = soustraction( multiplication256x64_256(A256, U1.val0 ), multiplication256x64_256(B256, V1.val0 ) )
+      si A224.val3>=LIMIT_UI64_POSITIF ALORS
+      	//signe1 = -1
+      	bSigneOppose=vrai
+      	A224 = negation( A224 )
+      FIN
+      B224 = soustraction( multiplication256x64_256(A256, U2.val0 ), multiplication256x64_256(B256, V2.val0 )  )
+      SI B224.val3>=LIMIT_UI64_POSITIF ALORS
+      	//signe2 = -1
+      	bSigneOppose = pas bSigneOppose
+      	B224 = negation(B224 )
+      FIN
+      // avec les coef real une inversion peut se produire.
+      SI PAS A224.estSupérieurOuEgalA(B224) ALORS
+      	// échange A et B
+      	A224 <=> B224
+      	U1   <=> U2
+      	V1   <=> V2
+      FIN
+      dbgAssertion(A224.val3 < 0X10000000 ) //, "A256="+A256.VersChaineHexa()+rc+"B256="+B256.VersChaineHexa()  )
+      dbgAssertion(B224.val3 < 0x10000000 )
+      dbgAssertion(A224.estSupérieurOuEgalA(B224) )
+      
+      // on continue un peu le calcul tant qu'on est pas vraiment < 224 bits
+      Q64 est un entier sur 8 sans signe
+      R224 est un entier256
+      dbgAssertion(A224.estSupérieurOuEgalA(B224) )
+      A224_Test est Entier256 
+      B224_Test est Entier256 
+      
+      tantque  A224.val3 >= 1 _ou_  B224.val3 >= 1
+      	//(Q256,R224) =  divisionEuclidienne256(A224, B224)
+      	(Q64, R224) =  divisionEuclidienne64_HGCD(A224, B224, 3)
+      	dbgAssertion(Q64>0)
+      	A224  = B224
+      	B224  = R224
+      	dbgAssertion(A224.estSupérieurOuEgalA(B224) )
+      
+      	U2_next est un entier256
+      	V2_next est un entier256
+      	SI bSigneOppose ALORS
+      		U2_next = addition(U1 , multiplication128x64_256( U2, Q64 ))
+      		V2_next = addition(V1 , multiplication128x64_256( V2, Q64 )) // V1 + Q256.val0 * V2
+      	SInon
+      		U2_next =  soustraction(multiplication128x64_256( U2, Q64 ), U1) // Q*U2 - U1	
+      		V2_next =  soustraction(multiplication128x64_256( V2, Q64 ), V1)  // = Q*V2 - V1
+      		bSigneOppose= Vrai
+      	FIN	
+      	SI U2_next.val3>LIMIT_UI64_POSITIF _ET_ V2_next.val3>LIMIT_UI64_POSITIF ALORS
+      		U2_next = negation(U2_next)
+      		V2_next = negation(V2_next)
+      		bSigneOppose= pas bSigneOppose
+      	FIN			
+      	U1 = U2
+      	U2 = U2_next		
+      	V1 = V2
+      	V2 = V2_next
+      	
+      	// si en TEST 
+      	SI gbModeTest ALORS
+      		A224_Test  = soustraction( multiplication256x256_256(A256, U1), multiplication256x256_256(B256, V1) )
+      		SI A224_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      			A224_Test = negation(  A224_Test )
+      		FIN
+      		//Trace(A224_Test.VersChaineHexa())
+      		//dbgAssertion(A224_Test.estEgalA(A224))
+      		B224_Test  = soustraction( multiplication256x256_256(A256, U2), multiplication256x256_256(B256, V2) )
+      		SI B224_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      			B224_Test = negation(  B224_Test )
+      		FIN
+      		//Trace(A224_Test.VersChaineHexa())
+      		//dbgAssertion(B224_Test.estEgalA(B224), B224_Test.VersChaineHexa() + RC + B224.VersChaineHexa() )
+      	FIN
+      	
+      	
+      FIN
+      
+      // si en TEST 
+      si gbModeTest alors
+      	A224_Test = soustraction( multiplication256x256_256(A256, U1), multiplication256x256_256(B256, V1) )
+      	SI A224_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      		A224_Test = negation(  A224_Test )
+      	FIN
+      	//Trace(A224_Test.VersChaineHexa())
+      	dbgAssertion(A224_Test.estEgalA(A224))
+      	B224_Test  = soustraction( multiplication256x256_256(A256, U2), multiplication256x256_256(B256, V2) )
+      	SI B224_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      		B224_Test = negation(  B224_Test )
+      	FIN
+      	//Trace(A224_Test.VersChaineHexa())
+      	dbgAssertion(B224_Test.estEgalA(B224))
+      fin
+      
+      A224h est Entier256
+      dbgAssertion(  A224.val3 = 0)
+      A224h.val1 = A224.val2
+      A224h.val0 = A224.val1
+      B224h est Entier256
+      dbgAssertion(  B224.val3 = 0)
+      B224h.val1 = B224.val2
+      B224h.val0 = B224.val1
+      
+      
+      // 2eme calcul de M pour le poids fort de A et B
+        U3, V3, U4, V4  sont des entiers sur 8 sans signe
+      ( U3, V3, U4, V4  ) =_HGCD128vers64(A224h, B224h) 
+      
+      // recalcul de A et B avec le produit matriciel des coef :
+      U5 est entier256 = addition( multiplication128x64_256(U1,U3) , multiplication128x64_256(U2,V3)) // (U3*U1 + V3*U2) 
+      V5 est entier256 = addition( multiplication128x64_256(V1,U3) , multiplication128x64_256(V2,V3)) // (U3*V1 + V3*V2)
+      U6 est entier256 = addition( multiplication128x64_256(U1,U4) , multiplication128x64_256(U2,V4)) // U4*U1 + V4*U2
+      V6 est entier256 = addition( multiplication128x64_256(V2,V4) , multiplication128x64_256(V1,U4)) // V4*V2 + U4*V1
+      si U1.val3> LIMIT_UI64_POSITIF _et_ V1.val3> LIMIT_UI64_POSITIF alors
+      	U1 = negation(U1)
+      	V1 = negation(V1)
+      	U5  = soustraction( multiplication128x64_256(U2,V3), multiplication128x64_256(U1,U3)  ) // (U3*U1 + V3*U2) 
+      	V5  = soustraction( multiplication128x64_256(V2,V3), multiplication128x64_256(V1,U3)  ) // (U3*V1 + V3*V2)
+      	A128_Test est Entier256 = soustraction( multiplication256x256_256(A256, U5), multiplication256x256_256(B256, V5) )
+      	dbgAssertion(A128_Test.val3=0) //,  A128_Test.VersChaineHexa() )
+      FIN
+      
+      // recalcul de A et B avec ces coef : entier de ~128 bits
+      A128 est Entier256
+      B128 est Entier256
+      bSigneOppose = faux
+      A128 = soustraction( multiplication256x256_256(A256, U5), multiplication256x256_256(B256, V5) )
+      SI A128.val3>=LIMIT_UI64_POSITIF ALORS
+      	bSigneOppose= vrai
+      	A128 = negation(  A128 )
+      FIN
+      B128 = soustraction( multiplication256x256_256(A256, U6), multiplication256x256_256(B256, V6) )
+      SI B128.val3>=LIMIT_UI64_POSITIF ALORS
+      	bSigneOppose= pas bSigneOppose= Vrai
+      	B128 = negation( B128 )
+      FIN
+      si pas A128.estSupérieurOuEgalA(B128) ALORS
+      	// échange A et B
+      	A128 <=> B128
+      	U5   <=> U6
+      	V5   <=> V6
+      FIN
+      dbgAssertion(A128.val3=0)
+      dbgAssertion(B128.val3=0)
+      
+      // on continue un peu le calcul tant qu'on est pas vraiment < 128 bits
+      R128 est Entier256
+      TANTQUE  A128.val2 >= 1 _OU_  B128.val2 >= 1
+      	(Q64 ,R128) =  divisionEuclidienne64_HGCD(A128, B128, 2)
+      	dbgAssertion(Q64> 0)
+      	A128  = B128
+      	B128  = R128
+      	dbgAssertion(A128.estSupérieurOuEgalA(B128) )
+      	U6_suiv est un entier256
+      	V6_suiv est un entier256
+      	SI bSigneOppose ALORS
+      		U6_suiv = addition(U5 ,  multiplication256x64_256( U6, Q64 ))
+      		V6_suiv = addition(V5 ,  multiplication256x64_256( V6, Q64 )) 
+      	SInon // signe1 = signe2 ALORS
+      		U6_suiv =  soustraction( multiplication256x64_256( U6, Q64 ), U5) 	
+      		V6_suiv =  soustraction( multiplication256x64_256( V6, Q64 ), V5) 
+      		bSigneOppose= vrai
+      	FIN	
+      	SI U6_suiv.val3>LIMIT_UI64_POSITIF _ET_ V6_suiv.val3>LIMIT_UI64_POSITIF ALORS
+      		U6_suiv = negation(U6_suiv)
+      		V6_suiv = negation(V6_suiv)
+      		bSigneOppose= PAS bSigneOppose
+      	FIN				
+      	
+      	U5 = U6
+      	U6 = U6_suiv
+      	V5 = V6
+      	V6 = V6_suiv
+      	
+      FIN
+      ///@TEST
+      SI gbModeTest ALORS
+      
+      	A128_Test est Entier256 =  soustraction( multiplication256x256_256(A256, U5), multiplication256x256_256(B256, V5) )
+      	SI A128_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      		A128_Test = negation(  A128_Test )
+      	FIN
+      	dbgAssertion(A128_Test.estEgalA(A128))
+      	B128_Test est Entier256 =  soustraction( multiplication256x256_256(A256, U6), multiplication256x256_256(B256, V6) )
+      	SI B128_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      		B128_Test = negation(  B128_Test )
+      	FIN
+      	dbgAssertion(B128_Test.estEgalA(B128))
+      fin
+      
+      // 3 eme calcul de M 
+      dbgAssertion( A128.val2 = 0)
+      dbgAssertion( B128.val2 = 0)
+        U7, V7, U8, V8  sont des entiers sur 8 sans signe
+      ( U7, V7, U8, V8  ) =_HGCD128vers64(A128, B128) 
+      
+      // recalcul de A et B avec le produit matriciel des coef :
+      //A128 = B*V5 - A*U5 
+      //B128 = A*U6 - B*V6
+      // A64 = A128*U7 - B128*V7
+      //=>
+      // A64 = (U5*U7 + U6*V7)*A - (V5*U7 + V6*V7)*B 
+      U9  est Entier256 = addition( multiplication256x64_256(U5,U7) , multiplication256x64_256(U6,V7) )
+      V9  est Entier256 = addition( multiplication256x64_256(V5,U7) , multiplication256x64_256(V6,V7) )
+      U10 est Entier256 = addition( multiplication256x64_256(U5,U8) , multiplication256x64_256(U6,V8) )
+      V10 est Entier256 = addition( multiplication256x64_256(V5,U8) , multiplication256x64_256(V6,V8) )
+      bSigneOppose = Faux
+      A64 est Entier256 = soustraction( multiplication256x256_256(A256, U9), multiplication256x256_256(B256,V9) )
+      SI A64.val3>=LIMIT_UI64_POSITIF ALORS
+      	bSigneOppose = Vrai
+      	A64 = negation(  A64 )
+      FIN
+      dbgAssertion(A64.val3 = 0,"A64.val3="+A64.val2+rc+"A256="+ A256.VersChaineHexa() + RC + "B256="+ B256.VersChaineHexa()) 
+      B64 est Entier256 = soustraction( multiplication256x256_256(A256, U10), multiplication256x256_256(B256,V10) )
+      SI B64.val3>=LIMIT_UI64_POSITIF ALORS
+      	B64 = negation(  B64 )
+      	bSigneOppose = pas bSigneOppose 
+      FIN
+      dbgAssertion(B64.val3 = 0,"B64.val3="+B64.val3+rc+"A256="+ A256.VersChaineHexa() + RC + "B256="+ B256.VersChaineHexa()) 
+      SI PAS A64.estSupérieurOuEgalA(B64) ALORS
+      	// échange A et B
+      	A64  <=> B64
+      	U9   <=> U10
+      	V9   <=> V10
+      FIN
+      
+      // on continue un peu le calcul tant qu'on est pas vraiment < 128 bits
+      R64 est Entier256
+      TANTQUE  A64.val1 >= 1 _OU_  B64.val1 >= 1
+      	(Q64,R64) =  divisionEuclidienne64_HGCD(A64, B64,1)
+      	dbgAssertion(Q64>0)
+      	A64  = B64
+      	B64  = R64
+      	dbgAssertion(A64.estSupérieurOuEgalA(B64) )
+      	U10_suiv est un entier256
+      	V10_suiv est un entier256
+      	//SI signe1 <> signe2 ALORS
+      	SI bSigneOppose ALORS
+      		U10_suiv = addition(U9 ,  multiplication256x64_256( U10, Q64 ))
+      		V10_suiv = addition(V9 ,  multiplication256x64_256( V10, Q64 ))
+      	SInon// signe1= signe2 ALORS
+      		U10_suiv = soustraction(  multiplication256x64_256( U10, Q64 ), U9) 
+      		V10_suiv = soustraction(  multiplication256x64_256( V10, Q64 ), V9)  
+      		bSigneOppose= vrai
+      	FIN
+      	SI U10_suiv .val3>LIMIT_UI64_POSITIF _ET_ V10_suiv.val3>LIMIT_UI64_POSITIF ALORS
+      		U10_suiv = negation(U10_suiv)
+      		V10_suiv = negation(V10_suiv)
+      		bSigneOppose= PAS bSigneOppose
+      	FIN					
+      	U9  = U10
+      	U10 = U10_suiv
+      	V9  = V10
+      	V10 = V10_suiv
+      	
+      FIN
+      
+      //@Test
+      SI gbModeTest ALORS
+      
+      	A64_Test est Entier256 =  soustraction( multiplication256x256_256(A256, U9), multiplication256x256_256(B256, V9) )
+      	SI A64_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      		A64_Test = negation(  A64_Test )
+      	FIN
+      	dbgAssertion(A64_Test.estEgalA(A64))
+      	B64_Test est Entier256 =  soustraction( multiplication256x256_256(A256, U10), multiplication256x256_256(B256, V10) )
+      	SI B64_Test.val3>=LIMIT_UI64_POSITIF ALORS
+      		B64_Test = negation(  B64_Test )
+      	FIN
+      	dbgAssertion(B64_Test.estEgalA(B64))
+      fin
+      
+      
+      /// blindage cas ou l'on se sait pas gérér
+      si  B64.val0=0 ALORS
+      	renvoyer _0_256
+      FIN
+      // réduction des derniers 64 bits
+      U11, V11, U12, V12  sont des entiers sur 8 sans signe
+      ( U11, V11, U12, V12  ) = _HGDC64Final(A64.val0, B64.val0) 
+      
+      // v tels que
+      // 1 = A*U - B*V  => B*V = 1 mod A
+      VFinal est Entier256 = addition( multiplication256x64_256(V9,U12) , multiplication256x64_256(V10,V12) )
+      // cas particulier ou U et V sont négatif 
+       SI V10.val3 >LIMIT_UI64_POSITIF _ET_ V9.val3>LIMIT_UI64_POSITIF ALORS
+      	// -U*A - -V*B = -(  U*A - V*B  )
+      	VFinal  = negation( addition( multiplication256x64_256(V9,U12) , multiplication256x64_256(V10,V12) ) )
+      fin
+      
+      renvoyer VFinal
+      
+     type : 458752
+   -
+     name : _HGDC64Final
+     procedure_id : 2016014355517430013
+     type_code : 15
+     code : |1+
+      // renvoie la matrice de réduction de 32 bits de 2 entier 64 bits :
+      // ( U1 U2 V1 V2 b) tels que
+      //    x = abs( U1*A1 - V1*B1 )
+      //    1 = abs( U2*A1 - V2*B1 )
+      // soient des entiers de 32 bits ( ou un peu plus ). 
+      // algorithme d'Euclide étendu qui stoppe des qu'on a obtenu un reste de 32 bits ou moins
+      // prérequis : A1  >= B1 et B1 > 0
+      PROCEDURE _HGDC64Final( A1 entier sur 8 sans signe,  B1 entier sur 8 sans signe)
+      
+      dbgAssertion( A1 >= B1 )
+      dbgAssertion( B1 >   0 )
+      
+      // restes successifs
+      r0 , r1, r2  sont des entiers sur 8 sans signe
+      quotient est entier sur 8 sans signe
+      // init
+      r1 = A1 
+      r2 = B1
+      // coef de la matrice M
+      U0, U1, U2 sont des entiers sur 8 sans signe
+      V0, V1, V2 sont des entiers sur 8 sans signe
+      // Init coef
+      V1= 1
+      V0= 0
+      U1= 0
+      U0= 1
+      
+      nbEtape est un entier
+      
+      
+      //tantque  r_ <>0
+      boucle
+          quotient =  r1 / r2
+              
+          // sauver les restes précédents
+          r0 = r1;
+          r1 = r2
+           
+          // calcul du reste
+      	r2 =  r0- r2*quotient
+      
+      	// calcul du membre suivant de la suite des coefs de la matrice
+      	V2 = V0 + quotient * V1
+      	U2 = U0 + quotient * U1
+      
+      	// condition de fin de boucle : il va rester moins de 32 bits
+      	dbgAssertion(r2>=0)
+      	SI r2 <= 1 ALORS
+      		SORTIR
+      	FIN	
+      	
+      	// tour suivant
+      	V0 = V1
+      	V1 = V2
+      	U0 = U1
+      	U1 = U2
+      	
+      	nbEtape++
+      fin
+      
+      
+      renvoyer (  U1, V1,  U2, V2 )
+     type : 458752
+   -
+     name : multiplication128x64_256
+     procedure_id : 2018244744916871392
+     type_code : 15
+     code : |1+
+      // calcul du A * B  avec A sur 128 bits et B sur 64 bits. 
+      // résultat sur 256 bits (sans signe)
+      procédure multiplication128x64_256( nombreA Entier256, nombreB entier sur 8 sans signe) : Entier256
+      R2 est Entier256 
+      
+      dbgAssertion(addrprocMult128x128_256_ASM<>0)
+      
+      // OPTIM : version en assembleur
+      nombreB_256 est Entier256
+      nombreB_256.val0 = nombreB
+      api(addrprocMult128x128_256_ASM, &nombreA,&nombreB_256,&R2 )
+      renvoyer R2
+      
+      
+     type : 458752
+   -
+     name : divisionEuclidienne64_HGCD
+     procedure_id : 2018338392422374826
+     type_code : 15
+     code : |1+
+      // calcul du reste et du quotient de  A / B.
+      // renvoie (quotient, reste)
+      // si le résultat est sur 64 bits uniquement. sinon renvoie 0,0
+      // procédure optimisée pour la boucle de HGCD
+      // <numMot>: n0 de mot de poids forts qui paut valoir 0 pour nombreA ou diviseur. 3 = max, 0 = min, invalide.
+      PROCÉDURE divisionEuclidienne64_HGCD( nombreA Entier256, diviseur entier256 , numMot entier ) : (  entier sur 8 sans signe, Entier256)
+      
+      
+      // cas particuliers
+      SI diviseur.estEgalAZero() ALORS
+      	dbgAssertion(PAS diviseur.estEgalAZero(),"Division par 0")
+      	RENVOYER ( 0, _0_256 )
+      FIN
+      
+      // teste rapidement si 1 est la solution, cas TRES fréquent
+      resteTest    est Entier256 = soustraction(nombreA, diviseur )
+      si diviseur.estSupérieurStrictA( resteTest ) alors
+      	RENVOYER ( 1, resteTest )
+      FIN
+      // teste rapidement si 2, 3 ou sont solution, cas fréquent
+      resteTest = soustraction(resteTest, diviseur )
+      SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      	RENVOYER ( 2, resteTest )
+      FIN
+      //resteTest = soustraction(resteTest, diviseur )
+      //SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      //	RENVOYER ( 3, resteTest )
+      //FIN
+      //resteTest = soustraction(resteTest, diviseur )
+      //SI diviseur.estSupérieurStrictA( resteTest ) ALORS
+      //	RENVOYER ( 4, resteTest )
+      //FIN
+      
+      quotient est un entier sur 8 sans signe 
+      reste    est Entier256
+      QxD 	 est Entier256
+      
+      // récup des poids forts de chaque nombre au rang donné
+      nombre_H64   est un entier sur 8 octets sans signe
+      diviseur_H64 est un entier sur 8 octets sans signe
+      selon numMot
+      	cas 3
+      		Transfert(&nombre_H64,   &nombreA.val2  + 4 , 8)
+      		Transfert(&diviseur_H64, &diviseur.val2 + 4,  8)
+      	CAS 2
+      		Transfert(&nombre_H64,   &nombreA.val1  + 4 , 8)
+      		Transfert(&diviseur_H64, &diviseur.val1 + 4,  8)
+      	CAS 1
+      		Transfert(&nombre_H64,   &nombreA.val0  + 4 , 8)
+      		Transfert(&diviseur_H64, &diviseur.val0 + 4,  8)		
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      FIN
+      si diviseur_H64 = 0 ALORS
+      	// non géré
+      	dbgAssertion(faux,"cas non géré"+rc+"nombreA="+nombreA.VersChaineHexa()+RC+"diviseur="+RC+diviseur.VersChaineHexa()+RC+"numMot"=numMot)
+      	renvoyer (0, _0_256)
+      FIN
+      
+      // division simple
+      quotient = nombre_H64 / diviseur_H64
+      dbgAssertion( quotient > 0,"nombreA="+nombreA.VersChaineHexa()+rc+"diviseur="+rc+diviseur.VersChaineHexa()+rc+"numMot"=numMot)
+      
+      
+      QxD  =  multiplication256x64_256(diviseur, quotient )
+      bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
+      SI bResteNegatif ALORS
+      	// Q = Q - 1
+      	//quotient = addition( quotient,  _Moins1_256);
+      	// 	QxD = 	QxD - diviseur 
+      	//QxD   = soustraction(   QxD, diviseur )
+      	reste = soustraction(   QxD, nombreA  )
+      SINON
+      	reste = soustraction(   nombreA , QxD )
+      FIN
+      
+      // si le reste est inférieur au diviseur
+      si pas reste.estSupérieurOuEgalA(diviseur) 	
+      
+      	// on a Trouvé !
+      	SI bResteNegatif ALORS
+      		// Q = Q - 1
+      		quotient-- // =  quotient,  _Moins1_256);
+      		// R = R + D
+      		reste    = soustraction( diviseur, reste )
+      	FIN
+      	SI gbModeTest ALORS
+      		_Q_DBG est Entier256
+      		_R_DBG est Entier256
+      		(_Q_DBG, _R_DBG ) = divisionEuclidienne256(nombreA, diviseur)
+      		dbgAssertion(quotient = _Q_DBG.val0 )
+      	FIN		
+      	
+      	RENVOYER (quotient, reste)
+      
+      fin
+      
+      // rebond division euclidienne complete
+      Q256 est Entier256
+      (Q256, reste  ) = divisionEuclidienne256(nombreA, diviseur)
+      SI Q256.val1 <>0 _OU_ Q256.val2 <>0 _OU_ Q256.val3 <> 0 ALORS
+      	RENVOYER (0,_0_256) // non géré
+      FIN
+      RENVOYER (Q256.val0,reste)
+      
+      
+      	
+      //
+      //
+      //
+      //// cas général 
+      //// algorithme de Newton–Raphson
+      //// https://en.wikipedia.org/wiki/Division_algorithm
+      //
+      //// conversion en "flottant" 
+      //diviseur64 est EntierFlottant64( diviseur )
+      //quotient  = division256_f64( nombreA,   diviseur64 ) ;
+      ////reste    est Entier256 //= diviseur  
+      ////addition256_64( reste,1) // pour ne pas entrer dans la boucle
+      //
+      //
+      //nbTour est entier
+      ////QxD est Entier256
+      //QuotientN  est Entier256 
+      //TANTQUE vrai// reste.estSupérieurOuEgalA(diviseur)
+      //	// R = N – (Q * D)
+      //	QxD  =  multiplication256x256_256(quotient, diviseur)
+      //	
+      //	// si a a évaluté un quotient trop grand de 1
+      //	bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
+      //	SI bResteNegatif ALORS
+      //		// Q = Q - 1
+      //		//quotient = addition( quotient,  _Moins1_256);
+      //		// 	QxD = 	QxD - diviseur 
+      //		//QxD   = soustraction(   QxD, diviseur )
+      //		reste = soustraction(   QxD, nombreA  )
+      //	SINON
+      //		reste = soustraction(   nombreA , QxD )
+      //	FIN
+      //	// si le reste est inférieur au diviseur
+      //	si pas reste.estSupérieurOuEgalA(diviseur) ALORS
+      //		// on a Trouvé !
+      //		SI bResteNegatif ALORS
+      //			// Q = Q - 1
+      //			quotient = addition( quotient,  _Moins1_256);
+      //			// R = R + D
+      //			reste    = soustraction( diviseur, reste )
+      //		FIN
+      //		RENVOYER (quotient.val0,reste)
+      //	FIN
+      //		
+      //	// Qn = Q + R / A
+      //	RsurA est Entier256 = division256_f64( reste, diviseur64 );
+      //	SI bResteNegatif ALORS
+      //		QuotientN  = soustraction( quotient, RsurA );
+      //  	SINON
+      //		QuotientN  = addition(     quotient , RsurA  );
+      //	FIN
+      //	
+      //	// Q = (Q + Qn) / 2
+      //	newQ est un entier256  = addition( quotient, QuotientN)
+      //	newQ.divisePar2();
+      //	
+      //	// anti-boucle infinie si en /2 on retombe sur le même
+      //	SI newQ.estEgalA(quotient) _ET_ reste.estSupérieurOuEgalA(diviseur) ALORS
+      //		 newQ = additionAvecUn( newQ )
+      //	FIN
+      //	
+      //	nbTour++
+      //	dbgAssertion(nbTour <= 200 +256);
+      //	quotient = newQ
+      //FIN
+      //
+     type : 458752
+   -
+     name : _HGDC8vers4
+     procedure_id : 2018376677730443957
+     type_code : 15
+     code : |1+
+      // renvoie la matrice de réduction de 4 bits de 2 entier 8 bits :
+      // ( U1 U2 V1 V2 b) tels que
+      //    A2 = abs( U1*A1 - V1*B1 )
+      //    B2 = abs( U2*A1 - V2*B1 )
+      // soient des entiers de 32 bits ( ou un peu plus ). 
+      // algorithme d'Euclide étendu qui stoppe des qu'on a obtenu un reste de 32 bits ou moins
+      // prérequis : A1  >= B1 et B1 > 0
+      PROCEDURE _HGDC8vers4( A1 entier ,    B1 entier )
+      
+      dbgAssertion( A1 >= B1 )
+      dbgAssertion( B1 >   0 )
+      
+      
+      // restes successifs
+      r0 , r1, r2  sont des entiers 
+      quotient est entier
+      // init
+      r1 = A1 
+      r2 = B1
+      // coef de la matrice M
+      U0, U1, U2 sont des entiers 
+      V0, V1, V2 sont des entiers 
+      // Init coef
+      V1=1//MPrec1 // 1
+      U0=1//NPrec0 // 1
+      
+      nbEtape est un entier
+      
+      boucle
+          quotient =  r1 / r2
+              
+          // sauver les restes précédents
+          r0 = r1;
+          r1 = r2
+           
+          // calcul du reste
+      	r2 =  r0- r2*quotient
+      
+      	// calcul du membre suivant de la suite des coefs de la matrice
+      	V2 = V0 + quotient * V1
+      	U2 = U0 + quotient * U1
+      
+      	// condition de fin de boucle : il va rester moins de 4 bits
+      	//dbgAssertion(r2>=0)
+      	SI r2 <  0x10 ALORS
+      		SORTIR
+      	FIN	
+      	
+      	// tour suivant
+      	V0 = V1
+      	V1 = V2
+      	U0 = U1
+      	U1 = U2
+      	
+      	nbEtape++
+      fin
+      b est un booléen = EstImPair(nbEtape)
+      
+      AReste est un entier 
+      BReste est un entier 
+      //si A64_Test.val3<>0 ALORS
+      si b ALORS
+      	//    A2 = U1*A1 - V1*B1 
+      	//    B2 = V2*B1 - U2*A1 
+      	AReste =  U1*A1 - V1*B1  // soustraction( multiplication64x64_128(A1, U1), multiplication64x64_128(B1, V1))
+      	BReste =  V2*B1 - U2*A1  // soustraction( multiplication64x64_128(B1, V2), multiplication64x64_128(A1, U2))
+      sinon
+      	//    A2 = V1*B1 - U1*A1 
+      	//    B2 = V2*B1 - U2*A1
+      	AReste =  V1*B1 - U1*A1  //soustraction( multiplication64x64_128(B1, V1), multiplication64x64_128(A1, U1))
+      	BReste =  U2*A1 - V2*B1  //soustraction( multiplication64x64_128(A1, U2), multiplication64x64_128(B1, V2))
+      FIN
+      
+      renvoyer (  U1, V1,  U2, V2, AReste, BReste, b )
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : ProcéduresGlobales1
+resources :
+ string_res :
+  identifier : 0x1b39b9e7327da56c
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

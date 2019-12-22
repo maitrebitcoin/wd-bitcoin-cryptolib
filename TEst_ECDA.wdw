@@ -1,0 +1,782 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : TEst_ECDA
+ major_version : 25
+ minor_version : 0
+ type : 2
+ description : ""
+ subtype : 0
+window :
+ name : TEst_ECDA
+ identifier : 0x2b7cfedd00d3a562
+ internal_properties : BQAAAAUAAAA/6VTKSqywY7PM6dLG0yJY8Iv4xPGhBSd/KwXjnVROkm58dKYOm63ekT9dbFy2jiFt9cBlbuIDM/6BEI11A+67oPj60VpCLYxhK367cyNBt1o3yogOJsUfzkVq3/VPgLeXSz7Q6I6HyueQve1JI3NeAdoBRs1yTo39nfxtXfJ5Pzu6Znxvbcqfo+5ik0O8/hNvQ2Pnk9FLNSVfSge/XcFM/bBMLRQ8LjS/tc/DdVtMZblmWcDG+zeR3BAQ8NFyp/ss6sQkaN2p3Tvm8HSmIRdS+JeQEY/x52H9RTe/31iocibOk/4cxgZrQbZ4MPTvRYTy82lCOPoRcwhhbzYiZs3dhxT3LxhQxwbULctimR4vcukj/PeDXClx2m+3eXC0QHScXkaK++WeztOy7nCPIW0f9cueDupo7WNUFABIkG9Y/8vOwy7wG/HIE0/QQOCsf2yu8cy4SiT5A2tDpwEj9giMdK1wNUwukJWK7tsagrRZzTUwv5432/nEQTpM0kGENzSGzwRMrPdv0OdzdhTDBC+I2gPTfooYq/Adx74tO+e+L3E8ufvS6sFMMxEa04CJnrknGj84hbbTOjdZj6F5//cMnI55DSI+9DnZNvyvnV/M19cQClje4DZ8mUdJ7qjfWeITTi8Gdp0Sfc6WUccdSW5bvEHjP3IdwZkhwC5+vLVj0H7Xe4Vz2TzbMCq+LW+Q/z9QBQLbE4G1tLAPZrYyRzLO3mltJxBBo9J3exvnzYG00xg4EStlXBuh/wtuAwrAAfUZ225oI1kYAKcQtnMa977jYstpXyHNiCPgH97cjpQrgUpKugLIU82MWq0Vz+hX4eTu35kwYplI6/q2Tmic
+ controls :
+  -
+    name : priv_pub
+    identifier : 0x2b7cfee80119d106
+    internal_properties : BQAAAAUAAABjpoXjpIbkMxCB0g3IPk2SxZdGR73lXOBRifuWi6nTu7xKvZO6hD9XmyoE5RGjsueKqmUEvGxUIRkl9Qkx3oo5ZBweil2ApQ//t+ojTUlHEremgYqdTHIKx5LPWlpg1tGf4LxfPrI2fa0dX1GZcPY/sL1Y0+w/aK1Yqo+wJPzQwkF7f+GbwGUXkpYxyljN+V/kkxlF2xS+e28lquQ1+trNyD7pJ9+D4OHtjgIU8m6OaDlGH4/xrBvdfuZfc+tN/I+WyyaA0BTZrivTMixmqOrkispjwzU+u0oLAsiYAZfPmpv3JqUF+QrHjxm5M+FUZ7+Hi9wWgwqkw1fug6Vl2lRPlvi54L146mJ8Ux1mDVzmo7LlYPXC0WXwQ6jNnL+0cwf2GRcsm2d1XjLr845DmtBREVM0PocxXfc78zJgGsNTG+4d32ZMpwnwzEdeuK6QbMePeecMQZcyZP3li2X3oQkB5vrWLSPmCs8vcYRbv5tbsZTli28h9ya8N6X0Wf1malQc1as4L0nk6Le7DoF0yAf0waP5xfDg/shL5BE2e0jWg9NpslHxD2BubdxpEmuUCf+NBuwvBaCHGUMduA+QyiG07CW5ngu5YJ7aowA5qmeIaQNKm/lJZOWeeRliURm/J8VlDX0eZjPNdtX8ffiT5/IeI3g6WQXG9/qY00kYbzUh2g8aWZFICq1AzZH/F2MF78jn6EZvyBm68PpTx6xEDbIqlg9bFdWob1Vl3ph31zGgq7Olva5KzvEbCQ5j8xZODJCR6h0gQiclSL6tXwQ=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         gbModeBench = vrai
+         CrytoLib est ECDSA_BTC
+         //ClePrivee est Entier256("75be5c76cde3bcb877a523f618c839cb6ac58269880288734acee9473a180744")
+         ClePrivee est Entier256("8727b3b7be9139498f2f48f7b88f92203b1ce5ea527fd7dd754F650e2216b935")
+         //CléPrivée est Entier256("2")
+         
+         Trace("Calcul...")
+         ChronoDébut()
+         ClePublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée(ClePrivee)
+         Trace( "Temps (ms) : " + ChronoFin())
+         Trace(ClePublique.x.VersChaineHexa())
+         Trace(ClePublique.y.VersChaineHexa())
+         
+         // 5b0ec43c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef87b
+         xOK est Entier256("0x5b0ec43c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef87b")
+         //xOK est Entier256("0xFD0F6EBE95AAFBED3C431047BB3D9DEA4324B8D6CDBC16D35AE30AC22E9548")
+         yOK est Entier256("0xb809f2a2d4c6423c2f946ff6499dffec78385fd75f97245910c358a4a55cfdb6")
+         
+         
+         
+         dbgAssertion(ClePublique.x.estEgalA( xOK) )
+         dbgAssertion(ClePublique.y.estEgalA( yOK) )
+         // b809f2a2d4c6423c2f946ff6499dffec78385fd75f97245910c358a4a55cfdb6
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : FIn1
+    identifier : 0x2b8390ec00c21e47
+    internal_properties : BQAAAAUAAADHH1hpNuVeqtgUtwzkBK1q+lz1W2aBvCw1FT1C3W7BCW2MhiFgSpVBs5wsWOZVgMWF1sw4/qLR+bIvdrDqRs1A5DsidWHMTl+3ZM+eUPakbFK8e4DTGjcuANy5ucuUCCpGndvtWZniAjlMgpWkxax0a/E1ROoybmfhYseCwHzFMuNSr6KkwXvwg6MRyqerICjtfL1bO9p8XUePNNrGLKbh7bBfk2yiIndF2xVq6t/NU0gWTTQssQl8S573x/TMQOGLpk62N1bTLDL9Pm4/P4Cl4Z9cOi6gD/ksCQ8Ay03b23z9gLgl/W3M/w37FK0dpNsQI2MXUnW1wLRHNTTCrWyV8RkqV6aB28tdO0ifkEd+wMaSngUhuK4AdWAVLUb5017ZzdgGz0Dt1v1VvDeDx7LYqhzFq+E0q2XAEeWD1IinQCnM2DkcMsEYFzGnF1zvbN6w3g4T64pugIhhEr6dnvlKVXmRoBsVGh/up7tU41Sh96niwLidzFBWShkZQM9T9DvBAliNWfoyRiB1Qfp+SwUVjC4+atqhdsBshhEs68t6vRkH3Jnq670N6ZHzylakc/+53hpbXsNdY31huysZcvwzFKQGHjWmyrQunyhvWiFOYGaCPHupKJAnFalBiAXTmfB2rGfJdmORwJoqWHOhox6JI8Kp5sFNYvyh7VGBGjAJuLKpGOOB5qfykZAw5Q6FgHepvOLacG0jNEyu0c41FzTszSA8
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         ferme()
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : Test_P_P
+    identifier : 0x2b8a9bb300c5193a
+    internal_properties : BQAAAAUAAABlpFITPPHcl1nkmNvJDP4IxITE1apInTyNijZmqAw2azu+6Zcf+A12DI6jl7t3c4sNJGE6xXZhNjFJw7tDoq42aCcp8PsuN9L0Ju+DC6BHW8UKlDi6cJysELsjMpU7NuRh7wC3FnbRFWROE+oZHHeXFEi8SGvIgs3BgB0bqI+19lmGj3Es2pkcEkDSFIKnb5umzbSoY5th3qb6/706szr1lmEvLR66eV8XKbMysmKQtnGdNwDjRnwxo8Id/FMsg+axpYjrR2N9GIvZXZKMz1BfLtMgY6IZX3zBYANp/wdhTrq9sq1Rac4SNW901uNEYC+06PtSAdLYXozi1Ezrs7qB1OqfYrxP4XcgqBZfSW9Ad30+vVZFE4keSACV3oujDMOh1/KBXSkeOibr6Kh4DxnvpkpLTN85NL0DP72mW9CCTw3mMDqoowYMftXN+lMJkVtminJ4+63BBEGl1K0AIuDlja9rIQEASeGhHylVuLyCKQU4fvPTpXmy0RMV3UA523Tb4koAZ+HtIglhsbcP25js5nayIQRc7UjhChG3wmgowRA00c+9+xvIB2rOHKRdHn1A05MoUI1xVtIevIWtbbY4AeF/xcY2hPFzmFg0JAtEGssIRyKgTVXTNpIW2tqQFkWgfm+ZzCBZ80LjV1HVxrb19lSVQYdbvaMjCrkKoZPPvlAJjDjcnBC8FH5kxVUR2pme3w/DBVWLOm3/C2HnYlwmEVhd063EVOU=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1-
+         CrytoLib est ECDSA_BTC
+         corps est CorpsModulaire <- CrytoLib.corpsECC
+         
+          _1 est un entier256(1)
+          
+         X   est Fraction256(3) // 0
+         Y   est Fraction256(4) // 0
+         X.numérateur   = corps.X_to_monX( X.numérateur  )
+         Y.numérateur   = corps.X_to_monX( Y.numérateur  )
+         X.dénominateur = corps.X_to_monX( _1 )
+         Y.dénominateur = corps.X_to_monX( _1 )
+         
+         moinsX est Fraction256 = corps.négationFractionModulo_mon( X )
+         Z est Fraction256 = corps.multiplicationFractionModulo_mon( X, moinsX)
+         
+         trace(Z.numérateur.VersChaineHexa())
+         trace(Z.dénominateur.VersChaineHexa())
+         Z.numérateur   = corps.monX_to_X( Z.numérateur )
+         Z.dénominateur = corps.monX_to_X( Z.dénominateur )
+         trace("--")
+         Trace(Z.numérateur.VersChaineHexa())
+         Trace(Z.dénominateur.VersChaineHexa())
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : Test_mon
+    identifier : 0x2b8aa07700c7b785
+    internal_properties : BQAAAAUAAAC6HZtMh04hckbRM2LARfmDP4dvYIF7uFFY7ZSZsyl1qk5ZTJIo3WaJLUcGBmL86taws9ihsof+Pa4e7kKyyyGBj5pE0g+0AOn+OXDlm9wPgcGePUeJN1cIQC5mXcyWyR6TlMAQYjANswPm438IDgjJ0BymKS4t2421JLPtqgnxQANoY0W2ML+MMrhwighamZuu+bBMP5dVYgq2b+kuJ45dZkU7yfpmBUObZcNWPobcdumZW9Sf8iCtj8aF0EfwN35BmYz3q//xVBcNBW7Yk2Tv1vf8/8b1GzBl9HN1Q4M9nkppRnmlbRpGKUPEsteQzI/0vIeO1YYEIkheXCAX/z6RfB7Lhnh7fatcNN4L9cuEp3XaYaKbfevsPgavxCGZDsV/9cxHGwvokHQpgt4mTfPpvGDFwtU7LrvBfWe0md58aeM86vBm9fC67EOn6LH3yxV8oKRGIX/rOo9zJhN+EFJfMxX1h6/iY8dfTTNLpjpkM6su2Bm558Nof8FH427XLc5xOJy+pYtfgI/nM3XtWbr2zCSEP/pW/0bnepr28eFL3K8LWpZ6ZsBR/hFn+ztikfCXH5z2yViC9zOihjwvM4gJFjKsPByI4YS6MMlyPScv89I4GEbXm4PZWu4uhI1pRzNceIyLVwUoJFf4cDBEa7Pcc8keyAb8gLDYT2qZ4HjgacE6yQsHgf+ZfWdh+BB6e8C/gLi6nP5Oa56gqERC0/Wh9r02CmQNm6o=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1-
+         CrytoLib est ECDSA_BTC
+         corps est CorpsModulaire <- CrytoLib.corpsECC
+         
+          //_1 est un entier256(1)
+          
+         X   est Fraction256(12) // 0
+         Y   est Fraction256(2) // 0
+         mon_X est Fraction256 = corps.X_to_monX( X  )
+         mon_Y est Fraction256 = corps.X_to_monX( Y  )
+         
+         //Z est Fraction256 = corps.multiplicationFractionModulo_mon( X, Y)
+         mon_demiX est Fraction256 = corps.divisionFractionModulo_mon( mon_X, mon_Y)
+         //mon_demiX.affecteAvecChaineHexa("6")
+         mon_demiX =  corps.X_to_monX( mon_demiX  )
+         trace(mon_demiX.VersChaineTrace_DBG())
+         demiX est Fraction256 = corps.monX_to_X( mon_demiX )
+         Trace(demiX.VersChaineTrace_DBG())
+         
+         mon_36 est Fraction256 = corps.multiplicationFractionModulo_mon( mon_demiX, mon_demiX )
+         Trace( corps.monX_to_X(mon_36). VersEntier256(corps).VersChaineHexa())
+         
+         mon_18 est Fraction256 = corps.additionFractionModulo_mon( mon_X, mon_demiX )
+         Trace(mon_18.VersChaineTrace_DBG())
+         Trace(mon_18.VersEntier256(corps).VersChaineHexa())
+         
+         mon_12 est Fraction256 = corps.soustractionFractionModulo_mon( mon_18, mon_demiX )
+         Trace(mon_12.VersChaineTrace_DBG())
+         Trace(mon_12.VersEntier256(corps).VersChaineHexa())
+         mon_12 = corps.soustractionFractionModulo_mon( mon_12, mon_demiX )
+         Trace(mon_12.VersChaineTrace_DBG())
+         Trace(mon_12.VersEntier256(corps).VersChaineHexa())
+         
+         //demiX_horsmon est Fraction256 = corps.monX_to_X( demiX )
+         //Trace(demiX_horsmon.VersChaineTrace_DBG())
+         //trace(demiX_horsmon.VersEntier256(corps).VersChaineHexa())
+         //trace(demiX.VersEntier256(corps).VersChaineHexa())
+         //moinsDemiX est Fraction256 = corps.négationFractionModulo_mon( moinsDemiX )
+         //Z est Fraction256 = corps.additionFractionModulo_mon( X, demiX) OK
+         //monZ est Fraction256 = corps.multiplicationFractionModulo_mon( demiX, demiX)
+         //Z est Fraction256 = corps.monX_to_X(monZ)
+         //Trace(Z.VersChaineTrace_DBG())
+         //Zi est Entier256 = Z.VersEntier256(corps)
+         //Trace(Zi.VersChaineHexa())
+         ////Trace(Z.VersEntier256().versChaineHexa())
+         //
+         ////trace(Z.numérateur.VersChaineHexa())
+         ////trace(Z.dénominateur.VersChaineHexa())
+         //
+         //Z.numérateur   = corps.monX_to_X( Z.numérateur   )
+         //Z.dénominateur = corps.monX_to_X( Z.dénominateur )
+         //trace("--")
+         //Trace(Z.VersChaineTrace_DBG())
+         //Z2 est Entier256 = Z.VersEntier256(corps)
+         //Trace(Z2.VersChaineHexa())
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : TEST_Mul_64
+    identifier : 0x2b8e1e360145dde5
+    internal_properties : BQAAAAUAAAB5hVmOkVIqsbXHU7hbhN2mIxVtOXnRCZorj0OdcCLA9/6953+3UfXm4jLMOAG6HR9n1z/G+X6t4DHKB4Xg0JtDd/g2tT5DkXjCdPjKO2JDp0nz1cCRGKT0AnH/n2W4oYOJID5opT/FDKfjs/VoRzBqpQ3UqJe/EMGhTfXGZwLe6mfr/bgX2DPkRjPIzF+QiblkIrre03HtMuTB+WvoksPRSnxkV3sN8jShP5e8n8Ame1WanM/hScnKtP5aT5KYiDJ0/zzx3SMCL8UTk83Getmm528x29GGc69QHM/lKA9Fbi7dT691+Ua1Vb32HRkQ9I3RzLYH/+v6C+71jzFnpA88WT+HdO/Sa8JtRDbuzz+TybBmACVIKOxOYnZ8bvBMgy8kyAFzIVWVXrLL18yPLlTdzZP2hm0LEz19VWgYHk/Pl+oBwwx8b0+2HBfWYHyiTF93eY/+9xEMXnmR18GpjysnXAjkP/mAIIXpu4KH40cl/0ITWXcJx4gORfMeBQfs4MZuh13+/cP8gB3JBN9Kki/UkSf/79AIxA43yPCh8s6YeFZYAZqylgWVRANIE6jHbmJuF8EiFpn6ZLD4jTP4cPtSiIJ+XUIKQ5PP+MFKnwJpiABTDFbWl3YxC7zrmKYEagD2hY1UCOj2Fhi+1iXxbtyOFRhl7hByCY5mAViCzOJOJFE4fo/yHSXqOJl2NwPK2LBAjYXaopWyTEcuzE9jQAPR6gkFZHWB+jCJWKM8
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         PROCÉDURE interne _multiplication64x64_128( nombreA entier sans signe SUR 8 octet, nombreB Entier sans signe sur 8 octet  ) : Entier256
+         
+         	//@TEST
+         	Résultat  est Entier256 
+         	nA est un numérique   (38,0) = nombreA
+         	nB est un numérique   (38,0) = nombreB
+         	n64 est un numérique  (38,0) = 0x100000000
+         	n64 = n64 * n64
+         	nAB est un numérique  (38,0)  = nA
+         	nAB = nAB *  nombreB
+         	sRes est chaine =  NumériqueVersChaîne(nAB,"32X")
+         	nMax64 est un entier sur 8 octets sans signe  = 0xFFFFFFFFFFFFFFFF
+         	nMax64_num est un numérique (38,0) = nMax64
+         	//buf est un buffer sur 16
+         	Transfert(&Résultat.val0,&nAB,8)
+         	Transfert(&Résultat.val1,&nAB+8,8)
+         	//Résultat.val0 =  ETBinaire(nMax64, nAB ) //arithmetique._2_Puissance64) //, 	arithmetique._2_Puissance64 )
+         	dbgAssertion( Résultat.val0 = HexaVersEntier(droite(sRes,16)) )
+         	//si taille(sRes)>16 alors
+         	dbgAssertion( Résultat.val1 = HexaVersEntier(gauche(sRes,Taille(sRes)- 16) ))
+         	//fin
+         
+         	renvoyer Résultat //(Résultat.val0, Résultat.val1)
+         fin
+         
+         //_VerifieAMultB(  0xE6B52D16CF375361,  0xE6B52D16CF375361, "0xcfea0d3dc68974efebb6f377ccd60ac1")	
+         //_VerifieAMultB(  0xFFFFFFFFFFFFFFFF,  0xFFFFFFFFFFFFFFFF, "0xfffffffffffffffe0000000000000001")	  
+         V1 est un entier sur 8 octets sans signe = 1 //0xFFFFFFFFFFFFFFFF   //0xE6B52D16CF375361
+         V2 est un entier sur 8 octets sans signe = 0xFFFFFFFFFFFFFFFE // 0xFFFFFFFFFFFFFFFF 
+         
+         ResOK est Entier256(  "0xcfea0d3dc68974efebb6f377ccd60ac1" )
+         //ResOK est Entier256(  "0xfffffffffffffffe0000000000000001" )
+         Res  est Entier256 = _multiplication64x64_128( V1, V2 )
+         trace(Res.VersChaineHexa())
+         trace(ResOK.VersChaineHexa())
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : Génration_Table_Point_2_N_mon
+    identifier : 0x2b8f620400c6b0a3
+    internal_properties : BQAAAAUAAAC3OgCEd5cxV+Yr42/EPM0seeai1XcYIGwBoGdSgvdjG7K/xdnzPgFvzkISEhr1l7MMxk0NrQdTKcOxYam/pCQTztSiUpbdN8d8cX7Uj5Q0O35JQ8dWYXLI+GTnDceP3/KxBu6/XOtsG+xSe20tXCRYMWtZFU7J3kFNtZjpzTjhCuQ0wJDQK6WhzkJdcJvzo4Wu/pXRsgWLtlJhsqODwrDZL/AdGg7ekADK0xy5OlLP/OMQtjNlhLmEpgBiaVsfkC5JyhczT3djldDbooWm9MPWtGesGzp/t8p0uy0xkcwvZ1UUQ4DhvlQrjlUka7rRmUoB3FEgpOSaw/drS938sdqJPWOP7inj8Xg0+Ux04LDKttYfzx3Os4C6XviB0yx47fc/rNg8uTkOvI7Ylk/neZwvGrGnX+nj1rsH6rOXZITPCXHVAkfmabBaipzl+3wlKsOYK747X+0hKH/UYAw3Zj0DmW7PzEtas91NOp9OwZx9zb/jlljB87/6CeydMMMjeJjfV6A5mRsn9vs6M6rK52XUwDsuJiJau6LVxWCVLoBX/E14vkOQvLItmqqzxPWdd91DWkUmnQ4Yb1HN0q34f71P8vn4wXg4uVpCi3VNALNYiW7jXg03d8swLgKfeiuorGTRnoVmGQuOdHIQU8MKeqiOs7d1vIOcYrLOgAkCxjNrKUTsAzUDoftoZOS14nF6scmlJ3qXRwsHSLwreZ3kcpeEJIwtbBNohpbSNSbdlW/aLq+ei3vyCvmhsZ6hpesIlqqr
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         CrytoLib est ECDSA_BTC
+         corps est CorpsModulaire dynamique <- CrytoLib.corpsECC
+         ecc   est CourbeElliptique_secp256k1 dynamique <- CrytoLib.courbeBtc
+         
+         //GN est PointFraction256 //= CrytoLib.courbeBtc.pointGen
+         //_1 est Entier256
+         //_1.affecteAvecEntierPositif(1)
+         //mon_résultat   est PointFraction256 // 0
+         //mon_résultat.x.dénominateur = corps.X_to_monX( _1 )
+         //mon_résultat.y.dénominateur = corps.X_to_monX( _1 )
+         POUR i = 0 a 255
+         	valeurKPow2I   est PointFraction256  =  ecc.TabPointPow2PreCalculé[i+1]
+         	// vers mon 
+         	mon_résultatvaleurKPow2I   est PointFraction256 
+         	mon_résultatvaleurKPow2I.x   = corps.X_to_monX( valeurKPow2I.x )
+         	mon_résultatvaleurKPow2I.y   = corps.X_to_monX( valeurKPow2I.y )
+         
+         	trace("  " + mon_résultatvaleurKPow2I.x.VersEntier256(corps).VersChaineHexa() + " " +	
+         		  	     mon_résultatvaleurKPow2I.y.VersEntier256(corps).VersChaineHexa())		
+         	Multitâche(-1)
+         FIN
+         
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : ECDSA_SigneNombre
+    identifier : 0x2b9198d600a6d698
+    internal_properties : BQAAAAUAAAADwq6PMH5fjvwgFjpzaDvOJzWZghrKdvQhzNDrF2xO1SXmx2et12melgYY6XU26GXTuWsOZ8fzhn+bBfTyvGId9fahjvbnr1rf45egUxW3U3TjMbmFhGxHjM84cOCW7gOJG62WcwzFzpCMJX2bRUrH8rO3ywlo0sekt9UR1CcVDvgQAcbqxrDOFIjWl65ai5AypIWp/jTxBGXywy2cy8mhkBBnxX/AfBtmjz7Xf7y5iRXsnnukw4qrj3Vd6chw2vAm+ufMiYlEqo5+syvcUZJ1OS3ba4XrihePCwIvY0MHpvW7MuBqch2AMBrmn0gBUOaxK3o6PmOl4Z33Ktzq8S7kT3ZDytp7zweOFU4LbKf6+DNYY0OSc/AnyWCaj3cOUTmf+SIdWJWJMhLj3eXipDg5pp4ZOnJpd+ETU7CJ63t9wRWKxNqvpeMqSk2C7/uCJr0kFBRa6LsWmO2NbRZMO+lh13XL5aqG4vdN35ic3NtBm+82br/Wy84kb1U6dtSeYA4FoIzaVNeg5OGlIiCrTKNIgq6ES4WeIgx9XrWpVbtnEgUsZR8Oo8Iwlx6lz0qaA/068W0SL8l9s+S3BslQ28SScvJsg3lG56PlV7+F7/iw+3W93LDXZi5UuNbng6PMxF65KpBReXri3YRhICnMxBL2qTDPL403B3reAX6w9h2bV6jaNDBDlCTwDi+W3hpD3POsasTqNLuPa4UzUqqS8HcuuDNeM9xpsAXvMWQUeImEMk/igef65Q==
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         CrytoLib est ECDSA_BTC
+         ClePrivee est Entier256("8727b3b7be9139498f2f48f7b88f92203b1ce5ea527fd7dd754F650e2216b935")
+         N est Entier256("12345678")
+         //CléPrivée est Entier256("3")
+         
+         Trace("Calcul...")
+         ChronoDébut()
+         Signature est SignatureEcdsa
+         Signature= CrytoLib.SigneNombre( N, ClePrivee)
+         Trace( "Temps (ms) : " + ChronoFin())
+         trace("Signature : ")
+         Trace(Signature.R.VersChaineHexa())
+         Trace(Signature.S.VersChaineHexa())
+         retour
+         
+         CléPublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée( ClePrivee )
+         sERR est chaine
+         bOK est un booléen =  CrytoLib.VerifieiSignature( N, CléPublique, Signature, sERR )
+         trace("Vérif signature :" )
+         Trace(bOK)
+         Trace(sERR)
+         
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : TEST_Mul_65
+    identifier : 0x2b9a01bd00828070
+    internal_properties : BQAAAAUAAABFMRBYpJHuU/jkwHRmFuQc4Fm6Owg807wJOAQD6DZu1SFBeznherG1r33RCJaK39UtfkME9fOVYlvryTdnlHovQiDJj5iv+1bdz7C20Weu1WOAteSgWFLQUT5qJZhu5tA9/4AP+95ocsMEDnRg+lnDs75GdQvO24ntmFmKM8tYF/rP9488lsXD6OsaY0svY+8yHrz6xwMOzmxdeAIDHPD2dBdOMU/t9FfPD4SdrlE8X6Z7t7L2lTqle1yX1qe50jopD6NbkXn70zgf6vjbsnn/MnZWaXeTSpbCuaHV728hzPziaINN6Ql9FUIAlt0FuDrvcCGeRo7C1UHaFg0Os26b38XDj2mwNWky53sKnkQfS6adbgbZoAiRnycoOwUW59nGlu1OgTsDmX1Npvxv3lBBZRR7vBM1th4moMSf0OFvDQoURAeXFOtnH2u63ekM8TewQ0rKOrTcNPIyhUbaPk6HPsZoupDupOgq5UWdJIcNu1dHSQiBl/spMUXsxECDg7ja6Fu9eS2T5KSxY2U80WCkJKmb5+FqFq2x7//rpDqkfXOEwuDo23hgZvqVaaEvVVQS/8hK3KwYjjzrukYy8lZokhUj0PpUPGHoMN8hh9utYxfGwNCpZa3SkHTceEEiWVEjA2s/80VNGR8FQRjCeirCEX4dUeWD9DXR2Qs+5aFx0WWu3Cxl5pbwltbXR1iEdrpsLYPSdLYVj/KQ7DIwcpy+nCqZdM62R5W5xW1Thgq9FjjM
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         
+         //_VerifieAMultB(  0xE6B52D16CF375361,  0xE6B52D16CF375361, "0xcfea0d3dc68974efebb6f377ccd60ac1")	
+         //_VerifieAMultB(  0xFFFFFFFFFFFFFFFF,  0xFFFFFFFFFFFFFFFF, "0xfffffffffffffffe0000000000000001")	  
+         V1 est Entier256( "0xFFFFFFFFFFFFFFFFFFFFFFFFFF" )
+         V2 est  Entier256 ( "0xFAEAAC7C6663B93D3D6A0D489E" )
+         
+         ResOK est Entier256(  "0xfaeaac7c6663b93d3d6a0d489d05155383999c46c2c295f2b762" )
+         //ResOK est Entier256(  "0xfffffffffffffffe0000000000000001" )
+         Res  est Entier256 = multiplication128x128_256( V1, V2 )
+         trace(Res.VersChaineHexa())
+         trace(ResOK.VersChaineHexa())
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : TEst_Div
+    identifier : 0x2b9d499901f6ea31
+    internal_properties : BQAAAAUAAAAg5xMukezbhMhzqcyaD6+pcUHRUiuRUnO61155yY+3jBy45JFSoccp7QdIuPw29sBCJYRF+DFoSYIC6LysLa17yTQwVKFl25+Uz8ipTERAohXxld46lJRpa9FJXVIi2ULfaZU/yuwnb7qa4Z8Ch6UVlh6ul8i5DrAxt7jnAfvn6shOeynrZQV8HE3EIBUYnEKg5isGhSPCqrfoAYbZLGKEyULgRU0z6qBETuV0yPixBOPD5xFzw2bcCGMKSytid5OUwEPzcM/JmHHvtUadDjoJ6dq5S6/zL6/oi72nzvVfKYuY2zDln204Y8D7Mv3YOetCPLMTpHs3Ot5ZB6e7Qu4TqOL4uvfrGTmzF4ss/xIgWoZaQ61WowFVdhs4PwS110obU3mu73XvhgqPCkjwy/v1Ruq9SluNuNulAE4NwdEeZyHJlSAIcxIXq2oLu8eO4uN62d1rXyeTGav/y+xCNqSvhRjRIXkzu0W35WJyPS0iNyPW6gezwaXSFdZqYp2syV0WFSWEeoaQcOWMZJS8LhyHpaTYNHAyFwT8711E/883vn11423Vps12ecboZNgEfpsVaLQ+o0owNTEwEqhT03DXSCa4EM7GBw4USu8UV+njJf7kbnA8ZF4k1XmnwxxWUjoriNMYwNx56aobJYOn4DJ7uoj3338DkUVH7puo1xHveBBKu3HwYN/tpS8VFHQis9RXEMyGQEKOL3ZY5EjWc00VftXS/nCHESA=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         
+         	PROCÉDURE INTERNE _VerifieAdivB( AFormaHexA est chaine, BFormaHexa est une chaîne, QuotientFormaHexa est chaine, ResteFormaHexa est chaine)
+         	nombreA est Entier256(AFormaHexA)
+         	nombreB est Entier256(BFormaHexa)
+         	Q_Etalon est Entier256(QuotientFormaHexa)
+         	R_Etalon est Entier256(ResteFormaHexa)
+         	Q,R sont Entier256
+         	(Q,R )  = divisionEuclidienne256( nombreA, nombreB )
+         	SI PAS Q.estEgalA(Q_Etalon) ALORS
+         		trace(Faux, Q.VersChaineHexa() + RC + Q_Etalon.VersChaineHexa() )
+         	FIN
+         	SI PAS R.estEgalA(R_Etalon) ALORS
+         		Trace(Faux, R.VersChaineHexa() + RC + R_Etalon.VersChaineHexa() )
+         	FIN
+         	FIN  
+         
+         
+         _VerifieAdivB("0x23456788fffdcba9877", "0xFFFFFFFFFFF", "0x23456789", "0" )  
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : PGFD
+    identifier : 0x2b9d55b302462d21
+    internal_properties : BQAAAAUAAABLO9DOmuKP6/81qDHZAZZptTeKBvzBdnRtb2ruvg8+0Lxg4RPJI5+uMsfNc+tCfeKg25vNQ7+YsvEaq1fr7979L7yBtMOKNRqsKHaVS7O5HnFH34pG3ShY689HkQxG2kUi1r86tbk1/xy2lUfQsy1am+EK5+gybFEVSqlOhBGlGPNhqNr1pAd0/Cx+Bj1HklkPZnL9+S46E7n3+pBdJyArYfOY19Ejw/gZYrHaTB9Lq6iuLsql3Ls/pz5y0Ikc9n6n9VL2wjOBMg9BdxQak/+sjYF/dFGTOw2jVJwWO55LsVR3lyPVKm4yP7K7M2MX2hOse/0axxTsmIIsqAozBNf7FVD4Qnrpv/poaJn7Epf2DSu86b8O9thLi52WVKW3+B9fkY9NSca0yjHz+jf75Ry8rMKXJXuCRZUEMlawYBkzImtRDw8aEgE5mpw5yMhWdyby13OsE0DkG67PGQ8RdilcmXb74r0q6hNS42qj4ov71nEaUAhPepak0OR64ej+Qi5KC+P79g3nCrDMEk+DfI0q46TYX1YHGDQlxcuA5+TXjIaAKBG04oclyQOnNKSnFuEQK9GoFyvVd3CS/tUsjwm+fEja9ej5rjK9trHHxstUarBgHIcuVcNYNheDVnPUg16kfttnVHvxUA4kZHWjX/pnKfR1zP89SmTFZ4WLtfPEjhAA45QyqaQxRGUHjLWk08Ss6/UTycC4M1MlXKeeuns84TzA
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         nombreA est Entier256("0x23456788fffdcba9877")
+         nombreB est Entier256("0xFFFFFFFFFFF")
+         
+         // Test PGDS
+         _pgdg, u, v est Entier256
+         (_pgdg,u,v) = PGCD_Etendu(nombreA, nombreB)
+         
+         trace(_pgdg.VersChaineHexa())
+         trace(u.VersChaineHexa())
+         trace(v.VersChaineHexa())
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : inverseModulo
+    identifier : 0x2ba08bf4027a10b8
+    internal_properties : BQAAAAUAAAA5fjVcq44Ydb1nQqgiE/Du8Q0LD/s8iP+2pL3OHgUQEdgcTyjoQydFWeX2G4Dea57cwKoOYkQrmevbqQTZ5Fgx9tQxS8qBMmYq2YuKtUvDa3s3FqMiYesyLujtP6BZJ1WBEMBt4r0hR3UMhHYymKt+UCngKQoVe6TNit/LzOHZb5bry7mDy6S9hg+jUoyaVKOVYaB1e0vV3KY3Zx9bcBJzN110FFJoenGUwf4PrHx+oHDP5rOKCvzFGBOr9krFaxZ0bq8J1Mtwi8MthLmr8V48Fnilc5bPfzpCoq3Hlp+G97uqszVK4HLKZy7QwJxH18hp1YV8D+6M8GGrvbdWVn66eOwcwdQwDVyW3Y7Ua8y2xMWTIFidJtWCUXum52swrMkMQ9bO6vOaG/D/llMrYbwZTRp1VIGgS/8h7h6AHz8CaBdR6tS9USuu7M0IEDlTvomPwnu5xQQouO8qvEESi/+IHiD8ur+fo4PxEQ8P/rCInIGd5YUQmePufC8VYMNDowBOvCg4X6BgIFThOUKiP3KWpQ2VHjtU/1lz2gDpPdQn9Z+ryZAd/LAbt7QapBy44l5Aq2m+AsJ7l7yxD1odvpRcSd/wHmtlwTLJgnRbAt8eQc/Ulu1RyNnVipZ01Z0VzHQwJGDLjoGC7+DosbJG3kXnJw8x+L/q7lCHjHyZ5UiRNTul5cCe9NvTsCf41T9CUQgIihgW2CUmgZvHcToVm5GbJ31n+m/S5u4/MDg=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1-
+         gCorps est CorpsModulaire( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
+         
+         //P2 est Entier256("1" + Répète("0",28+28)) 
+         //P2_Mod est Entier256 = gCorps.multiplicationModulo(P2,P2)
+         //trace( P2_Mod.VersChaineHexa())
+         
+         
+         //x est Entier256("2") 
+         //x est Entier256("8727b3b7be9139498f2f48f7b88f92203b1ce5ea527fd7dd754F650e2216b915") 
+         //x est Entier256("497c0fb9646881ce25a2fc68e89a129135e8715423e73fce0759ecca87d30009") 
+         x est Entier256("ea92bdc008249e599c2570ab25deff4b35b971c0a059add76a64ce20724128d0") 
+         
+         inverseDex est Entier256
+         y_2 est Entier256
+         ChronoDébut()
+         inverseDex = gCorps.inverseModulo(x)
+         Trace( "Temps (ms) : " + ChronoFin())
+         //y_2 = gCorps.puissanceModulo( x, gCorps.PMoins2 )
+         trace(inverseDex.VersChaineHexa())
+         y_2 = gCorps.multiplicationModulo(x, inverseDex)
+         dbgAssertion(y_2.estEgalA1(), y_2.VersChaineHexa())
+         //trace(y_2.VersChaineHexa())
+         
+         quotient est Entier256
+         reste est Entier256
+         ( quotient, reste ) = divisionEuclidienne256( x, gCorps.P )
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : TEST_PGCD
+    identifier : 0x2badc0020158377f
+    internal_properties : BQAAAAUAAAAFXHQgBwUhfE9bcMrj7V8Ht0R0J5VuYkDMYAPhah+9u2jvkh/D49LRKOhgIfo+DoswozeatHjYf4ZBDasquhwPPqoTdQa3IqRpJtRwgVGZNa8i9Df0ojEPr9pwtrqCGfybsLsj+UildmCWVBIEjbquJINFiG6njbcNYBcGGC3xfKtlqmb0UuhDavwAYqRAFmPab0ZYRdtn4sbHIr1YQQdiwsSEfR1FutPDpp72tcQRJTvQyo++liF+lDNhqeigdJAZIKmHHQaPRMCUPa2MDf76SgSrByEgZ+FI/Dd8b/b7V3rK4+lBpN/HdIoTxr+vx10p6lOsV/UjmScMCelRQCcYksF/Y1eGciPLNgdyL+dsR8oRYgozbtjU1KObb0BMyNl7bIzETTgVXGoEPrVBjMFRApMt51XEa28p6gerBCnai+1J6h0YdH+QirjtDxQq1V8qkyL1lRp+jpGQAJ79qzh5CaTZgkWbHEvB1p+8QycKk/W5SGaD7MhogYhdNsWOccapQ/CNCV5WwJGksRZSWob+7E8eCFgfYDhPm+GqGrk0DAOQunc470mPcqoxoGyjU/7h5+pZTI49vcBMS1FHs4cgKEdalg5LFUsWlWspEI5dg3zPZkkvmqaf1FO0W1iA7VbrVmsW0T64kh/VQTuz8OE+v2V6mAOgbKnV8Y6gcc8q/9lWTBeJXsfaOKDK62MJ+XycDDv7PWRCdmUrY8A/pdygr0XzPSU4MCcN
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1-
+         
+         //PGCD_Ex(23,120)
+         PGCD_ExR(40,70)
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : ECDSA_SigneNombre_ECDSA_VerifieiSignature
+    identifier : 0x2c02cf800181802d
+    internal_properties : BQAAAAUAAACLUuJolw8KAbpNKKq7wOBqPJkufCO/wMNvRINjamWS1qa420cxVqolhG0WOVpb1Y6NPn8soWjIWccZwa4TW0VYL5X+W4ltWHn9Lf5LE0CQW7hVmVSVdKNVGXW8fJri8dFHftBqp2H2xXAWVibIBmmuAXcGGLbSecOl0F58vsWbYJrOVk2SlUKHzU4wQlhwN2W7F2OJGc/q3EYwylB3GhB2WHnMZlDkWg1qX+eZph/MAEOhj8h7hOBGwtzvuMURsEJZp7ADyTlezmPC78eLWZtgjkf5A/KG1uYGA6lkvhvh595PV5onpmI3/x+m2Ow2HJSV3Xqmssu89e9KR/GSpyp9xnCwABTKNYT6fw00PJ8ZSr+8BBRrpR08OydKMI8U3+XI9RaxvAES5K8T5IqxeAPM/ZCVDg2XtzP20PIN3FgiZnR3NZx6HfUx6gqzB5p1RmSzAcVXUbGqVYSrQwjloaTqvFj9cTE/7FnAv2pewlaWVLz+TLkdKyYAiCYyxi5B8cRbWUuq6vJhsGLM6LRRE0SmBqh+kqxqZl4FE4GOQg4tk1fwuHzeObdJdRWzdTo827GRCnB0VWSUpB8oXDH0rOpltpsLXcDApy/pvQHtZIkNDoURFEEPYMlmkh0Je0WHjuyh89gIlobaXWhujjmL3Pu/44i/MYT8a6nUXM3cB+l6Bjc02vIzHLfMBiZ+zWG9GevF1W+nt6Zbd2QNGw+FQaepalAD6NCDNm65uf9quOyHI+z6VI8zpTmxRaX1Yn/lq4mg1iPllfdrenPf
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         CrytoLib est ECDSA_BTC
+         ClePrivee est Entier256("8727b3b7be9139498f2f48f7b88f92203b1ce5ea527fd7dd754F650e2216b935")
+         N est Entier256("12345678")
+         //CléPrivée est Entier256("3")
+         
+         Trace("Calcul...")
+         ChronoDébut()
+         Signature est SignatureEcdsa
+         signature = CrytoLib.SigneNombre( N, CléPrivée)
+         Trace( "Temps (ms) : " + ChronoFin())
+         trace("Signature : ")
+         Trace(signature.R.VersChaineHexa())
+         Trace(signature.S.VersChaineHexa())
+         
+         CléPublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée( CléPrivée )
+         sERR est chaine
+         ChronoDébut()
+         bOK est un booléen =  CrytoLib.VerifieiSignature( N, CléPublique, signature, sERR )
+         Trace( "Temps (ms) : " + ChronoFin())
+         trace("Vérif signature :" )
+         Trace(bOK)
+         Trace(sERR)
+         
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : TET
+    identifier : 0x2c228a9a00fa64e4
+    internal_properties : BQAAAAUAAACJ/RKIXC1cIsxu40b0dEGUEgaf6STh4kBlg/NUTv5Z57VPRrYgqkgF4/hYAN4ddN21EhzU3jJt5bqDwhAyptHAXH9Cm461IuOPcAPqY8KfyilV0eiE7WoYj0W3V+hisrcyZJX8u33bD0iUXfWY8bk4kQRCz4AaRPmtwtHGPBldAGvpMNJ9vM9sNFRAJq2PVim/YsJJueZGD+FbzugF/yTzgUdYu7GLx3RJvgXS3CfvmxCyhs7dPAczP3KeEFF8ik6X+doiSuv9fs9dm0yKm6schaXn2DEL3+FjwGCuQ1YPAaTbF/+9WlpGL/7Pm3u/RltMN03mrxTYrPrQjDpb3HujNaSo5hJ5Ow4QbOXran86vePuz72MbBJVRc9sSgsNMlUF65ULHzTmTPsN6C2xyxa64tQNExkw97dO5Lwmlk914IE7ZUXgQDN7/NaHdr7M+aS4WUkaofbWXaD5N/V/fMP6R5D5QMMoNK0cFTCRUBklBAe89tbtiJB+0p6Y74ZM/Fw4tTFhHDMBlAIe+I2J+g+oeX5uVdyFok79zdO435yfVM5IYGnsqk/tgcv/nMwPrvkIkJYZVPZiclvnTcSbLvglJUm99O/w5x0Q8whubaJvgQEdoyb9gv5F488D0hcO0a50ThX/vNELqpQ8DkE3CUCv8XzXzO8TLDaTH8e3WcXaLljg1WTy//6bvmcdQqPybdhwIx9b8e7izSFNHuPSfDl+o36C
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         Signature est SignatureEcdsa
+         Signature.R.affecteAvecChaineHexa("13cfb50edf248662ca8d64195cf48b26d90f4ebc1998966d0d9ead4275c20dad")
+         Signature.S.affecteAvecChaineHexa("6c2134191f22d1f5fea6848fd23524297fc88c0fb296cd7e955f01370fcda63f")
+         
+         
+         CléPublique est Point256 // = CrytoLib.ECDSA_DériveCléPubliqueDepuisCléPrivée( CléPrivée )
+         CléPublique.x.affecteAvecChaineHexa("61b0c48518491955c022d99b0c73b43d947990ae361eced90d5e0d22ce3ab4b7")
+         CléPublique.y.affecteAvecChaineHexa("8aa93591f1a2818ffc6e7d575bdc1312055e188616dca470aaefd5bba9b9625e")
+         
+         N est un entier256
+         N.affecteAvecChaineHexa("f49c9d1c8a96157ce04d5651ce201778aba934c3ff245f9c64727ecb2f6fe0ad")
+         
+         sERR est chaine
+         bOK est un booléen =  ECDSA_Bitcoin.VerifieiSignature( N, CléPublique, Signature, sERR )
+         trace(bOK)
+         trace(sERR)
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : priv_pub1
+    identifier : 0x2dc68581035feaad
+    internal_properties : BQAAAAUAAAD5X1pa1/qhED/00zZnweaj6+RXvumo+5spztKUAg9M0Bodoahv8caGpYsLI6K1zIoVAWdmKEoHLAuPPqIkcT3vh9vC/000CmEdFFXBKTFrjkOdsLLKHlWVeJcP7uEg+hC7djoeAaEwPB0+sJYG9K5sxWQewJOqll6rNz33R/GmMYYg0k0XFOHYNiEQnObslcQmPIqcwdz/slxht4S9ft1JHJPOu3w0lM1S3c+Pqql7oGplNnM+CfCY7zwRDR1Kn5ciqblHYiEGEeVlzc3YEd62+Fdv+qCol2nA7zf3uAYeDQawh/wdTulYaC/J3qcLMkDjPfTiIrW80HccucgYN/f7n1Y0zgpOSLw63/xE8R7sc6FBjLiaVqk5BGmKGy2UqUL9GtnW691BCNVk+1eyMtyeubGyqV+kliRaKbILdNa+/gCN3QqndZFfUe5S23EAjoJI3m+/ddQtoOXdTDF/Hv5XnQqYTiNQLVXvicLWwbWLqCFOTBFrcNsTcWCY/oTQDvUeyeYO8XAHCtAewUFOLrlRMe+hNQqDqBFx5LOFk5z+4zD//vb3f81BqypIvGLv4w5bIXjmgy7f5bsf25chdj7ItfeR3hcKXQqlMmr8CK8ZGIvyhABENyKT/1R1adRSMvpR8er0+QwBemYVvOKs5rJOk8keakvl7DpkX0vEmE8b+PvJ6dPo6wUXgSx6GmBbilGhnmwbFubzV1LGwhKIqfPt5K9DESkSab8D1wxKXtltWfbIe0pudyUgmkZ5G8Xxp1ETJeF90rLVlOBz3YtQVVkYElLc1CZ9
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1-
+         gbModeBench = vrai
+         CrytoLib est ECDSA_BTC
+         ClePrivee est Entier256("0x914f06164094ab80f14de57c15a5dead827a473c005837a5c137167db965a203")
+         //CléPrivée est Entier256("2")
+         
+         Trace("Calcul...")
+         ChronoDébut()
+         ClePublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée(ClePrivee)
+         Trace( "Temps (ms) : " + ChronoFin())
+         Trace(ClePublique.x.VersChaineHexa())
+         Trace(ClePublique.y.VersChaineHexa())
+         
+         // TEST si OK
+         xOK est Entier256("0xc51b1777e1a45b4b3cc29d32cd89153ded2c45d6cadc019207f5aec8b451e9e9")
+         yOK est Entier256("0x58f798f6ec04fbcb768aae73f4f58ecd55cbf7326d79adf7cf5bf620ed9acffe")
+         dbgAssertion(ClePublique.x.estEgalA( xOK) )
+         dbgAssertion(ClePublique.y.estEgalA( yOK) )
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : Test_mult_2
+    identifier : 0x2dc8390b03833679
+    internal_properties : BQAAAAUAAACQAE8iLpGq0l+V0pewwbJPL+k8gG3jltAsYpyTD6Hs2HQnJxgTWGejVrkPvRhwP1Ak/Q9PmyaNh2E087tSc66BtdzbhCwf2w0gmgR9gjFLn/NzDPGykkSkRgp0ITjGYZKJiZDh2ZWPA5gMhI1d6r4/j/2cAl6l0JNW+WOtWP/vzFQYWNWK2v+MeagglGoAtu/gTi8PRFb2WxWoWIDzjMV2haMuCaTpJEV5admpNN7U/KlvDD0e74myehe8U1ym/YDeysIeetd6Omq5krpOVrZ0aGI8xWTMyUQAhExvom749P3NdIcK18Zo5EP6OcvoOB6U3ESocwZx2AvLrb+vfUsEOCfRygKKXKCvFJwzaVTJCTF9iZoautTrsj15RPJF3yqV1/VDUy7XX/y8YrCDxXxYWoqiimHmWeKTNF08YLYxmCGucZwa+sEJhlJbskh7OPDyynfQZxy8TzWk6N+XzBu6HSMmm+tNUnJfwledlTx5KtPSDy17DFA5lywteyU1Wu07rtWonbQw80ci8y/CD+mtdPjBV47RprGnTRg+MB4xMpTk9DcTgEhLbQMGovGF26qCaexB3WrP8qqsT7Br6LYhknJLpZk8LEU+kcVbIWrDa/7mEPORkg0kz9QN4bu4disTfYm3ESgvFKgo9+pzq07dCQ0JkAh1SKCbLTYKr1av0bhXKruRQweDLHzXhSrPa14J4Q5APnW9Au1LJMzM0jbF/SuJOkuyugZ6HXHXAw==
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         gCorps est CorpsMudulaire_sepc256k1 //( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
+         
+         
+         x est Entier256("0xea92bdc008249e599c2570ab25deff4b35b971c0a059add76a64ce20724128d0") 
+         //x est Entier256("80000000000000000A00000000000000000000000000B00000000000003") 
+         //x est Entier256("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8") 
+         //y est Entier256("0x43cf5d4541155780f44aa34089024a194415bd27e39f7acf86848972528faa001") 
+         //y est Entier256("0x43cf5d4541155780f44aa34089024a194415bd27e39f7acf86848972528faaae") 
+         y est Entier256("0x43cf5d4541155780f44aa34089024a194415bd27e39f7acf86848972528faaae") 
+         //soit y = x
+         //y est Entier256("1222") 
+         xy est entier256
+         xy2 est entier256
+         xy_TEST est entier256
+         
+         // TEST
+         //sDLL est chaine = "C:\Users\Paul Albert\Source\myRepo\LibInt256\x64\DebugDLL\LibInt256.dll"
+         sDLL est chaine = "C:\Users\Paul Albert\Source\myRepo\LibInt256\x64\ReleaseDLL\LibInt256.dll"
+         dbgAssertion(fFichierExiste(sDLL))
+         ChargeDLL(sDLL)
+         si ErreurDétectée ALORS
+         	erreur()
+         	retour
+         FIN
+         hModule est un entier système = API("kernel32","GetModuleHandleA","LibInt256.dll")
+         pAddr est un entier système = API("kernel32","GetProcAddress",hModule,"multiplicationMudulo_sepc256k1")
+         dbgAssertion(pAddr<>0)
+         
+         ChronoDébut()
+         POUR i = 1 a 10 000
+         	//API(sDLL,"multiplicationMudulo_sepc256k1", &x, &y, &xy)
+         	API(pAddr, &x, &y, &xy)
+         	//Trace(xy.VersChaineHexa())
+         	//x = xy
+         fin
+         soit dureeAlgo3 = ChronoFin()
+         Trace(xy.VersChaineHexa()+";"+dureeAlgo3..EnMillisecondes/10+"ms")
+         //retour
+         
+         
+         
+         // nouvel algo
+         ChronoDébut()
+         pour i = 1 a 1000
+         	 xy2 <- gCorps.multiplicationModulo(x, y)
+         fin
+         si pas xy2.estEgalA(xy) ALORS
+         	trace("*****ERR*****")
+         FIN
+         soit dureeAlgo1 = ChronoFin()
+         
+         // ancien
+         ChronoDébut()
+         POUR i = 1 À 1000
+         	xy_TEST <- gCorps.multiplicationModulo_OLD(x, y)
+         fin
+         soit dureeAlgo2 = ChronoFin()
+         
+         
+         //trace(x.VersChaineHexa())
+         //trace(y.VersChaineHexa())
+         trace(xy2.VersChaineHexa()+";"+dureeAlgo1..EnMillisecondes+"ms")
+         trace(xy_TEST.VersChaineHexa()+";"+dureeAlgo2..EnMillisecondes+"ms")
+        type : 18
+      -
+        type : 161
+        enabled : false
+ menu :
+  name : _Menu
+  identifier : 0x292573e513b5f221
+  internal_properties : BQAAAAUAAABd4biPtdLQOwfUFiqrit8H4xfGqKyz9t6VLxCUnNZRQiLPVs82PZNE+UVdKRzjizyeuKyRur85gNMUfqplpmtNDnQWQla9zo+GH9+1EfUJ6w17Dn/egD/gv+Hhywk8c9unIdzEp7EHgaAqD28w7Agveg4u19PBcKGZtQ==
+  options : []
+ languages :
+  - fr-FR
+ popup_menus : []
+ message_bar :
+  internal_properties : BQAAAAUAAABqPQh6HC8RxAVkp2SqPYLuZrfVhd+1KX4lx22hIT8uqEpE6yP7Sbc2rmVqdmL816EWzXOkEe9ijOtYwchZKAfpy3B1cNqhpJgsnbUs
+ code_elements :
+  internal_properties : BQAAAAUAAABWIHrh1Yb2YcVvIfiiRDSu3aXMOSCmrRDPwCP2jtbUBEGFOv+qg2ayVXoCZujUnWzZv/mop+WO+JtZ1Q==
+  type_code : 1
+  p_codes :
+   -
+     code : |1+
+      PROCEDURE MaFenêtre()
+   -
+     code : |1+
+      
+      
+     type : 34
+   -
+     code : |1+
+      
+      
+     type : 2
+   -
+     code : |1+
+      
+      
+     type : 40
+   -
+     code : |1+
+      
+      
+     type : 234
+   -
+     code : |1+
+      
+      
+     type : 165
+   -
+     code : |1+
+      
+      
+     type : 177
+   -
+     code : |1+
+      
+      
+     type : 180
+   -
+     type : 230
+     enabled : false
+  procedures :
+   -
+     name : PGCD_Ex
+     procedure_id : 1994461367820771349
+     type_code : 14
+     code : |1+
+      
+      PROCEDURE PGCD_Ex( nA entier, nB entier)
+      
+      dbgAssertion(nB > nA )
+      
+      r, u, v   sont des entiers
+      r_,u_,v_ sont des entiers
+      //reste est un entier
+      quotient est entier 
+      
+      // init
+      r  = nA 
+      r_ = nB
+      u  = 1
+      v  = 0
+      u_ = 0
+      v_ = 1
+      
+      tantque r_ <> 0
+          quotient =  r / r_
+          
+          // sauver les valeur précédentes
+          rTemp,uTemp,vTemp sont des entiers
+          rTemp = r;
+          uTemp = u;
+          vTemp = v;
+          
+          r =r_
+          u =u_
+          v =v_ 
+          
+          // calcul du reste
+      	r_ 	 =  rTemp- r_*quotient
+      	dbgAssertion(r_>=0)
+       	u_Avant est entier = u_
+       	v_Avant est entier = v_
+      	u_ = uTemp - quotient * u_
+      	v_ = vTemp - quotient * v_
+      	//trace( complete(u_+"",4," ") + " = " + Complète(uTemp+"",4," ") + "- " + quotient + " * " + u_Avant )
+      	trace( complete(r_+"",4," ") + " = " + Complète(uTemp+"",4," ") + " + " + quotient + " * " + u_Avant )
+      fin
+      
+     type : 458752
+   -
+     name : PGCD_ExR
+     procedure_id : 1994470541871085041
+     type_code : 14
+     code : |1+
+      // version résursive
+      PROCEDURE PGCD_ExR( nA entier, nB entier, u=1, u_ =0 )
+      
+      //dbgAssertion(nB > nA )
+      
+      r   sont des entiers
+      r_  sont des entiers
+      //reste est un entier
+      quotient est entier 
+      
+      // init
+      r  = nA 
+      r_ = nB
+      
+      
+      si  r_ = 0 ALORS
+      	renvoyer ( r, r_ ,  u, u_) 
+      
+      FIN
+      
+          quotient =  r / r_
+          
+          // sauver les valeur précédentes
+          rTemp,uTemp sont des entiers
+          rTemp = r;
+          uTemp = u;
+          r	  = r_
+          u     = u_
+          
+          // calcul du reste
+      	r_ 	 =  rTemp- r_*quotient
+      	dbgAssertion(r_>=0)
+       	uPourTrace est entier = u_
+      	u_ = uTemp - quotient * u_
+      	trace( complete(u_+"",4," ") + " = " + Complète(uTemp+"",4," ") + "- " + quotient + " * " +uPourTrace )
+      	// récursion
+      	( r, r_ ,  u, u_) = PGCD_ExR( r, r_,u,u_)
+      	
+      renvoyer  ( r, r_ ,  u, u_)
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAAwjDLmDSZ0H1P68nJIeNfqR9EvRjU/K+sVcM1T6rhVNr+VTV1mZ/rmoweYbFDZUhBGcv8UsxlDxVCOnb2U/SQOvlGWzNby3/w/V+ppSymxv+Vh
+  original_name : Modele1
+resources :
+ string_res :
+  identifier : 0x1b7cfed701529005
+  internal_properties : BQAAAAUAAAAa2Zm8J9E/zh+/WIrVvz1fER/So3PB0gjQuxc1xKQVWY4ZDm5lfg==
+custom_note :
+ internal_properties : BQAAAAUAAAC68/W0/adbG0nFCRhrE42B5HRnbDzVHaz86sSQyxlBk7I=
+rad :
+ internal_properties : BQAAAAUAAABoAN7PLpwJW3EiA7WVZdCA5EwrCA1rvutcDHooMWKe

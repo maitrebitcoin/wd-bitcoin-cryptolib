@@ -1,0 +1,280 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Entier512
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1b46f08200ad6776
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      Entier512 est une Classe
+      	valPoidsFaible  est Entier256 // poids faible
+      	valPoidsFort    est Entier256 // poids fort
+      FIN
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1965522728541644662
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Constructeur
+     procedure_id : 1965522728541644662
+     type_code : 27
+     code : |1-
+      PROCÉDURE Constructeur(chaineHexa est une chaîne)
+      affecteAvecChaineHexa(chaineHexa)
+     type : 589825
+   -
+     name : Destructeur
+     procedure_id : 1965522728541710198
+     type_code : 28
+     code : |1+
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : VersChaineHexa
+     procedure_id : 1965523162333507234
+     type_code : 12
+     code : |1+
+      PROCÉDURE VersChaineHexa() : chaîne
+      
+      renvoyer valPoidsFort.VersChaineHexa() + valPoidsFaible.VersChaineHexa()
+      
+     type : 458752
+   -
+     name : multipliePar256
+     procedure_id : 1965525997012714416
+     type_code : 12
+     code : |1+
+      PROCEDURE multipliePar256()
+      
+      // récup  8 otets de poids fort du poids faible
+      c est un entier = valPoidsFaible._8Bits(31)
+      valPoidsFaible.multipliePar256()
+      valPoidsFort.multipliePar256()
+      valPoidsFort.val0 += c
+     type : 458752
+   -
+     name : affecteAvecChaineHexa
+     procedure_id : 1965888475079164130
+     type_code : 12
+     code : |1+
+      // affectation a partir d'une chaine hexa 
+      procédure affecteAvecChaineHexa(local chaineHexa est chaine)
+      
+      // si ca commence par "0x" on supprime ce préfixe
+      si chaineHexa [= "0x" _ou_ chaineHexa [= "0X" ALORS
+      	chaineHexa = Milieu(chaineHexa,3)
+      FIN
+      
+      
+      // construit une chaine de 128 octets avec de 0 au début 
+      chaineHexa64 est chaine = Répète("0", 128- taille(chaineHexa)) + chaineHexa
+      
+      valPoidsFort.affecteAvecChaineHexa(     chaineHexa64[1  a  64] ) 
+      valPoidsFaible.affecteAvecChaineHexa(   chaineHexa64[65 a 128] ) 
+      
+     type : 458752
+   -
+     name : estEgalA
+     procedure_id : 1965889265354379592
+     type_code : 12
+     code : |1+
+      //  indique si pn est  égale a <nombre>
+      procédure estEgalA( nombre Entier512 ) : booléen
+      
+      renvoyer valPoidsFaible.estEgalA( nombre.valPoidsFaible ) _et_ 
+      		 valPoidsFort.estEgalA(   nombre.valPoidsFort )
+      	
+     type : 458752
+   -
+     name : _32Bits
+     procedure_id : 1968874628389114368
+     type_code : 12
+     code : |1+
+      // renvoie la valeur de 32 bits d'indice n°<indiceBit>
+      // avec   0  : poids faible
+      //       15  : poids fort
+      procédure _32Bits( numMot entier ) : entier sur 4 sans signe
+      
+      // récup mot de 8 otets
+      n est un entier sur 8 octets sans signe
+      selon numMot
+      	cas   0 a  1
+      		n = valPoidsFaible.val0
+      	cas   2  a 3
+      		 n = valPoidsFaible.val1
+      	cas   4 a  5
+      		 n = valPoidsFaible.val2
+      	cas   6 a  7
+      		 n = valPoidsFaible.val3
+      	CAS   8 À  9
+      		n = valPoidsFort.val0
+      	CAS  10  À 11
+      		n = valPoidsFort.val1
+      	CAS  12  À 13
+      		n = valPoidsFort.val2
+      	CAS  14 À  15
+      		n = valPoidsFort.val3		 
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      		renvoyer 0
+      FIN
+      // récup octet
+      si numMot modulo 2 = 0
+      		renvoyer n & 0xFFFFFFFF
+      	sinon
+      		RENVOYER bitDécaleDroite(n,32) & 0xFFFFFFFF
+      FIN
+      
+     type : 458752
+   -
+     name : set32Bits
+     procedure_id : 1968877531787092733
+     type_code : 12
+     code : |1+
+      // affecter la valeur de 32 bits d'indice n°<indiceBit>
+      // avec  0  : poids faible
+      //      15  : poids fort
+      procédure set32Bits( numMot entier, val32 est un entier sans signe sur 4 octets ) 
+      //dbgAssertion(numMot<16)
+      //si numMot<8 ALORS
+      //	valPoidsFaible.set32Bits(numMot,val32)
+      //sinon
+      //	valPoidsFort.set32Bits(numMot-8,val32)
+      //FIN
+      //retour
+      
+      bPoidsFaible est un booléen = numMot modulo 2 = 0
+      
+      val32_64 est un entier sans signe sur 8 octets = val32
+      masque	 est un entier sans signe sur 8 octets 
+      SI PAS bPoidsFaible ALORS
+      	val32_64 = val32_64 * 0x100000000
+      	masque	 = 0x00000000FFFFFFFF 
+      sinon
+      	masque	 = 0xFFFFFFFF00000000
+      FIN
+      
+      SELON numMot
+      	CAS   0 À  1
+      		valPoidsFaible.val0  =  (valPoidsFaible.val0 & masque ) | val32_64				
+      	CAS   2  À 3
+      		valPoidsFaible.val1  =  (valPoidsFaible.val1 & masque ) | val32_64					
+      	CAS   4 À  5
+      		valPoidsFaible.val2  =  (valPoidsFaible.val2 & masque ) | val32_64					
+      	CAS   6 À  7
+      		valPoidsFaible.val3  =  (valPoidsFaible.val3 & masque ) | val32_64			
+      		
+      	CAS   8 À  9
+      		valPoidsFort.val0  =  (valPoidsFort.val0 & masque ) | val32_64				
+      	CAS  10  À 11
+      		valPoidsFort.val1  =  (valPoidsFort.val1 & masque ) | val32_64					
+      	CAS  12 À  13
+      		valPoidsFort.val2  =  (valPoidsFort.val2 & masque ) | val32_64					
+      	CAS  14 À  15
+      		valPoidsFort.val3  =  (valPoidsFort.val3 & masque ) | val32_64				
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      FIN
+      
+      
+      
+      
+     type : 458752
+   -
+     name : _64Bits
+     procedure_id : 1969263653655388261
+     type_code : 12
+     code : |1+
+      // renvoie la valeur de 64 bits d'indice n°<indiceBit>
+      // avec   0  : poids faible
+      //       7 : poids fort
+      procédure _64Bits( numMot entier ) : entier sur 8 sans signe
+      
+      
+      selon numMot
+      	cas  0 
+      		renvoyer  valPoidsFaible.val0
+      	cas  1
+      		RENVOYER  valPoidsFaible.val1
+      	CAS  2
+      		RENVOYER  valPoidsFaible.val2
+      	CAS  3
+      		RENVOYER  valPoidsFaible.val3
+      
+      	CAS  4
+      		RENVOYER  valPoidsFort.val0
+      	CAS  5
+      		RENVOYER  valPoidsFort.val1
+      	CAS  6
+      		RENVOYER  valPoidsFort.val2
+      	CAS  7
+      		RENVOYER  valPoidsFort.val3
+      		
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      		renvoyer 0
+      FIN
+      
+     type : 458752
+   -
+     name : set64Bits
+     procedure_id : 1969264272130758099
+     type_code : 12
+     code : |1+
+      // affecter la valeur de 32 bits d'indice n°<indiceBit>
+      // avec  0  : poids faible
+      //      15  : poids fort
+      procédure set64Bits( numMot entier, val64 est un entier sans signe sur 8 octets ) 
+      
+      SELON numMot
+      	CAS  0
+      		valPoidsFaible.val0 = val64
+      	CAS  1
+      		valPoidsFaible.val1 = val64
+      	CAS  2
+      		valPoidsFaible.val2 = val64
+      	CAS  3
+      		valPoidsFaible.val3 = val64
+      		
+      	CAS  4
+      		valPoidsFort.val0 = val64
+      	CAS  5
+      		valPoidsFort.val1 = val64
+      	CAS  6
+      		valPoidsFort.val2 = val64
+      	CAS  7
+      		valPoidsFort.val3 = val64		
+      		
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      FIN
+      
+      
+      
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b46f07c00aa4ebd
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

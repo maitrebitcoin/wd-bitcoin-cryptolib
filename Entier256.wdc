@@ -1,0 +1,691 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Entier256
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1b39b92a3278c46c
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      Entier256 est une Classe
+      	// valeurs sans signes sur 256 bits avec le poins faible dans valO
+      	val0 est un entier sur 8 sans signe // poids faible
+      	val1 est un entier sur 8 sans signe
+      	val2 est un entier sur 8 sans signe
+      	val3 est un entier sur 8 sans signe // poids fort
+      FIN
+      
+      constant
+      	BUF_LOW_ENDIAN = 0  // poids faible au début. 0x1234 => 0x34 0x12
+      	BUF_BIG_ENDIAN = 1  // poids fort au début
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1961802703583167596
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur()
+     type : 589824
+   -
+     name : Constructeur
+     procedure_id : 1961802703583167596
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur(n Entier sans signe sur 8 octets)
+      val0 = n
+     type : 589825
+   -
+     name : Constructeur
+     procedure_id : 1961802703583167596
+     type_code : 27
+     code : |1-
+      PROCÉDURE Constructeur(chaineHexa est une chaîne)
+      affecteAvecChaineHexa(chaineHexa)
+     type : 589826
+   -
+     name : Destructeur
+     procedure_id : 1961802703583233132
+     type_code : 28
+     code : |1-
+      PROCEDURE Destructeur()
+      
+      // convertion en buffer de 256 bits= 32 octet
+     type : 655360
+   -
+     name : _versbufferLE
+     procedure_id : 1961809889064208394
+     type_code : 12
+     code : |1+
+      // conversion en buffer de 256 bits au format Little endian (poids faible au début)
+      procédure privée _versbufferLE() : buffer
+      
+      s est un buffer = Répète(caract(0), 32)
+      Transfert(&s   ,&val0,8)
+      Transfert(&s +8,&val1,8)
+      Transfert(&s+16,&val2,8)
+      Transfert(&s+24,&val3,8)
+      renvoyer s
+     type : 458752
+   -
+     name : versbuffer
+     procedure_id : 2026484042642597260
+     type_code : 12
+     code : |1+
+      // conversion en buffer de 256 bits au format little ou big endian
+      procédure versbuffer( format est un entier = BUF_LOW_ENDIAN )
+      
+      si format = BUF_BIG_ENDIAN ALORS
+      	renvoyer _sinverseEndian( _versbufferLE() )
+      sinon
+      	RENVOYER _versbufferLE()
+      FIN
+     type : 458752
+   -
+     name : _affecteAvecBufferLE
+     procedure_id : 1961812027958092247
+     type_code : 12
+     code : |1+
+      // affectation a partir d'un buffer 256 bits au format Little endian (poids faible au début)
+      // format naturel x86
+      procédure prive _affecteAvecBufferLE( buf est buffer )
+      dbgAssertion( taille(buf) = 32)
+      
+      Transfert(&val0 ,&buf,8)
+      Transfert(&val1 ,&buf +  8,8)
+      Transfert(&val2 ,&buf + 16,8)
+      Transfert(&val3 ,&buf + 24,8)
+     type : 458752
+   -
+     name : affecteAvecBuffer
+     procedure_id : 2026475985303438591
+     type_code : 12
+     code : |1+
+      // affectation a partir d'un buffer 256 bits au format Big endian (poids fort da début)
+      procédure affecteAvecBuffer( buf est buffer, format est un entier = BUF_LOW_ENDIAN )
+      dbgAssertion( Taille(buf) = 32)
+      
+      // inversion du buffer de  Big Endian vers Low Endian 
+      si format = BUF_BIG_ENDIAN  alors
+      	// inversion puis rebond version Le
+      	_affecteAvecBufferLE( _sinverseEndian( buf ) )
+      	retour
+      FIN
+      // rebond version Le
+      _affecteAvecBufferLE(buf)
+     type : 458752
+   -
+     name : affecteAvecEntierPositif
+     procedure_id : 1962542678360302389
+     type_code : 12
+     code : |1-
+      procédure affecteAvecEntierPositif( n est un entier sur 8 octets sans signe)
+      
+      val0 = n
+      val1 = 0
+      val2 = 0
+      val3 = 0
+     type : 458752
+   -
+     name : VersChaineHexa
+     procedure_id : 1961805503902431021
+     type_code : 12
+     code : |1-
+      // conversion en chaine hexadécimale de 64 caractères.
+      procedure VersChaineHexa() : chaine
+      
+      resultat est une chaîne
+      // conversion en buffer
+      buf256bits est un buffer = versbuffer(Entier256::BUF_LOW_ENDIAN )
+      pour i= 1 a 32
+      	// construction octet par octet.
+      	resultat += Minuscule(BufferVersHexa( buf256bits[32-i+1] ))
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : affecteAvecChaineHexa
+     procedure_id : 1961813136059716429
+     type_code : 12
+     code : |1+
+      // affectation a partir d'une chaine hexa 
+      procédure affecteAvecChaineHexa(local chaineHexa est chaine)
+      
+      // si ca commence par "0x" on supprime ce préfixe
+      si chaineHexa [= "0x" _ou_ chaineHexa [= "0X" ALORS
+      	chaineHexa = Milieu(chaineHexa,3)
+      FIN
+      
+      
+      // construit une chaine de 64 octets avec de 0 au début 
+      chaineHexa64 est chaine = Répète("0", 64 - taille(chaineHexa)) + chaineHexa
+      
+      val0 = HexaVersEntier(chaineHexa64[49 a 64])
+      val1 = HexaVersEntier(chaineHexa64[33 a 48])
+      val2 = HexaVersEntier(chaineHexa64[17 a 32])
+      val3 = HexaVersEntier(chaineHexa64[ 1 a 16])
+     type : 458752
+   -
+     name : estEgalA
+     procedure_id : 1961817783216526891
+     type_code : 12
+     code : |1+
+      //  indique si pn est  égale a <nombre>
+      procédure estEgalA( nombre Entier256 ) : booléen
+      
+      renvoyer val0 = nombre.val0 _et_
+      		 val1 = nombre.val1 _et_
+      		 val2 = nombre.val2 _et_
+      		 val3 = nombre.val3
+     type : 458752
+   -
+     name : estSupérieurOuEgalA
+     procedure_id : 1962196645729421874
+     type_code : 12
+     code : |1-
+      //  indique si pn est supérieur ou égale a <nombre>
+      procédure estSupérieurOuEgalA( nombre Entier256 ) : booléen
+       
+       si (val3 > nombre.val3) renvoyer vrai
+       SI (val3 < nombre.val3) RENVOYER faux
+       si (val2 > nombre.val2) renvoyer vrai
+       SI (val2 < nombre.val2) RENVOYER faux
+       si (val1 > nombre.val1) renvoyer vrai
+       SI (val1 < nombre.val1) RENVOYER Faux
+       renvoyer (val0 >= nombre.val0) 
+       
+     type : 458752
+   -
+     name : estEgalAZero
+     procedure_id : 1961819041642040777
+     type_code : 12
+     code : |1-
+      PROCEDURE estEgalAZero() : booléen
+      
+      RENVOYER val0 = 0 _ET_
+      		 val1 = 0 _ET_
+      		 val2 = 0 _ET_
+      		 val3 = 0
+      		 
+     type : 458752
+   -
+     name : estEgalA1
+     procedure_id : 1979623973768236403
+     type_code : 12
+     code : |1+
+      procédure estEgalA1() : booléen		 
+      
+      RENVOYER val0 = 1 _ET_
+      		 val1 = 0 _ET_
+      		 val2 = 0 _ET_
+      		 val3 = 0
+     type : 458752
+   -
+     name : bit
+     procedure_id : 1962048311293266141
+     type_code : 12
+     code : |1+
+      // renvoie la valeur du bit n°<indiceBit>
+      // avec 0  : poids faible
+      //     255 : poids fort
+      procédure bit( indiceBit entier ) : entier
+      
+      n est un entier sur 8 octets sans signe
+      selon indiceBit
+      	cas   0 a  63  
+      		n = val0
+      	cas  64 a 127 
+      		 n = val1
+      	cas 128 a 191 
+      		 n = val2
+      	cas 192 a 255
+      		 n = val3
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      		renvoyer 0
+      FIN
+      
+      renvoyer bitDécaleDroite( n, indiceBit modulo 64) & 0x1
+      
+     type : 458752
+   -
+     name : _8Bits
+     procedure_id : 1962197753831045727
+     type_code : 12
+     code : |1+
+      // renvoie la valeur de 8 bits d'indice n°<indiceBit>
+      // avec  0  : poids faible
+      //      31  : poids fort
+      procédure _8Bits( numOctect entier ) : entier
+      
+      // récup mot de 8 otets
+      n est un entier sur 8 octets sans signe
+      selon numOctect
+      	cas   0 a  7  
+      		n = val0
+      	cas  8  a 15
+      		 n = val1
+      	cas 16 a  23
+      		 n = val2
+      	cas 24 a  31
+      		 n = val3
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      		renvoyer 0
+      FIN
+      // récup octet
+      selon numOctect modulo 8
+      	cas 0
+      		renvoyer n & 0xFF
+      	cas 1
+      		RENVOYER bitDécaleDroite(n,8) & 0xFF
+      	CAS 2
+      		RENVOYER bitDécaleDroite(n,16) & 0xFF
+      	CAS 3
+      		RENVOYER bitDécaleDroite(n,24) & 0xFF
+      	CAS 4
+      		RENVOYER bitDécaleDroite(n,32) & 0xFF
+      	CAS 5
+      		RENVOYER bitDécaleDroite(n,40) & 0xFF		
+      	CAS 6
+      		RENVOYER bitDécaleDroite(n,48) & 0xFF
+      	CAS 7
+      		RENVOYER bitDécaleDroite(n,56) & 0xFF
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      		RENVOYER 0
+      FIN
+      
+     type : 458752
+   -
+     name : _32Bits
+     procedure_id : 1965143324014989491
+     type_code : 12
+     code : |1+
+      // renvoie la valeur de 32 bits d'indice n°<indiceBit>
+      // avec  0  : poids faible
+      //       7  : poids fort
+      procédure _32Bits( numMot entier ) : entier sur 4 sans signe
+      
+      // récup mot de 8 otets
+      n est un entier sur 8 octets sans signe
+      selon numMot
+      	cas   0 a  1
+      		n = val0
+      	cas   2  a 3
+      		 n = val1
+      	cas   4 a  5
+      		 n = val2
+      	cas   6 a  7
+      		 n = val3
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      		renvoyer 0
+      FIN
+      // récup octet
+      si numMot modulo 2 = 0
+      		renvoyer n & 0xFFFFFFFF
+      	sinon
+      		RENVOYER bitDécaleDroite(n,32) & 0xFFFFFFFF
+      FIN
+      
+      
+     type : 458752
+   -
+     name : Set64Bits
+     procedure_id : 2026155430398667951
+     type_code : 12
+     code : |1+
+      // affecter la valeur de 64 bits d'indice n°<indiceBit>
+      // avec  0  : poids faible
+      //       7  : poids fort
+      procédure Set64Bits( numMot entier, val entier sur 8 sans signe ) 
+      
+      SELON numMot
+      	CAS  0 
+      		 val0 = val
+      	CAS  1
+      		 val1 = val
+      	CAS  2
+      		 val2 = val
+      	CAS  3
+      		 val3 = val
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      FIN
+      
+     type : 458752
+   -
+     name : set32Bits
+     procedure_id : 1965152197417457411
+     type_code : 12
+     code : |1+
+      // affecter la valeur de 32 bits d'indice n°<indiceBit>
+      // avec  0  : poids faible
+      //       7  : poids fort
+      procédure set32Bits( numMot entier, val32 est un entier sans signe sur 4 octets ) 
+      
+      bPoidsFaible est un booléen = numMot modulo 2 = 0
+      
+      val32_64 est un entier sans signe sur 8 octets = val32
+      si pas bPoidsFaible ALORS
+      	val32_64 = val32_64 * 0x100000000
+      FIN
+      
+      selon numMot
+      	cas   0 a  1
+      		si bPoidsFaible alors	val0  =  (val0 & 0xFFFFFFFF00000000 ) | val32_64					....
+      		siNON					val0  =  (val0 & 0x00000000FFFFFFFF ) | val32_64
+      	cas   2  a 3
+      		SI bPoidsFaible ALORS	val1  =  (val1 & 0xFFFFFFFF00000000 ) | val32_64					....
+      		SINON					val1  =  (val1 & 0x00000000FFFFFFFF ) | val32_64
+      	cas   4 a  5
+      		SI bPoidsFaible ALORS	val2  =  (val2 & 0xFFFFFFFF00000000 ) | val32_64					....
+      		SINON					val2  =  (val2 & 0x00000000FFFFFFFF ) | val32_64
+      	cas   6 a  7
+      		SI bPoidsFaible ALORS	val3  =  (val3 & 0xFFFFFFFF00000000 ) | val32_64					....
+      		SINON					val3  =  (val3 & 0x00000000FFFFFFFF ) | val32_64
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      FIN
+      
+      
+     type : 458752
+   -
+     name : multipliePar256
+     procedure_id : 1965526447984385121
+     type_code : 12
+     code : |1+
+      PROCEDURE multipliePar256()
+      
+      val3 = bitDécaleGauche( val3, 8)  + (bitDécaleDroite(val2,56) & 0xFF)
+      val2 = bitDécaleGauche( val2, 8)  + (bitDécaleDroite(val1,56) & 0xFF)
+      val1 = bitDécaleGauche( val1, 8)  + (bitDécaleDroite(val0,56) & 0xFF)
+      val0 = val0*256  
+     type : 458752
+   -
+     name : estSupérieurStrictA
+     procedure_id : 1967984659636539555
+     type_code : 12
+     code : |1-
+      //  indique si pn est supérieur ou égale a <nombre>
+      procédure estSupérieurStrictA( nombre Entier256 ) : booléen
+       
+       si (val3 > nombre.val3)  renvoyer vrai
+       SI (val3 < nombre.val3)  RENVOYER faux
+       si (val2 > nombre.val2)  renvoyer vrai
+       SI (val2 < nombre.val2)  RENVOYER faux
+       si (val1 > nombre.val1)  renvoyer vrai
+       SI (val1 < nombre.val1)  RENVOYER Faux
+       renvoyer (val0 > nombre.val0) 
+       
+     type : 458752
+   -
+     name : _64Bits
+     procedure_id : 1969271423251791151
+     type_code : 12
+     code : |1+
+      // renvoie la valeur de 64 bits d'indice n°<indiceBit>
+      // avec   0  : poids faible
+      //        3 : poids fort
+      procédure _64Bits( numMot entier ) : entier sur 8 sans signe
+      
+      
+      selon numMot
+      	cas  0 
+      		renvoyer  val0
+      	cas  1
+      		RENVOYER  val1
+      	CAS  2
+      		RENVOYER  val2
+      	CAS  3
+      		RENVOYER  val3
+      
+      
+      	AUTRE CAS
+      		dbgAssertion(faux)
+      		renvoyer 0
+      FIN
+      
+      
+     type : 458752
+   -
+     name : _64Bits_AligneSur32
+     procedure_id : 1997526827707581053
+     type_code : 12
+     code : |1-
+      // renvoie la valeur de 64 bits d'indice n°<indiceBit> aligné SUR 32 bits
+      // avec   0  : poids faible
+      //        6 :  poids fort  
+      PROCÉDURE _64Bits_AligneSur32( numMot32 entier ) : entier sur 8 sans signe
+      
+      
+      SELON numMot32
+      	CAS  0 
+      		RENVOYER  val0
+      	CAS  1
+      		RENVOYER  (bitDécaledroite(val0,32) & 0x00000000FFFFFFFF) | (bitDécaleGauche(val1,32) & 0xFFFFFFFF00000000)
+      	CAS  2
+      		RENVOYER  val1
+      	CAS  3
+      		RENVOYER  (bitDécaleDroite(val1,32) & 0x00000000FFFFFFFF) | (bitDécaleGauche(val2,32) & 0xFFFFFFFF00000000)		
+      	CAS  4
+      		RENVOYER  val2
+      	CAS  5
+      		RENVOYER  (bitDécaleDroite(val2,32) & 0x00000000FFFFFFFF) | (bitDécaleGauche(val3,32) & 0xFFFFFFFF00000000)				
+      	CAS  6
+      		RENVOYER  val3
+      		
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      		RENVOYER 0
+      FIN
+     type : 458752
+   -
+     name : divisePar2
+     procedure_id : 1989748057906385184
+     type_code : 12
+     code : |1+
+      PROCEDURE divisePar2()
+      
+      //V0 est Entier256 = objet
+      //x_DBG est Entier256 = Objet
+      //x_DBG.val0 = (bitDécaleDroite(val0,1) & 0x7FFFFFFFFFFFFFFF) | (bitDécaleGauche(val1,63) & 0x8000000000000000)
+      //x_DBG.val1 = (bitDécaleDroite(val1,1) & 0x7FFFFFFFFFFFFFFF) | (bitDécaleGauche(val2,63) & 0x8000000000000000)
+      //x_DBG.val2 = (bitDécaleDroite(val2,1) & 0x7FFFFFFFFFFFFFFF) | (bitDécaleGauche(val3,63) & 0x8000000000000000)
+      //x_DBG.val3 =  bitDécaleDroite(val3,1) & 0x7FFFFFFFFFFFFFFF
+      
+      API(arithmetique.addrprocDivPar2_256_ASM,&objet)
+      //dbgAssertion(x_DBG.estEgalA(objet))
+      retour
+      
+     type : 458752
+   -
+     name : multipliePar2
+     procedure_id : 1993346402882964608
+     type_code : 12
+     code : |1-
+      PROCÉDURE multipliePar2()
+      
+      val3 =  val3*2 | ( bitDécaleDroite(val2, 63 ) & 1)
+      val2 =  val2*2 | ( bitDécaleDroite(val1, 63 ) & 1)
+      val1 =  val1*2 | ( bitDécaleDroite(val0, 63 ) & 1)
+      val0 =  val0*2  
+      //val3 = bitDécaleGauche( val3, 1)  | ( bitDécaleDroite(val2, 63 ) & 1)
+      //val2 = bitDécaleGauche( val2, 1)  | ( bitDécaleDroite(val1, 63 ) & 1)
+      //val1 = bitDécaleGauche( val1, 1)  | ( bitDécaleDroite(val0, 63 ) & 1)
+      //val0 = bitDécaleGauche( val0, 1)  
+     type : 458752
+   -
+     name : mulitplieParUnePuissanceDe2
+     procedure_id : 1989750042181475307
+     type_code : 12
+     code : |1+
+      // multiplie le nombre par 2^N
+      procédure mulitplieParUnePuissanceDe2( local nPuisssance est un entier  )
+      dbgAssertion(nPuisssance>=0)
+      
+      // élimine les cas particuliers 
+      si nPuisssance=0    alors retour
+      si nPuisssance>=256 alors 
+      	affecteAvecEntierPositif(0)
+      	retour
+      FIN
+      si estEgalAZero() retour
+      
+      // déplacement par otect si plus de 8
+      SI (nPuisssance >= 8) ALORS
+      	nbOctet est un entier = nPuisssance/8
+      	
+      	// décalage vers le poids fort
+      	Transfert(&objet+nbOctet,&objet, 32 - nbOctet )
+      	 // Mise a 0 sur les poids faibles
+         	Transfert(&objet, &arithmetique._0_256 ,nbOctet)
+      
+      	nPuisssance = nPuisssance - nbOctet*8
+      	if (nPuisssance <= 0) return;
+      	//dbgAssertion(FALSE);
+      //	
+      FIN
+      dbgAssertion(nPuisssance<8)
+      
+      //@ 0xFF : contourne un bug 23
+      nMasqueFF est un entier = bitDécaleDroite( 0xFF, 8-nPuisssance )
+      val3 = bitDécaleGauche( val3, nPuisssance)  | ( bitDécaleDroite(val2, 64-nPuisssance ) & nMasqueFF)
+      val2 = bitDécaleGauche( val2, nPuisssance)  | ( bitDécaleDroite(val1, 64-nPuisssance ) & nMasqueFF)
+      val1 = bitDécaleGauche( val1, nPuisssance)  | ( bitDécaleDroite(val0, 64-nPuisssance ) & nMasqueFF)
+      val0 = bitDécaleGauche( val0, nPuisssance)  
+     type : 458752
+   -
+     name : diviseParUnePuissanceDe2
+     procedure_id : 1990031530189826080
+     type_code : 12
+     code : |1+
+      PROCÉDURE diviseParUnePuissanceDe2( LOCAL nPuisssance est un entier  )
+      dbgAssertion(nPuisssance>=0)
+      // élimine les cas particuliers 
+      SI nPuisssance=0    ALORS RETOUR
+      SI nPuisssance>=256 ALORS 
+      	dbgAssertion(faux)
+      	affecteAvecEntierPositif(0)
+      	RETOUR
+      FIN
+      SI estEgalAZero() RETOUR
+      
+      
+      // déplacement par octets si plus de 8
+      SI (nPuisssance >= 8) ALORS
+      	// nb d'octets a mettre à 0
+      	nbOctet0 est un entier = nPuisssance/8
+      	
+      	// décalage vers les poids faibles
+      	Transfert(&objet, &objet+ nbOctet0, 32-nbOctet0 )
+      	// Mise a 0 sur les poids forts
+      	Transfert(&objet + 32-nbOctet0, &arithmetique._0_256 , nbOctet0)
+      	
+      	nPuisssance = nPuisssance - (nbOctet0*8)
+      	si (nPuisssance <= 0) RETour
+      
+      FIN
+      dbgAssertion(nPuisssance<64)
+      
+      // bits restant
+      val0 = bitDécaleDroite( val0, nPuisssance)  + bitDécaleGauche(val1, 64-nPuisssance ) 
+      val1 = bitDécaleDroite( val1, nPuisssance)  + bitDécaleGauche(val2, 64-nPuisssance ) 
+      val2 = bitDécaleDroite( val2, nPuisssance)  + bitDécaleGauche(val3, 64-nPuisssance ) 
+      val3 = bitDécaleDroite( val3, nPuisssance) 
+     type : 458752
+   -
+     name : log2
+     procedure_id : 1990177825367549742
+     type_code : 12
+     code : |1-
+      // renvoie l'indice du plus grand bit a 1.
+      procédure log2() : entier
+      
+      
+      POUR i= 31 A 0 PAS -1
+      	nVal est entier sans signe sur 4 = _8Bits(i);
+      	SI nVal <> 0 ALORS
+      		//test bit a bit
+      		si nVal>=0x80 alors renvoyer i*8+7
+      		si nVal>=0x40 alors renvoyer i*8+6
+      		si nVal>=0x20 alors renvoyer i*8+5
+      		si nVal>=0x10 alors renvoyer i*8+4
+      		si nVal>=0x08 alors renvoyer i*8+3
+      		si nVal>=0x04 alors renvoyer i*8+2
+      		si nVal>=0x02 alors renvoyer i*8+1
+      		RENVOYER i*8
+      	FIN
+      fin
+      
+      dbgAssertion(faux,"Log de 0 invalide")
+     type : 458752
+   -
+     name : _64Bits_AligneSur1Bit
+     procedure_id : 2000541233320026998
+     type_code : 12
+     code : |1+
+      // renvoie la valeur de 64 bits d'indice n°<indiceBit> aligné SUR 1 bits
+      // avec   64  : poids faible
+      //        255 :  poids fort  
+      PROCÉDURE _64Bits_AligneSur1Bit( numBit entier ) : entier sur 8 sans signe
+      
+      nDecaleH est un entier = numBit modulo 64
+      nMask est un entier sur 8 octets sans signe = 0x7FFFFFFFFFFFFFFF
+      											
+      SELON numBit
+      	CAS  64
+      		RENVOYER  val0
+      	CAS  65 a 127
+      		RENVOYER  (bitDécaledroite(val0,nDecaleH) & nMask) | (bitDécaleGauche(val1,nDecaleH))
+      	CAS  128
+      		RENVOYER  val1
+      	CAS  129 a 195
+      		RENVOYER  (bitDécaleDroite(val1,nDecaleH) & nMask) | (bitDécaleGauche(val2,nDecaleH))		
+      	CAS  196
+      		RENVOYER  val2
+      	CAS  176 a 254
+      		RENVOYER  (bitDécaleDroite(val2,nDecaleH) & nMask) | (bitDécaleGauche(val3,nDecaleH) )				
+      	CAS  255
+      		RENVOYER  val3
+      		
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      		RENVOYER 0
+      FIN
+     type : 458752
+   -
+     name : _sinverseEndian
+     procedure_id : 2026484489319234461
+     type_code : 12
+     code : |1-
+      // inversion de l'endienness
+      procédure privée _sinverseEndian(buf est un buffer) : buffer
+      sBufferInverse est un Buffer 
+      POUR i=1 _À_ Taille(buf)
+      	sBufferInverse = buf[i] + sBufferInverse
+      FIN
+      renvoyer sBufferInverse
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1b39b91f327597af
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
