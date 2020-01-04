@@ -172,7 +172,7 @@ class :
       	renvoyer resultat
       FIN
       si nExposant>0 alors
-      	resultat.mulitplieParUnePuissanceDe2(nExposant)
+      	resultat.multiplieParUnePuissanceDe2(nExposant)
       sinon
       	resultat.diviseParUnePuissanceDe2(-nExposant)
       fin

@@ -425,7 +425,7 @@ class :
       // dépassement sir le bit de poids fort est a 1
       dépassement est un booléen = (nombreA.val3 & 0x8000000000000000) <> 0
       											 
-      si dépassement <> 0 alors
+      si dépassement  alors
       	// ajout le résultat du modulo pour 2^256
       	resultat = additionModulo( resultat,DeuxPuissance256MoinsP)
       FIN

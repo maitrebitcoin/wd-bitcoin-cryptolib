@@ -10,7 +10,7 @@ info :
 window :
  name : Test_PGCD
  identifier : 0x2baf219b017775c3
- internal_properties : BQAAAAUAAABVq4k0CrV+Xo0/clsEFK5wtJn3UfVStv2pZ4Hmenq0n6EptL6cJiMW/QFSjFeT6D12J25XNsZBPxW4h9OSAgvd6VABxLY/CThI0Mm11r9tD/KfPPMn1CNI9OBjlWpz4cGaejb32mvQM0bAP1ASC75keE27tnA5LXPOTpiJ7737v8hnPxW6bd+kueo0Rv5dFYC94EqHil+bdOK1AXf5g0eKdH/pGZS6H7zeVNRObUCcFT1IefjkLx9XoNXjO/yu3MqobYdBrgCXmK7nYKKypPcPfJcowsqxDNXL4FIObVcy4OEGgcz59P5267gQPALTJLSwJyHKHaKJrleDtFOqqcABG5EAAZHnkOLkGTITpoFjMxfON/kjLYQjyfJcA/uKRbki9gN1SA1vL020e6Bax6TjGwiKmTHux5Qmpfyxvc8eicYeCQsBOcR7gNu01DdVO5QWIxyNNYtl7DixyU1RPKi0RyTxArVNP7fl2WxQGDAZ3nBD85Yjaon8KGo2i2pPE9yvvioSWn654nwHOrJKPKgv3qS38VtU2ptpShNK3rw0mlKuBTUiEyKpgzID6Ida89n9GOs/n8BnE2dlPbNmwuG7WnCxphORSSEyn5G3cb8+wCNyUYCu1/3Z2TVBEC2AuvovLO9GFi3Bqj1QkX9OqYfAM88EJnKBbjgQ15iMy2D2wHZheiw/QpU2RzqM/s/RD0lWXbMi3yhgN3FBPgxUTaBFcXbh6IU0ZiCGuiDC84C/DpWU9jUKIweSUTO8emOx6DY3MxsO6OhBoaXbmWMBjowSlwnjqzwIVN8abeazxP7vUK4V7pxOR+hGI9ReiWIIDnU7FvGN+lmIkDCMLoLDcLyWTJsh3e2KG2WiGoHTfC6l8p2p6akkWkucPZ/mt9PnYkt0mTr2+Y1fA63/zReIc22J1QUbwudTqtntkQVxNVT+talOdBeuQ0ngjIGTcxsyh1GqoIsRLSDcdzwL1Z4Mup2JlhrNEMDTWtPJSERuHpUR22OArSLHSV5KKG5IJvTf
+ internal_properties : BQAAAAUAAAC/sepIjirQ9yeo4TuEKRunewDnNsRZJG67Cicuf4bvCP5S+WDN29dMrdkYgTRkKwicPzVpG3C5TPfKH8hiYMQuIo0Ilaq9VHo3ayp4uNrO1wd+22zW0+qKYc5iepj1E6+i8+Z1Ue9OAGWrJIBdUDmrLA/7bxRU7QdjWlmrvUq8bvvuZEbL5GNEY9dQTJKunXx389gwLq37v4v8DXt6ubyc5l5Va4odfk/qrq7FLWs9BRlpac/ShB3K3WYwrOwfvl9sGjzYkO27O4oSKRknoinsCCYzF5QsV7zro0+2BIkWIQL/97VjihJGFOQP2wkuZqyrcKbA8pJEw1b1NsHWS3OwLj9nscNhqDlCcHskLlPVmRTcMk4DiqcQ4459QoirWbu+44REYC2KFCUk7HHCXlr7McluP7lJ4z0SwEwxSfatqjWdn9aZgsNiDN7goI5piGTHg//corDnHkHBnnqMHUXr4M+vmUOHD5yrdWcUE9QfwtdfLlq3TlOJEPorVxRsh6W13RGoeTnvY4/WiGIhIF3YkoXBRf0d//eJCUsWSr00Q0WtYzof2Kn1HpDhv2Xi03M+o4xpAuh40WrJXuiYxU7JexS98s2Z+r/gFJywhNpL0f11KvcxGa1BooKVU50rXmkNpJG6Esud5iiIL74CcM0YMgap6MKLZVTTjS2WMt8GOFfyEo1F/Z7yjMqLH6LBv9Xg/ClchwIz8gRNaObo99zpp6oEk8uxHV5lzBlOFFJKzCRjLM93PaRgH7UbgWWK89ejZq4s+n/8wH38pIkQN/BgKwsRSRdx7kbIJK1jwLLrcKzRJvACxbRyKG2VKJt5V+xdUOewkkUDrRqqhdaaeV+URN7f+RgjtXCQw6nNevRHmphhUNVGaz2AkOdVvopaV2q+/w6SR2q4053c4lpM2XDbwpI6oRKuyf/q7aHaOvLgnhpSn998lsiGwYHtN6yp6KgIA5UYbb6oOq/JLMVs0c7R5wfUaD04rnVgDS59Z33K8b1nL6z4Ga6bjjT+wCQ=
  controls :
   -
     name : Table1
@@ -1675,28 +1675,13 @@ window :
       		
       		_2_puissanceN est Entier256
       		_2_puissanceN.affecteAvecEntierPositif(1)
-      		_2_puissanceN.mulitplieParUnePuissanceDe2( pow2 )
+      		_2_puissanceN.multiplieParUnePuissanceDe2( pow2 )
       				
-      		
-      //		pgcd64 , M1, N1, M2, N2, nbTour  sont des entiers sur 8 sans signe
-      //		(pgcd64, M1, N1, M2, N2, nbTour ) =_HGDC64( n, _2_puissanceN.val0 -1 )
-      //		// si premier entre eux
-      //		si pgcd64=1 ALORS
-      //			(pgcd64, M1, N1, M2, N2, nbTour ) =_HGDC64( n, _2_puissanceN.val0 )
-      //		FIN
-      //		// si premier entre eux
-      //		SI pgcd64=1 ALORS
-      //			(pgcd64, M1, N1, M2, N2, nbTour ) =_HGDC64( n+1, _2_puissanceN.val0 )
-      //		FIN		
-      //		
-      //		res est Entier256( pgcd64 )
-      //		renvoyer res
-      		
+      				
       		n256 est un Entier256
       		n256.affecteAvecEntierPositif( (n) )
-      
       		
-      		n256.mulitplieParUnePuissanceDe2( pow2 )
+      		n256.multiplieParUnePuissanceDe2( pow2 )
       		iMin est un entier256
       		iMin.affecteAvecEntierPositif(1)
       		zMin est entier sans signe sur 8 = n
@@ -1709,30 +1694,7 @@ window :
       			FIN
       		FIN
       		renvoyer iMin		
-      //		
-      //		n256_pow2 est Entier256 = 
-      //		_2_puissanceN est Entier256
-      //		_2_puissanceN.affecteAvecEntierPositif(1)
-      //		_2_puissanceN.mulitplieParUnePuissanceDe2( pow2 )
-      //		
-      //		n256 = multiplication( n256, _2_puissanceN)
-      //		
-      //		_2_puissanceN = soustraction(_2_puissanceN, corps._1)
-      //		inverseDeN est Entier256 = Corps.inverseModulo( n256 ) //  inverseModuloParRightShift( n256, _2_puissanceN)
-      //		
-      //		
-      //		// si pas d'invere modulaire
-      //		si inverseDeN.estEgalAZero() ALORS
-      //			
-      //			r64 , M1, N1, M2, N2, nbTour  sont des entiers sur 8 sans signe
-      //			(r64, M1, N1, M2, N2, nbTour ) =_HGDC64( n256.val0, _2_puissanceN.val0 )
-      //			si EstPair(nbTour) ALORS
-      //				N1 = _2_puissanceN.val0 -N1
-      //			FIN
-      //			inverseDeN.affecteAvecEntierPositif( N1 )
-      //	
-      //			
-      //		FIN
+      
       	fin
       
       
