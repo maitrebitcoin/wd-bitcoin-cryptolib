@@ -623,12 +623,12 @@ class :
       //val0 = bitDécaleGauche( val0, 1)  
      type : 458752
    -
-     name : mulitplieParUnePuissanceDe2
+     name : multiplieParUnePuissanceDe2
      procedure_id : 1989750042181475307
      type_code : 12
      code : |1+
       // multiplie le nombre par 2^N
-      procédure mulitplieParUnePuissanceDe2( local nPuisssance est un entier  )
+      procédure multiplieParUnePuissanceDe2( local nPuisssance est un entier  )
       dbgAssertion(nPuisssance>=0)
       
       // élimine les cas particuliers 
