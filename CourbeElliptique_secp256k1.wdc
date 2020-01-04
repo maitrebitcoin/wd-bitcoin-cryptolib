@@ -1007,31 +1007,46 @@ class :
       // conversion en coordonnées de Jacobi
       P est Point256_3D 
       P.VersJacobi(point) // init à 1*P
-      // précalcul de 2*P,3*P, 
+      // précalcul de 2*P,3*P, 15*P
+      _MultiplesDeP est un tableau de 15  Point256_3D
+      _MultiplesDeP[1] = P
+      _MultiplesDeP[2] = pointDouble_Jacobi(P)
+      //_MultiplesDeP[3] = pointPlusPoint_Jacobi(_MultiplesDeP[2], P)
+      //_MultiplesDeP[4] = pointDouble_Jacobi(_MultiplesDeP[2]) 
+      //_MultiplesDeP[5] = pointPlusPoint_Jacobi(_MultiplesDeP[2], _MultiplesDeP[3])
+      //_MultiplesDeP[6] = pointDouble_Jacobi(_MultiplesDeP[3])
+      //_MultiplesDeP[7] = pointPlusPoint_Jacobi(_MultiplesDeP[6], P)
+      //_MultiplesDeP[8] = pointDouble_Jacobi(_MultiplesDeP[4]) 
+      pour i = 3 a  15
+      	si EstPair(i) ALORS
+      		// P = P[I/2] * 2
+      		_MultiplesDeP[i] = pointDouble_Jacobi(   _MultiplesDeP[i/2]   ) 
+      	sinon
+      		// P = P[I-1] + 1
+      		_MultiplesDeP[i] = pointPlusPoint_Jacobi(_MultiplesDeP[i-1], P) 
+      	fin
+      FIN
+      
+      
       _2P est Point256_3D = pointDouble_Jacobi(P)
       _3P est Point256_3D = pointPlusPoint_Jacobi(_2P, P)
       
       PointRésultatJ	est Point256_3D		// 0
-      // parcourt en partant du bit de poids fort par bloc de 2 bits
-      POUR i = 255 À 1 pas -2
-      	n est un entier = K.bit(i)*2 + K.bit(i-1)
+      // parcourt en partant du bit de poids fort par bloc de 4 bits
+      POUR i = 255 À 3 pas -4
+      	//@Récup 16 bits
+      	n est un entier = K.bit(i)*8 + K.bit(i-1)*4 + K.bit(i-2)*2 + K.bit(i-3)
       	selon n
       		cas 0:
       			// rien
-      		cas 1:
+      		autres cas:
       			// r = r + 2^k
-      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  P    )
-      		CAS 2:
-      			// r = r + 2^k
-      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _2P  )
-      		CAS 3:
-      			// r = r + 2^k
-      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _3P  )			
+      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP[n]   )
       	FIN
       
       	SI PointRésultatJ.estZéro() ALORS
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
-      		si i=1  alors
+      		si i=3  alors
       			// renvoie (0,0)
       			_P0 est Point256 
       			RENVOYER _P0
@@ -1039,11 +1054,12 @@ class :
       		// sinon c'est qu'on a pas encore rencontré de 1
       		continuer
       	FIN	
-      	SI i=1  ALORS
+      	SI i=3  ALORS
       		sortir
       	FIN
       	
-      	// r = r*4
+      	// r = r*16
+      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	
       FIN
