@@ -153,14 +153,15 @@ class :
       	erreurSiEchec_OUT = "La clé publique est invalide : elle n'est pas sur la courbe elliptique"
       	renvoyer faux
       FIN
-      //  N * CléPublique doit être égal a 0
-      nQ est Point256 = courbeBtc.multiplicationScalairePointJacobi( CléPublique, courbeBtc.Ordre )
-      //nQ_DBG est Point256 = courbeBtc.MultiplicationScalairePoint( CléPublique, courbeBtc.Ordre )
-      //dbgAssertion(nQ_DBG.PointestEgalA(nQ))
-      si pas nQ.x.estEgalAZéro() ALORS
-      	erreurSiEchec_OUT = "La clé publique est invalide : elle ne respecte par l'ordre de la courbe elliptique"
-      	RENVOYER Faux
-      FIN
+      // --- Test commenté : condition trouvée dans Wikipedia mais pas dans secp256k1_ecdsa_sig_verify() de https://github.com/bitcoin-core/secp256k1
+      ////  N * CléPublique doit être égal a 0
+      //nQ est Point256 = courbeBtc.multiplicationScalairePointJacobi( CléPublique, courbeBtc.Ordre )
+      ////nQ_DBG est Point256 = courbeBtc.MultiplicationScalairePoint( CléPublique, courbeBtc.Ordre )
+      ////dbgAssertion(nQ_DBG.PointestEgalA(nQ))
+      //si pas nQ.x.estEgalAZéro() ALORS
+      //	erreurSiEchec_OUT = "La clé publique est invalide : elle ne respecte par l'ordre de la courbe elliptique"
+      //	RENVOYER Faux
+      //FIN
       
       
       // vérification des pré-requis sur la la signature
