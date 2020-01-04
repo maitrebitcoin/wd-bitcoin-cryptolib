@@ -79,12 +79,12 @@ class :
       
      type : 458752
    -
-     name : pointAuCarré
+     name : pointDouble
      procedure_id : 1964415631993640300
      type_code : 12
      code : |1+
       // Addition d'un point avec lui meme
-      PROCÉDURE pointAuCarré(point Point256)  : Point256
+      PROCÉDURE pointDouble(point Point256)  : Point256
       
       // formule trouvé sur le net :
       // L = (3x^2) / (2*y)-1  Modulo P
@@ -106,7 +106,7 @@ class :
       
       
       
-      renvoyer pointRésultat;
+      renvoyer PointRésultat;
      type : 458752
    -
      name : pointPlusPoint
@@ -122,7 +122,7 @@ class :
       
       // cas d'addition d'un point a lui même
       si pointA.PointEstEgalA( pointB ) alors
-      	renvoyer pointAuCarré(pointA)
+      	renvoyer pointDouble(pointA)
       FIN
       
       // formule de calcul des coordonnées du point résultat de l'addition
@@ -165,7 +165,7 @@ class :
       //// cas d'addition d'un point a lui même
       SI pointA.PointestEgalA( pointB ) ALORS
       	dbgAssertion(faux,"cas a voir")
-      	RENVOYER pointAuCarré(pointA)
+      	RENVOYER pointDouble(pointA)
       FIN
       
       // formule de calcul des coordonnées du point résultat de l'addition

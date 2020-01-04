@@ -153,8 +153,8 @@ class :
       	erreurSiEchec_OUT = "La clé publique est invalide : elle n'est pas sur la courbe elliptique"
       	renvoyer faux
       FIN
-      //  N * CléPublique doit être équal a 0 @TODO
-      nQ est Point256 = courbeBtc.multiplicationScalaireJacobi( CléPublique, courbeBtc.Ordre )
+      //  N * CléPublique doit être égal a 0
+      nQ est Point256 = courbeBtc.multiplicationScalairePointJacobi( CléPublique, courbeBtc.Ordre )
       
       nQ_DBG est Point256 = courbeBtc.MultiplicationScalairePoint( CléPublique, courbeBtc.Ordre )
       dbgAssertion(nQ_DBG.PointestEgalA(nQ))
@@ -192,7 +192,9 @@ class :
       Coef1 est Entier256 = corpsOrdre.multiplicationModulo(NombreSigné, inverseDeY)
       Coef2 est Entier256 = corpsOrdre.multiplicationModulo(signature.R, inverseDeY)
       P1 est Point256     = courbeBtc.MultiplicationScalairePointGenérateur( 	            Coef1 )
-      P2 est Point256     = courbeBtc.MultiplicationScalairePoint(           CléPublique, Coef2 ) 
+      P2 est Point256     = courbeBtc.multiplicationScalairePointJacobi(     CléPublique, Coef2 ) 
+      P2_DBG est Point256 = courbeBtc.MultiplicationScalairePoint(           CléPublique, Coef2 ) 
+      dbgAssertion( P2_DBG.PointestEgalA( P2 ))
       // PRes = P1 + P2
       P1plusP2 = courbeBtc.pointPlusPoint( P1 ,  P2)
       PX est Entier256 = P1plusP2.x //.VersEntier256(corpsECC)

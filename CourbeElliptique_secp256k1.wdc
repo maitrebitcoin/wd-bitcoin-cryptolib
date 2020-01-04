@@ -724,7 +724,7 @@ class :
       		// r = r + 2^k
       		PointRésultat = pointPlusPoint( PointRésultat, Ppow2I  )
       	FIN
-      	Ppow2I = pointAuCarré(Ppow2I)
+      	Ppow2I = pointDouble(Ppow2I)
       FIN
       
       // le point devrait être sur la courbe ou null, sinon erreur de calcul
@@ -823,8 +823,8 @@ class :
       Point0   est Point256 
       Tab32Point est un tableau de Point256
       POUR X = 0 À 31
-      	I est entier = K._8Bits(X)
-      	si I=0 alors
+      	i est entier = K._8Bits(X)
+      	si i=0 alors
       		Tab32Point.Ajoute( Point0  )
       	sinon
       		Tab32Point.Ajoute( TabPointPow2PreCalculé_256[ I+X*256 ]  )
@@ -996,18 +996,19 @@ class :
       RENVOYER pointRésultat
      type : 458752
    -
-     name : multiplicationScalaireJacobi
+     name : multiplicationScalairePointJacobi
      procedure_id : 2165923497383385657
      type_code : 12
      code : |1+
       // renvoie K * P 
       // version utilisation les coordonnées de jacobi pour minimiser les divisions modulaire
-      procédure multiplicationScalaireJacobi(  point est Point256, K est Entier256 ) : Point256
+      procédure multiplicationScalairePointJacobi(  point est Point256, K est Entier256 ) : Point256
       
       // convertion vers jacobi
       pointJ est Point256_3D
       pointJ.InitDepuis2D(point)
-      
+      pointJ_DBG est Point256 = _JacobiVersPoint( pointJ  )
+      dbgAssertion( point.PointestEgalA(pointJ_DBG) )
       
       PointRésultatJ	est Point256_3D		// 0
       Ppow2I			est Point256_3D		// p^(2*i)
@@ -1016,21 +1017,28 @@ class :
       	SI K.bit(i) ALORS
       		// r = r + 2^k
       		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ, Ppow2I  )
+      		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
+      		si i=255 _et_ PointRésultatJ.estZéro() ALORS
+      			// renvoie (0,0)
+      			_P0 est Point256 
+      			renvoyer _P0
+      		FIN
+      		
+      		pointRésultat_DBG est Point256 = _JacobiVersPoint( PointRésultatJ  )
+      		dbgAssertion( pointEstSurLaCourbe( pointRésultat_DBG )  , "pointEstSurLaCourbe FAILED")
+      		
       	FIN
       	// p = p*2
       	Ppow2I = pointDouble_Jacobi(Ppow2I)
+      	Ppow2I_DBG est Point256 = _JacobiVersPoint( Ppow2I  )
+      	dbgAssertion( pointEstSurLaCourbe( Ppow2I_DBG )  , "pointEstSurLaCourbe FAILED")
+      	
       FIN
       
       // conversion depuis jacobi:
       //  x=X/Z2
       //  y=Y/Z3
-      pointRésultat est Point256
-      _1SurZ 		 est entier256	= corps.inverseModulo(PointRésultatJ.z )
-      _1SurZ_Carre est entier256 	= corps.carréModulo(_1SurZ) 
-      _1SurZ_Cube  est entier256 	= corps.multiplicationModulo(_1SurZ_Carre, _1SurZ) 
-      pointRésultat.x = Corps.multiplicationModulo(PointRésultatJ.x, _1SurZ )
-      pointRésultat.y = Corps.multiplicationModulo(PointRésultatJ.x, _1SurZ )
-      
+      pointRésultat est Point256 = _JacobiVersPoint(PointRésultatJ  )
       
       // le point devrait être sur la courbe ou null, sinon erreur de calcul
       dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
@@ -1039,12 +1047,30 @@ class :
       RENVOYER pointRésultat
      type : 458752
    -
+     name : _JacobiVersPoint
+     procedure_id : 2166308605637854078
+     type_code : 12
+     code : |1-
+      // conversion d'un point en coordonnées de Jacobi vers 2D ( ie, en représentation de Weierstrass )
+      procédure _JacobiVersPoint( pointJacobi est Point256_3D ) : point256
+      
+      _1SurZ			est entier256	= corps.inverseModulo(pointJacobi.z )
+      _1SurZ_Carre	est entier256	= corps.carréModulo(_1SurZ) 
+      _1SurZ_Cube		est entier256	= corps.multiplicationModulo(_1SurZ_Carre, _1SurZ) 
+      //  x = X/Z^2
+      //  y = Y/Z^3
+      pointRésultat	est Point256
+      pointRésultat.x	= corps.multiplicationModulo(pointJacobi.x, _1SurZ_Carre )
+      pointRésultat.y	= corps.multiplicationModulo(pointJacobi.y, _1SurZ_Cube  )
+      renvoyer pointRésultat
+     type : 458752
+   -
      name : pointPlusPoint_Jacobi
      procedure_id : 2165931902639027483
      type_code : 12
      code : |1-
       // Addition de 2 points en coordonnées de Jacobi
-      // source des formules : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl
+      // source des formules : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl , "add-1998-cmo-2"
       procédure pointPlusPoint_Jacobi( point1 est Point256_3D, point2 est Point256_3D ) : Point256_3D
       
       // gestion cas particulier P+0 / 0+P
@@ -1065,31 +1091,28 @@ class :
       //S1		= Y1*Z2*Z2Z2
       S1 est Entier256   = corps.multiplicationModulo( point1.y, corps.multiplicationModulo( point2.z, Z2Z2  ) )
       //S2		= Y2*Z1*Z1Z1
-      S2 est Entier256   = corps.multiplicationModulo( point2.y, corps.multiplicationModulo( point2.z, Z1Z1  ) )
+      S2 est Entier256   = corps.multiplicationModulo( point2.y, corps.multiplicationModulo( point1.z, Z1Z1  ) )
       //H		= U2-U1
       H est Entier256    = corps.soustractionModulo( U2, U1)
       //HH		= H^2
-      HH est Entier256  = corps.carréModulo( H )
+      HH est Entier256   = corps.carréModulo( H )
       //HHH		= H^3
       HHH est Entier256  = corps.multiplicationModulo( HH, H )
-      //r		= S2-S1
+      // r		= S2-S1
       r est entier256    = corps.soustractionModulo( S2, S1)
       //V		= U1*HH
-      V est entier256    = corps.soustractionModulo(U1, HH)
+      V est entier256    = corps.multiplicationModulo(U1, HH)
       
       pointRésultat est Point256_3D
       // X' = r^2-HHH-2*V
       // X' = r^2-(HHH+2*V)
       HHH_plus2V est Entier256 =  corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
       pointRésultat.x    =  corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
-      // Y' = r*(V-X3)-S1*HHH
-      _r_V_X3 est Entier256    = corps.multiplicationModulo( r, corps.soustractionModulo( V, pointRésultat.x  ))
-      pointRésultat.Y    =  corps.soustractionModulo( _r_V_X3, corps.multiplicationModulo( S1, HHH ) )
-      // Z' = ((Z1+Z2)^2-Z1Z1-Z2Z2)*H
-      // Z' = H*((Z1+Z2)^2-(Z1Z1+Z2Z2))
-      _Z1plusZ2Carré est Entier256 =  corps.carréModulo( corps.additionModulo( point1.z, point2.z ) )
-      _Z1Z1plusZ2Z2  est Entier256 =  corps.additionModulo( Z1Z1, Z2Z2 ) 
-      pointRésultat.z	   = corps.multiplicationModulo( H,  corps.soustractionModulo( _Z1plusZ2Carré, _Z1Z1plusZ2Z2  ) )
+      // Y' = r*(V-X')-S1*HHH
+      _r_V_Xresultat est Entier256    = corps.multiplicationModulo( r, corps.soustractionModulo( V, pointRésultat.x  ))
+      pointRésultat.Y    =  corps.soustractionModulo( _r_V_Xresultat, corps.multiplicationModulo( S1, HHH ) )
+      //  Z' = Z1*Z2*H
+      pointRésultat.z	   = corps.multiplicationModulo( point1.z,  corps.multiplicationModulo( point2.z, H  ) )
       
       renvoyer pointRésultat
      type : 458752
@@ -1098,7 +1121,7 @@ class :
      procedure_id : 2165924145924843928
      type_code : 12
      code : |1+
-      // Addition d'un point avec lui même 
+      // Addition d'un point avec lui même en coordonnées de Jacobi
       // source : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2
       procédure pointDouble_Jacobi( point est Point256_3D ) : Point256_3D
       dbgAssertion( PAS point.z.estEgalAZero())
