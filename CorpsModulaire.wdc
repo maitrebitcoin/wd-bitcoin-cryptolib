@@ -447,7 +447,6 @@ class :
       resultat.numérateur   = multiplicationPar2Modulo(X.numérateur)
       resultat.dénominateur = X.dénominateur
       RENVOYER  resultat
-      
      type : 458752
    -
      name : MultiplicationPar3Modulo
@@ -466,13 +465,14 @@ class :
       procédure multiplicationPar4Modulo( nombre Entier256 ) : entier256  
       //@A optimiser
       RENVOYER multiplicationPar2Modulo( multiplicationPar2Modulo(nombre) )
+      
      type : 458752
    -
      name : multiplicationPar8Modulo
-     procedure_id : 2166246234118941340
+     procedure_id : 2166340036236684091
      type_code : 12
-     code : |1+
-      procédure multiplicationPar8Modulo( nombre Entier256 ) : entier256  
+     code : |1-
+      PROCÉDURE multiplicationPar8Modulo( nombre Entier256 ) : Entier256  
       
       //@A optimiser
       RENVOYER multiplicationPar2Modulo( multiplicationPar4Modulo( nombre) )

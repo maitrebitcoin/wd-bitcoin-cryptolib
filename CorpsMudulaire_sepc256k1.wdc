@@ -211,6 +211,54 @@ class :
       renvoyer resultat256
       
      type : 458752
+   -
+     name : multiplicationParUI32Modulo
+     procedure_id : 2166339207307541054
+     type_code : 12
+     code : |1+
+      procédure multiplicationParUI32Modulo( nombre Entier256, UI32 est entier sans signe ) : Entier256
+      
+      // var de travail temp
+      retenue  est un entier sur 8 sans signe
+      depasseModP  est un Entier256
+      
+      resultat est entier256
+      retenue  =	API(arithmetique.addrprocMult256x64_256_ASM, &nombre, &UI32, &resultat )
+      
+      // R = R mop P
+      // application du modulo en soustrayant le nombre de fois ou l'on a dépassé
+      API(arithmetique.addrprocMult64x64_128_ASM, &retenue, &_2P256_MoinsP.val0, &depasseModP)
+      retenue = API(arithmetique.addrprocAddition256p256_256c, &resultat, &depasseModP )
+      SI retenue ALORS
+      	API(arithmetique.addrprocAddition256p256_256c, &resultat, &_2P256_MoinsP )
+      FIN
+      // si on dépasse le modulo :
+      SI resultat.estSupérieurOuEgalA( :P ) ALORS
+      	// OPTIM de : resultat256 = soustraction( resultat256, :P )
+      	resultat = addition( resultat, _2P256_MoinsP )
+      FIN
+      
+      renvoyer resultat
+     type : 458752
+   -
+     name : multiplicationPar4Modulo
+     procedure_id : 2166340259575690984
+     type_code : 12
+     code : |1-
+      PROCÉDURE multiplicationPar4Modulo( nombre Entier256 ) : entier256  
+      //@A optimiser
+      RENVOYER multiplicationParUI32Modulo( nombre, 4 )
+     type : 458752
+   -
+     name : multiplicationPar8Modulo
+     procedure_id : 2166339383401437923
+     type_code : 12
+     code : |1-
+      PROCÉDURE multiplicationPar8Modulo( nombre Entier256 ) : Entier256  
+      
+      //@A optimiser
+      RENVOYER multiplicationParUI32Modulo( nombre, 8 )
+     type : 458752
   procedure_templates : []
   property_templates : []
  code_parameters :
