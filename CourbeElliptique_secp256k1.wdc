@@ -1001,44 +1001,44 @@ class :
      type_code : 12
      code : |1+
       // renvoie K * P 
-      // version utilisation les coordonnées de jacobi pour minimiser les divisions modulaire
+      // version utilisation les coordonnées de Jacobi pour minimiser les divisions modulaires
       procédure multiplicationScalairePointJacobi(  point est Point256, K est Entier256 ) : Point256
       
-      // convertion vers jacobi
-      pointJ est Point256_3D
-      pointJ.InitDepuis2D(point)
-      pointJ_DBG est Point256 = _JacobiVersPoint( pointJ  )
-      dbgAssertion( point.PointestEgalA(pointJ_DBG) )
-      
       PointRésultatJ	est Point256_3D		// 0
-      Ppow2I			est Point256_3D		// p^(2*i)
-      Ppow2I.InitDepuis2D(pointGen)
+      Ppow2JI			est Point256_3D		// p^(2*i)
+      Ppow2I_DBG		   est Point256    = point	// p^(2*i)
+      PointRésultat_DBG  est Point256
+      Ppow2JI.InitDepuis2D(point)
       POUR i = 0 À 255
       	SI K.bit(i) ALORS
       		// r = r + 2^k
-      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ, Ppow2I  )
+      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  Ppow2JI  )
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
       		si i=255 _et_ PointRésultatJ.estZéro() ALORS
       			// renvoie (0,0)
       			_P0 est Point256 
       			renvoyer _P0
       		FIN
-      		
-      		pointRésultat_DBG est Point256 = _JacobiVersPoint( PointRésultatJ  )
-      		dbgAssertion( pointEstSurLaCourbe( pointRésultat_DBG )  , "pointEstSurLaCourbe FAILED")
-      		
+      		//@@TEST
+      		PTemp_DBG est Point256 = _JacobiVersPoint( PointRésultatJ  )
+      		dbgAssertion( pointEstSurLaCourbe( PTemp_DBG )  , "pointEstSurLaCourbe FAILED")
+      		PointRésultat_DBG = pointPlusPoint( PointRésultat_DBG, Ppow2I_DBG )
+      		dbgAssertion( PTemp_DBG.PointestEgalA(PointRésultat_DBG) )		
       	FIN
       	// p = p*2
-      	Ppow2I = pointDouble_Jacobi(Ppow2I)
-      	Ppow2I_DBG est Point256 = _JacobiVersPoint( Ppow2I  )
-      	dbgAssertion( pointEstSurLaCourbe( Ppow2I_DBG )  , "pointEstSurLaCourbe FAILED")
-      	
+      	Ppow2JI = pointDouble_Jacobi(Ppow2JI)
+      	//@@TEST
+      	Ppow2IJ_DBG	est Point256 =  _JacobiVersPoint( Ppow2JI )
+      	dbgAssertion( pointEstSurLaCourbe( Ppow2IJ_DBG )  , "pointEstSurLaCourbe FAILED")
+      	Ppow2I_DBG = pointDouble(Ppow2I_DBG)	
+      	dbgAssertion( Ppow2I_DBG.PointestEgalA(Ppow2IJ_DBG ))
       FIN
       
       // conversion depuis jacobi:
       //  x=X/Z2
       //  y=Y/Z3
       pointRésultat est Point256 = _JacobiVersPoint(PointRésultatJ  )
+      dbgAssertion( pointRésultat.PointestEgalA(PointRésultat_DBG) )		
       
       // le point devrait être sur la courbe ou null, sinon erreur de calcul
       dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
