@@ -276,17 +276,17 @@ window :
          
          Trace("Calcul...")
          ChronoDébut()
-         Signature est SignatureEcdsa
-         Signature= CrytoLib.SigneNombre( N, ClePrivee)
+         signature est SignatureEcdsa
+         signature= CrytoLib.SigneNombre( N, ClePrivee)
          Trace( "Temps (ms) : " + ChronoFin())
          trace("Signature : ")
-         Trace(Signature.R.VersChaineHexa())
-         Trace(Signature.S.VersChaineHexa())
+         Trace(signature.R.VersChaineHexa())
+         Trace(signature.S.VersChaineHexa())
          retour
          
          CléPublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée( ClePrivee )
          sERR est chaine
-         bOK est un booléen =  CrytoLib.VerifieiSignature( N, CléPublique, Signature, sERR )
+         bOK est un booléen =  CrytoLib.VerifieiSignature( N, CléPublique, signature, sERR )
          trace("Vérif signature :" )
          Trace(bOK)
          Trace(sERR)
@@ -457,14 +457,14 @@ window :
          
          Trace("Calcul...")
          ChronoDébut()
-         Signature est SignatureEcdsa
-         signature = CrytoLib.SigneNombre( N, CléPrivée)
+         signature est SignatureEcdsa
+         signature = CrytoLib.SigneNombre( N, ClePrivee)
          Trace( "Temps (ms) : " + ChronoFin())
          trace("Signature : ")
          Trace(signature.R.VersChaineHexa())
          Trace(signature.S.VersChaineHexa())
          
-         CléPublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée( CléPrivée )
+         CléPublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée( ClePrivee )
          sERR est chaine
          ChronoDébut()
          bOK est un booléen =  CrytoLib.VerifieiSignature( N, CléPublique, signature, sERR )

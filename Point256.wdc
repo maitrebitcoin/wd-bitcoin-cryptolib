@@ -26,6 +26,18 @@ class :
      procedure_id : 1964400805765769875
      type_code : 27
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // Constructeur ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE Constructeur()
       
      type : 589824
@@ -34,6 +46,18 @@ class :
      procedure_id : 1964400805765835411
      type_code : 28
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // Destructeur ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE Destructeur()
       
      type : 655360
@@ -42,6 +66,18 @@ class :
      procedure_id : 1968102247238636034
      type_code : 12
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] PointestEgalA (<autrePoint> est Point256)
+      //
+      // Paramètres :
+      //	autrePoint (Point256) : <indiquez ici le rôle de autrePoint>
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE PointEstEgalA( autrePoint est Point256 ) : booléen
       
       renvoyer autrePoint.x.estEgalA( x ) _et_ autrePoint.y.estEgalA(  y )
@@ -52,6 +88,18 @@ class :
      procedure_id : 1968102689620567568
      type_code : 12
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] estZéro ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE estZéro() : booléen
       
       renvoyer x.estEgalAZero() _et_ y.estEgalAZero()

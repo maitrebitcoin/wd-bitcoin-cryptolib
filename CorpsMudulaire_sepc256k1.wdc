@@ -25,6 +25,7 @@ class :
       
       	pAddrMultModulo est un entier système 
       FIN
+      
      type : 131072
   procedures :
    -
@@ -63,7 +64,7 @@ class :
      type_code : 12
      code : |1-
       // version plus rapide de ma multiplication modulaire si le modulo est 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-      PROCÉDURE virtuelle multiplicationModulo(  nombreA Entier256, nombreB Entier256) : Entier256
+      PROCÉDURE virtuelle multiplicationModulo(  nombreA Entier256, nombreB Entier256) : Entier256 
       
       // algo :
       // on découpe en 4 multiplication 256*64 bits, puis on additionne chaque sous partie

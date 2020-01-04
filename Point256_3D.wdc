@@ -1,68 +1,67 @@
 #To edit and compare internal_properties, use WINDEV integrated tools.
 #Internal properties refer to the properties of controls in windows, reports, etc.
 info :
- name : SignatureEcdsa
+ name : Point256_3D
  major_version : 25
  minor_version : 0
  type : 4
  description : ""
  subtype : 0
 class :
- identifier : 0x1c189a69023cd795
+ identifier : 0x1e0ee44d00061eca
  internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
  code_elements :
   type_code : 10
   p_codes :
    -
      code : |1+
-      // les 2 entiers qui représentent un signature ECDSA
-      SignatureEcdsa est une Classe
-      	R est Entier256 // R = X modulo N
-      	S est Entier256 
-      	
+      // point en 3D avev  coordonnées entières sur 256 bits
+      // pour calcul en coordonées de jacobi
+      Point256_3D est une Classe
+      	x est Entier256
+      	y est Entier256
+      	z est Entier256
       FIN
      type : 131072
   procedures :
    -
      name : Constructeur
-     procedure_id : 2024537808302888853
+     procedure_id : 2165919490175868618
      type_code : 27
      code : |1+
-      // Résumé : <indiquez ici ce que fait la procédure>
-      // Syntaxe :
-      // Constructeur ()
-      //
-      // Paramètres :
-      //	Aucun
-      // Valeur de retour :
-      // 	Aucune
-      //
-      // Exemple :
-      // Indiquez ici un exemple d'utilisation.
-      //
       PROCEDURE Constructeur()
       
      type : 589824
    -
      name : Destructeur
-     procedure_id : 2024537808302954389
+     procedure_id : 2165919490175934154
      type_code : 28
      code : |1+
-      // Résumé : <indiquez ici ce que fait la procédure>
-      // Syntaxe :
-      // Destructeur ()
-      //
-      // Paramètres :
-      //	Aucun
-      // Valeur de retour :
-      // 	Aucune
-      //
-      // Exemple :
-      // Indiquez ici un exemple d'utilisation.
-      //
       PROCEDURE Destructeur()
-      
      type : 655360
+   -
+     name : InitDepuis2D
+     procedure_id : 2165919932557667799
+     type_code : 12
+     code : |1+
+      // convertion d'un point 2D vers 3D
+      procédure InitDepuis2D( source est Point256 )
+      
+      x = source.x
+      y = source.y
+      si pas source.estZéro()
+      	z.affecteAvecEntierPositif( 1 )
+      fin
+     type : 458752
+   -
+     name : estZéro
+     procedure_id : 2166252874141893770
+     type_code : 12
+     code : |1-
+      PROCÉDURE estZéro() : booléen
+      
+      renvoyer z.estEgalAZero()
+     type : 458752
   procedure_templates : []
   property_templates : []
  code_parameters :
@@ -70,7 +69,7 @@ class :
   original_name : Classe1
 resources :
  string_res :
-  identifier : 0x1c189a620239bd08
+  identifier : 0x1e0ee43f0003e849
   internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
 custom_note :
  internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -83,7 +83,7 @@ class :
      type_code : 12
      code : |1+
       // signe <NombreASigner> avec la clé privée <CléPrivée>
-      procédure SigneNombre(  NombreASigner Entier256, CléPrivée Entier256 ) : signatureEcdsa
+      procédure SigneNombre(  NombreASigner Entier256, ClePrivee Entier256 ) : signatureEcdsa
       
       recalculer:
       // il faut tirer un nombre K au hasard
@@ -92,6 +92,7 @@ class :
       
       // calcul du point P = K * G
       P est Point256 = courbeBtc.MultiplicationScalairePointGenérateur( K )
+      //P est Point256 = courbeBtc.MultiplicationScalairePointGenérateur( K )
       // tant que le résultat est 0, on recommence
       SI P.x.estEgalAZero()
       	GOTO recalculer
@@ -114,7 +115,7 @@ class :
       // y=K^-1(  H(m) + sx )
       signature.S =  corpsOrdre.multiplicationModulo( inverseDeK, ...
       	  			corpsOrdre.additionModulo(NombreASigner, ...
-      	   				corpsOrdre.multiplicationModulo( CléPrivée , P.x ) )) 
+      	   				corpsOrdre.multiplicationModulo( ClePrivee , P.x ) )) 
       
       si signature.S.estEgalAZero() ALORS
       	goto recalculer
@@ -153,7 +154,11 @@ class :
       	renvoyer faux
       FIN
       //  N * CléPublique doit être équal a 0 @TODO
-      nQ est Point256 = courbeBtc.MultiplicationScalairePoint( CléPublique, courbeBtc.Ordre )
+      nQ est Point256 = courbeBtc.multiplicationScalaireJacobi( CléPublique, courbeBtc.Ordre )
+      
+      nQ_DBG est Point256 = courbeBtc.MultiplicationScalairePoint( CléPublique, courbeBtc.Ordre )
+      dbgAssertion(nQ_DBG.PointestEgalA(nQ))
+      
       si pas nQ.x.estEgalAZéro() ALORS
       	erreurSiEchec_OUT = "La clé publique est invalide : elle ne respecte par l'ordre de la courbe elliptique"
       	RENVOYER Faux

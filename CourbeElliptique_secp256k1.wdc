@@ -991,9 +991,138 @@ class :
       FIN
       
       // le point devrait être sur la courbe, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( PointRésultat ) _ou_ PointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      dbgAssertion( pointEstSurLaCourbe( pointRésultat ) _ou_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
       
-      RENVOYER PointRésultat
+      RENVOYER pointRésultat
+     type : 458752
+   -
+     name : multiplicationScalaireJacobi
+     procedure_id : 2165923497383385657
+     type_code : 12
+     code : |1+
+      // renvoie K * P 
+      // version utilisation les coordonnées de jacobi pour minimiser les divisions modulaire
+      procédure multiplicationScalaireJacobi(  point est Point256, K est Entier256 ) : Point256
+      
+      // convertion vers jacobi
+      pointJ est Point256_3D
+      pointJ.InitDepuis2D(point)
+      
+      
+      PointRésultatJ	est Point256_3D		// 0
+      Ppow2I			est Point256_3D		// p^(2*i)
+      Ppow2I.InitDepuis2D(pointGen)
+      POUR i = 0 À 255
+      	SI K.bit(i) ALORS
+      		// r = r + 2^k
+      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ, Ppow2I  )
+      	FIN
+      	// p = p*2
+      	Ppow2I = pointDouble_Jacobi(Ppow2I)
+      FIN
+      
+      // conversion depuis jacobi:
+      //  x=X/Z2
+      //  y=Y/Z3
+      pointRésultat est Point256
+      _1SurZ 		 est entier256	= corps.inverseModulo(PointRésultatJ.z )
+      _1SurZ_Carre est entier256 	= corps.carréModulo(_1SurZ) 
+      _1SurZ_Cube  est entier256 	= corps.multiplicationModulo(_1SurZ_Carre, _1SurZ) 
+      pointRésultat.x = Corps.multiplicationModulo(PointRésultatJ.x, _1SurZ )
+      pointRésultat.y = Corps.multiplicationModulo(PointRésultatJ.x, _1SurZ )
+      
+      
+      // le point devrait être sur la courbe ou null, sinon erreur de calcul
+      dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      
+      
+      RENVOYER pointRésultat
+     type : 458752
+   -
+     name : pointPlusPoint_Jacobi
+     procedure_id : 2165931902639027483
+     type_code : 12
+     code : |1-
+      // Addition de 2 points en coordonnées de Jacobi
+      // source des formules : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl
+      procédure pointPlusPoint_Jacobi( point1 est Point256_3D, point2 est Point256_3D ) : Point256_3D
+      
+      // gestion cas particulier P+0 / 0+P
+      si point1.estZéro() ALORS	renvoyer point2
+      si point2.estZéro() ALORS	renvoyer point1
+      dbgAssertion( pas point1.z.estEgalAZero())
+      dbgAssertion( pas point2.z.estEgalAZero())
+      
+      
+      // Z1Z1	= Z1^2
+      Z1Z1 est Entier256 = corps.carréModulo( point1.z )
+      // Z2Z2	= Z2^2
+      Z2Z2 est Entier256 = corps.carréModulo( point2.z )
+      //U1	= X1*Z2Z2
+      U1 est Entier256   = corps.multiplicationModulo( point1.x, Z2Z2 )
+      //U2	= X2*Z1Z1
+      U2 est Entier256   = corps.multiplicationModulo( point2.x, Z1Z1 )
+      //S1		= Y1*Z2*Z2Z2
+      S1 est Entier256   = corps.multiplicationModulo( point1.y, corps.multiplicationModulo( point2.z, Z2Z2  ) )
+      //S2		= Y2*Z1*Z1Z1
+      S2 est Entier256   = corps.multiplicationModulo( point2.y, corps.multiplicationModulo( point2.z, Z1Z1  ) )
+      //H		= U2-U1
+      H est Entier256    = corps.soustractionModulo( U2, U1)
+      //HH		= H^2
+      HH est Entier256  = corps.carréModulo( H )
+      //HHH		= H^3
+      HHH est Entier256  = corps.multiplicationModulo( HH, H )
+      //r		= S2-S1
+      r est entier256    = corps.soustractionModulo( S2, S1)
+      //V		= U1*HH
+      V est entier256    = corps.soustractionModulo(U1, HH)
+      
+      pointRésultat est Point256_3D
+      // X' = r^2-HHH-2*V
+      // X' = r^2-(HHH+2*V)
+      HHH_plus2V est Entier256 =  corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
+      pointRésultat.x    =  corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
+      // Y' = r*(V-X3)-S1*HHH
+      _r_V_X3 est Entier256    = corps.multiplicationModulo( r, corps.soustractionModulo( V, pointRésultat.x  ))
+      pointRésultat.Y    =  corps.soustractionModulo( _r_V_X3, corps.multiplicationModulo( S1, HHH ) )
+      // Z' = ((Z1+Z2)^2-Z1Z1-Z2Z2)*H
+      // Z' = H*((Z1+Z2)^2-(Z1Z1+Z2Z2))
+      _Z1plusZ2Carré est Entier256 =  corps.carréModulo( corps.additionModulo( point1.z, point2.z ) )
+      _Z1Z1plusZ2Z2  est Entier256 =  corps.additionModulo( Z1Z1, Z2Z2 ) 
+      pointRésultat.z	   = corps.multiplicationModulo( H,  corps.soustractionModulo( _Z1plusZ2Carré, _Z1Z1plusZ2Z2  ) )
+      
+      renvoyer pointRésultat
+     type : 458752
+   -
+     name : pointDouble_Jacobi
+     procedure_id : 2165924145924843928
+     type_code : 12
+     code : |1+
+      // Addition d'un point avec lui même 
+      // source : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2
+      procédure pointDouble_Jacobi( point est Point256_3D ) : Point256_3D
+      dbgAssertion( PAS point.z.estEgalAZero())
+      
+      pointRésultat est Point256_3D
+      //XX	= X1^2
+      xx est Entier256 = corps.carréModulo( point.x)
+      //YY	= Y1^2
+      yy est Entier256 = corps.carréModulo( point.y)
+      //S	    = 4*X1*YY
+      S  est Entier256 = corps.multiplicationPar4Modulo( corps.multiplicationModulo(  point.x, yy ) )
+      //M	    = 3*XX
+      M  est Entier256 = corps.multiplicationPar3Modulo( xx )
+      // X'	= M2-2*S
+      pointRésultat.X  = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
+      //Y'	= M*(S-X')-8*YY^2
+      _M_SX est Entier256  = corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
+      _8YY2 est Entier256  = corps.multiplicationPar8Modulo( corps.carréModulo( yy ) )
+      pointRésultat.y  =  corps.soustractionModulo(_M_SX, _8YY2 )
+      //Z'	= 2*Y*Z
+      pointRésultat.z  =  corps.multiplicationPar2Modulo(corps.multiplicationModulo( point.y, point.z ))
+      
+      renvoyer pointRésultat
+      
      type : 458752
   procedure_templates : []
   property_templates : []

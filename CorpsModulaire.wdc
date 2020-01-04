@@ -143,20 +143,20 @@ class :
       // addtion de A/X + B/Y = C/Z (mod N)
       PROCÉDURE additionFractionModulo( nombreA Fraction256, nombreB Fraction256) : Fraction256
       
-      résultat est Fraction256 
+      resultat est Fraction256 
       // si meme dénominateur (y compris 1)
       si nombreA.dénominateur.EstEgalA( nombreB.dénominateur ) ALORS
       	// C = (A +B ) / X
-      	résultat.numérateur   = additionModulo(nombreA.numérateur, nombreB.numérateur )
-      	résultat.dénominateur = nombreA.dénominateur
-      	renvoyer résultat
+      	resultat.numérateur   = additionModulo(nombreA.numérateur, nombreB.numérateur )
+      	resultat.dénominateur = nombreA.dénominateur
+      	renvoyer resultat
       FIN
       
       // C = (A*Y + B*X) / X*Y
-      résultat.numérateur   = additionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
+      resultat.numérateur   = additionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
       										multiplicationModulo( nombreB.numérateur , nombreA.dénominateur ))
       résultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
-      RENVOYER résultat
+      RENVOYER resultat
       
      type : 458752
    -
@@ -167,12 +167,12 @@ class :
       // addtion de A/X + B = C/Z (mod N)
       PROCÉDURE additionFractionModulo( FractionA Fraction256, nombreB entier256) : Fraction256
       
-      résultat est Fraction256 
+      resultat est Fraction256 
       // C = (A + B*X) / X
-      résultat.numérateur   = additionModulo( FractionA.numérateur, ...
+      resultat.numérateur   = additionModulo( FractionA.numérateur, ...
       										multiplicationModulo( nombreB , FractionA.dénominateur ))
-      résultat.dénominateur = FractionA.dénominateur 
-      RENVOYER résultat
+      resultat.dénominateur = FractionA.dénominateur 
+      RENVOYER resultat
       
      type : 458753
    -
@@ -193,10 +193,10 @@ class :
      code : |1+
       Procédure  négationFractionModulo( X Fraction256 ) : Fraction256
       
-      résultat est Fraction256
-      résultat.numérateur   = négationModulo( X.numérateur )
-      résultat.dénominateur =  X.dénominateur
-      renvoyer résultat
+      resultat est Fraction256
+      resultat.numérateur   = négationModulo( X.numérateur )
+      resultat.dénominateur =  X.dénominateur
+      renvoyer resultat
      type : 458752
    -
      name : négationFractionModulo_mon
@@ -205,10 +205,10 @@ class :
      code : |1-
       procédure négationFractionModulo_mon( X Fraction256 ) : Fraction256
       
-      résultat est Fraction256
-      résultat.numérateur   = négationModulo( X.numérateur )
-      résultat.dénominateur =  X.dénominateur
-      RENVOYER résultat
+      resultat est Fraction256
+      resultat.numérateur   = négationModulo( X.numérateur )
+      resultat.dénominateur =  X.dénominateur
+      RENVOYER resultat
      type : 458752
    -
      name : soustractionModulo
@@ -234,20 +234,20 @@ class :
       procédure soustractionFractionModulo( nombreA Fraction256, nombreB Fraction256) : Fraction256
       
       
-      résultat est Fraction256 
+      resultat est Fraction256 
       // si meme dénominateur (y compris 1)
       SI nombreA.dénominateur.estEgalA( nombreB.dénominateur ) ALORS
       	// C = (A - B ) / X
-      	résultat.numérateur   = soustractionModulo(nombreA.numérateur, nombreB.numérateur )
-      	résultat.dénominateur = nombreA.dénominateur
-      	RENVOYER résultat
+      	resultat.numérateur   = soustractionModulo(nombreA.numérateur, nombreB.numérateur )
+      	resultat.dénominateur = nombreA.dénominateur
+      	RENVOYER resultat
       FIN
       
       // C = (A*Y - B*X) / X*Y
-      résultat.numérateur   = soustractionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
+      resultat.numérateur   = soustractionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
       											multiplicationModulo( nombreB.numérateur , nombreA.dénominateur ))
-      résultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
-      RENVOYER résultat
+      resultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
+      RENVOYER resultat
       
      type : 458752
    -
@@ -290,7 +290,7 @@ class :
      code : |1+
       // renvoie A * B ( mod P )
       procédure virtuelle multiplicationModulo(  nombreA entier256, nombreB entier256) : Entier256
-      dbgAssertion(faux) // normalmenet dérivée
+      dbgAssertion( P.val0 <> 0xFFFFFFFEFFFFFC2F, "ne devrait pas être appelé dans le corps sepc256k1" ) // car dérivée 
       
       // cas particulier de la multiplication par 1 (fractions)
       si nombreA.EstEgalA1() ALORS
@@ -389,10 +389,10 @@ class :
       procédure cubeFractionModulo( X fraction256 ) : Fraction256
       
       // = A*B/X*Y
-      résultat est Fraction256
-      résultat.numérateur   = cubeModulo(X.numérateur)
-      résultat.dénominateur = cubeModulo(X.dénominateur)
-      RENVOYER  résultat
+      resultat est Fraction256
+      resultat.numérateur   = cubeModulo(X.numérateur)
+      resultat.dénominateur = cubeModulo(X.dénominateur)
+      RENVOYER  resultat
       
      type : 458752
    -
@@ -446,9 +446,9 @@ class :
       procédure multiplicationPar2FractionModulo( X Fraction256) : Fraction256
       
       // = A*B/X*Y
-      résultat est Fraction256
-      résultat.numérateur   = multiplicationPar2Modulo(X.numérateur)
-      résultat.dénominateur = X.dénominateur
+      resultat est Fraction256
+      resultat.numérateur   = multiplicationPar2Modulo(X.numérateur)
+      resultat.dénominateur = X.dénominateur
       RENVOYER  résultat
       
      type : 458752
@@ -460,6 +460,25 @@ class :
       Procédure MultiplicationPar3Modulo( nombre Entier256 ) : entier256
       
       renvoyer additionModulo( multiplicationPar2Modulo(nombre), nombre)
+     type : 458752
+   -
+     name : multiplicationPar4Modulo
+     procedure_id : 2166246092384922583
+     type_code : 12
+     code : |1+
+      procédure multiplicationPar4Modulo( nombre Entier256 ) : entier256  
+      //@A optimiser
+      RENVOYER multiplicationPar2Modulo( multiplicationPar2Modulo(nombre) )
+     type : 458752
+   -
+     name : multiplicationPar8Modulo
+     procedure_id : 2166246234118941340
+     type_code : 12
+     code : |1+
+      procédure multiplicationPar8Modulo( nombre Entier256 ) : entier256  
+      
+      //@A optimiser
+      RENVOYER multiplicationPar2Modulo( multiplicationPar4Modulo( nombre) )
      type : 458752
    -
      name : multiplicationPar256Modulo

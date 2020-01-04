@@ -34,6 +34,18 @@ class :
      procedure_id : 1961802703583167596
      type_code : 27
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // Constructeur ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE Constructeur()
      type : 589824
    -
@@ -57,6 +69,18 @@ class :
      procedure_id : 1961802703583233132
      type_code : 28
      code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // Destructeur ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE Destructeur()
       
       // convertion en buffer de 256 bits= 32 octet
@@ -128,6 +152,18 @@ class :
      procedure_id : 1962542678360302389
      type_code : 12
      code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // affecteAvecEntierPositif (<n> est entier sans signe sur 8 octets)
+      //
+      // Paramètres :
+      //	n (entier sans signe sur 8 octets) : <indiquez ici le rôle de n>
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       procédure affecteAvecEntierPositif( n est un entier sur 8 octets sans signe)
       
       val0 = n
@@ -210,6 +246,18 @@ class :
      procedure_id : 1961819041642040777
      type_code : 12
      code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] estEgalAZero ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE estEgalAZero() : booléen
       
       RENVOYER val0 = 0 _ET_
@@ -223,6 +271,18 @@ class :
      procedure_id : 1979623973768236403
      type_code : 12
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] estEgalA1 ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       procédure estEgalA1() : booléen		 
       
       RENVOYER val0 = 1 _ET_
@@ -406,6 +466,18 @@ class :
      procedure_id : 1965526447984385121
      type_code : 12
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // multipliePar256 ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE multipliePar256()
       
       val3 = bitDécaleGauche( val3, 8)  + (bitDécaleDroite(val2,56) & 0xFF)
@@ -496,6 +568,18 @@ class :
      procedure_id : 1989748057906385184
      type_code : 12
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // divisePar2 ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCEDURE divisePar2()
       
       //V0 est Entier256 = objet
@@ -515,6 +599,18 @@ class :
      procedure_id : 1993346402882964608
      type_code : 12
      code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // multipliePar2 ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCÉDURE multipliePar2()
       
       val3 =  val3*2 | ( bitDécaleDroite(val2, 63 ) & 1)
@@ -571,6 +667,18 @@ class :
      procedure_id : 1990031530189826080
      type_code : 12
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // diviseParUnePuissanceDe2 (<nPuisssance> est entier)
+      //
+      // Paramètres :
+      //	nPuisssance (entier) : <indiquez ici le rôle de nPuisssance>
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCÉDURE diviseParUnePuissanceDe2( LOCAL nPuisssance est un entier  )
       dbgAssertion(nPuisssance>=0)
       // élimine les cas particuliers 

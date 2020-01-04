@@ -241,6 +241,20 @@ procedure_set :
      procedure_id : 1969267781119200227
      type_code : 15
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] addition64_64_retenueCumulative (<nombreA> est entier sans signe sur 8 octets, <nombreB> est entier sans signe sur 8 octets, <retenueCumulative_InOut> est entier sans signe sur 8 octets)
+      //
+      // Paramètres :
+      //	nombreA (entier sans signe sur 8 octets) : <indiquez ici le rôle de nombreA>
+      //	nombreB (entier sans signe sur 8 octets) : <indiquez ici le rôle de nombreB>
+      //	retenueCumulative_InOut (entier sans signe sur 8 octets) : <indiquez ici le rôle de retenueCumulative_InOut>
+      // Valeur de retour :
+      // 	entier sans signe sur 8 octets : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       Procédure addition64_64_retenueCumulative( nombreA entier sur 8 sans signe, nombreB entier sur 8 sans signe, retenueCumulative_InOut entier sur 8 sans signe  ): entier sur 8 sans signe
       
       resultat est entier sur 8 sans signe = nombreA  + nombreB
@@ -302,6 +316,19 @@ procedure_set :
      procedure_id : 1986300496158442668
      type_code : 15
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] multiplication64x64_128HL (<nombreA> est entier sans signe sur 8 octets, <nombreB> est entier sans signe sur 8 octets)
+      //
+      // Paramètres :
+      //	nombreA (entier sans signe sur 8 octets) : <indiquez ici le rôle de nombreA>
+      //	nombreB (entier sans signe sur 8 octets) : <indiquez ici le rôle de nombreB>
+      // Valeur de retour :
+      // 	multi-valeur : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCÉDURE multiplication64x64_128HL( nombreA entier sans signe sur 8 octet, nombreB entier sans signe sur 8 octet  ) :( entier sans signe SUR 8 octet, entier sans signe SUR 8 octet)
       
       //OPTIM
@@ -637,6 +664,19 @@ procedure_set :
      procedure_id : 1965527818079009339
      type_code : 15
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] multiplication256x32_512 (<nombreA> est Entier256, <nombreB> est entier sans signe sur 4 octets)
+      //
+      // Paramètres :
+      //	nombreA (Entier256) : <indiquez ici le rôle de nombreA>
+      //	nombreB (entier sans signe sur 4 octets) : <indiquez ici le rôle de nombreB>
+      // Valeur de retour :
+      // 	Entier512 : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       procédure multiplication256x32_512(nombreA Entier256, nombreB Entier sans signe sur 4 octet) : Entier512
       
       Résultat   est Entier512 
@@ -690,6 +730,19 @@ procedure_set :
      procedure_id : 1985937464018273321
      type_code : 15
      code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] multiplication64x64_num (<nombreA> est entier sans signe sur 8 octets, <nombreB> est entier sans signe sur 8 octets)
+      //
+      // Paramètres :
+      //	nombreA (entier sans signe sur 8 octets) : <indiquez ici le rôle de nombreA>
+      //	nombreB (entier sans signe sur 8 octets) : <indiquez ici le rôle de nombreB>
+      // Valeur de retour :
+      // 	numérique : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCÉDURE multiplication64x64_num( nombreA entier sans signe sur 8 octet, nombreB entier sans signe sur 8 octet  ) 
       
       //OPTIM:

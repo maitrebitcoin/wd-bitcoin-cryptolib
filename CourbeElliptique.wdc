@@ -93,16 +93,16 @@ class :
       // =>opération longue : inversion modulo ici
       L est entier256 = corps.divisionModulo( N, D )
       
-      pointRésultat est Point256 ;
+      PointRésultat est Point256 ;
       //X = (L*L - 2*p.x ) 
-      pointRésultat.x =  corps.soustractionModulo( corps.carréModulo(L),  corps.additionModulo( point.x, point.x ) ) 
+      PointRésultat.x =  corps.soustractionModulo( corps.carréModulo(L),  corps.additionModulo( point.x, point.x ) ) 
       // Y = - (L * ( X  - p.x ) + p.y )
-      RX est entier256 = pointRésultat.x
+      RX est entier256 = PointRésultat.x
       RY est entier256 = corps.soustractionModulo( RX, point.X )
       RY  =  corps.multiplicationModulo( L, RY)
       RY =  corps.additionModulo( RY, point.y )
       
-      pointRésultat.y = corps.négationModulo( RY )
+      PointRésultat.y = corps.négationModulo( RY )
       
       
       
@@ -139,16 +139,16 @@ class :
       L est entier256 = corps.divisionModulo( N, D )
       LAuCarré est entier256 = corps.carréModulo( L )
       
-      pointRésultat est Point256 ;
+      PointRésultat est Point256 ;
       //X = (L*L - Xa - Xb ) 
-      pointRésultat.x =  corps.soustractionModulo( LAuCarré,  corps.additionModulo( pointA.x, pointB.x ) ) 
+      PointRésultat.x =  corps.soustractionModulo( LAuCarré,  corps.additionModulo( pointA.x, pointB.x ) ) 
       // Y = -(YA + L * (Xr -  Xa ))
-      XR est entier256 = pointRésultat.x
+      XR est entier256 = PointRésultat.x
       RY_droite est entier256 =    corps.multiplicationModulo( L,  corps.soustractionModulo( XR, pointA.X )) 
-      pointRésultat.y = corps.négationModulo( corps.additionModulo( pointA.y,  RY_droite )   )
+      PointRésultat.y = corps.négationModulo( corps.additionModulo( pointA.y,  RY_droite )   )
       
       
-      renvoyer pointRésultat;
+      renvoyer PointRésultat;
      type : 458752
    -
      name : pointPlusPoint_InvModulairePrécalculé
@@ -183,16 +183,16 @@ class :
       L est Entier256 = corps.multiplicationModulo( N, InverseDeD )
       LAuCarré est Entier256 = corps.carréModulo( L )
       
-      pointRésultat est Point256 ;
+      PointRésultat est Point256 ;
       //X = (L*L - Xa - Xb ) 
-      pointRésultat.x =  corps.soustractionModulo( LAuCarré,  corps.additionModulo( pointA.x, pointB.x ) ) 
+      PointRésultat.x =  corps.soustractionModulo( LAuCarré,  corps.additionModulo( pointA.x, pointB.x ) ) 
       // Y = -(YA + L * (Xr -  Xa ))
-      XR est Entier256 = pointRésultat.x
+      XR est Entier256 = PointRésultat.x
       RY_droite est Entier256 =    corps.multiplicationModulo( L,  corps.soustractionModulo( XR, pointA.x )) 
-      pointRésultat.y = corps.négationModulo( corps.additionModulo( pointA.y,  RY_droite )   )
+      PointRésultat.y = corps.négationModulo( corps.additionModulo( pointA.y,  RY_droite )   )
       
       
-      RENVOYER pointRésultat;
+      RENVOYER PointRésultat;
      type : 458752
    -
      name : MultiplicationScalaireFraction
@@ -237,18 +237,18 @@ class :
       D est Fraction256 = corps.additionFractionModulo_mon( point.y, point.y )
       L est Fraction256 = corps.divisionFractionModulo_mon( N, D )
       
-      pointRésultat est PointFraction256 ;
+      PointRésultat est PointFraction256 ;
       //X = (L*L - 2*p.x ) 
-      pointRésultat.x =  corps.soustractionFractionModulo_mon( corps.carréFractionModulo_mon(L),  corps.additionFractionModulo_mon( point.x, point.x ) ) 
+      PointRésultat.x =  corps.soustractionFractionModulo_mon( corps.carréFractionModulo_mon(L),  corps.additionFractionModulo_mon( point.x, point.x ) ) 
       // Y = - (L * ( X  - p.x ) + p.y )
-      RX est Fraction256 = pointRésultat.x
+      RX est Fraction256 = PointRésultat.x
       RY est Fraction256 = corps.soustractionFractionModulo_mon( RX, point.X )
       RY  =  corps.multiplicationFractionModulo_mon( L, RY)
       RY =  corps.additionFractionModulo_mon( RY, point.y )
       
-      pointRésultat.y = corps.négationFractionModulo_mon( RY )
+      PointRésultat.y = corps.négationFractionModulo_mon( RY )
       
-      renvoyer pointRésultat;
+      renvoyer PointRésultat;
      type : 458752
    -
      name : pointPlusPoint_mon
@@ -343,17 +343,17 @@ class :
       L est Fraction256 = corps.divisionFractionModulo( N, D )
       LAuCarré est Fraction256 = corps.carréFractionModulo( L )
       
-      pointRésultat est PointFraction256 ;
+      PointRésultat est PointFraction256 ;
       //X = (L*L - Xa - Xb ) 
-      pointRésultat.x =  corps.soustractionFractionModulo( LAuCarré,  corps.additionFractionModulo( pointA.x, pointB.x ) ) 
+      PointRésultat.x =  corps.soustractionFractionModulo( LAuCarré,  corps.additionFractionModulo( pointA.x, pointB.x ) ) 
       // Y = -(AY + L * (Xr -  Xa ));
-      XR est Fraction256 = pointRésultat.x
+      XR est Fraction256 = PointRésultat.x
       RY_droite est Fraction256 =    corps.multiplicationFractionModulo( L,  corps.soustractionFractionModulo( XR, pointA.X )) 
-      pointRésultat.y = corps.négationFractionModulo( corps.additionFractionModulo( pointA.y,  RY_droite )   )
+      PointRésultat.y = corps.négationFractionModulo( corps.additionFractionModulo( pointA.y,  RY_droite )   )
       
       
       
-      renvoyer pointRésultat;
+      renvoyer PointRésultat;
      type : 458752
    -
      name : pointFractionAuCarré
@@ -369,20 +369,20 @@ class :
       D est Fraction256 = corps.multiplicationPar2FractionModulo( point.y )
       L est Fraction256 = corps.divisionFractionModulo( N, D )
       
-      pointRésultat est PointFraction256 ;
+      PointRésultat est PointFraction256 ;
       //X = (L*L - 2*p.x ) 
-      pointRésultat.x =  corps.soustractionFractionModulo( corps.carréFractionModulo(L),  corps.additionFractionModulo( point.x, point.x ) ) 
+      PointRésultat.x =  corps.soustractionFractionModulo( corps.carréFractionModulo(L),  corps.additionFractionModulo( point.x, point.x ) ) 
       // Y = - (L * ( X  - p.x ) + p.y )
-      RX est Fraction256 = pointRésultat.x
+      RX est Fraction256 = PointRésultat.x
       RY est Fraction256 = corps.soustractionFractionModulo( RX, point.X )
       RY  =  corps.multiplicationFractionModulo( L, RY)
       RY =  corps.additionFractionModulo( RY, point.y )
       
-      pointRésultat.y = corps.négationFractionModulo( RY )
+      PointRésultat.y = corps.négationFractionModulo( RY )
       
       
       
-      renvoyer pointRésultat;
+      renvoyer PointRésultat;
      type : 458752
    -
      name : pointFractionEstSurLaCourbe
@@ -466,22 +466,22 @@ class :
       // calcul L^2
       LAuCarré est Fraction256 = corps.multiplicationFractionModulo( L, L )
       
-      pointRésultat est PointFraction256 ;
+      PointRésultat est PointFraction256 ;
       //X = (L*L - Xa - Xb )  = L2 - (Xb + Xa)
       XAplusXB  est Fraction256 = corps.additionFractionModulo( pointA.x, pointB.x )
-      pointRésultat.x =  corps.soustractionFractionModulo( LAuCarré, XAplusXB ) 
+      PointRésultat.x =  corps.soustractionFractionModulo( LAuCarré, XAplusXB ) 
       // Y = -(Ya + L * (Xr -  Xa )
-      XR est Fraction256 = pointRésultat.x
+      XR est Fraction256 = PointRésultat.x
       // Xr - Xa
       XRmoinsXA  est Fraction256 =corps.soustractionFractionModulo( XR, pointA.X )
       
       // L * (Xr - Xa )
       LFois_XRmoinsXA est Fraction256 =    corps.multiplicationFractionModulo( L,  XRmoinsXA)  
       
-      pointRésultat.y = corps.négationFractionModulo( corps.additionFractionModulo( pointA.y,  LFois_XRmoinsXA )   )
+      PointRésultat.y = corps.négationFractionModulo( corps.additionFractionModulo( pointA.y,  LFois_XRmoinsXA )   )
       
       // renvoie  résultat
-      renvoyer pointRésultat;
+      renvoyer PointRésultat;
      type : 458752
    -
      name : pointAuCarréFraction
@@ -500,16 +500,16 @@ class :
       
       pointRésultat est PointFraction256 ;
       //X = (L*L - 2*p.x ) 
-      pointRésultat.x =  corps.soustractionFractionModulo( corps.carréFractionModulo(L),  corps.additionFractionModulo( point.x, point.x ) ) 
+      PointRésultat.x =  corps.soustractionFractionModulo( corps.carréFractionModulo(L),  corps.additionFractionModulo( point.x, point.x ) ) 
       // Y = - (L * ( X  - p.x ) + p.y )
-      RX est Fraction256 = pointRésultat.x
+      RX est Fraction256 = PointRésultat.x
       RY est Fraction256 = corps.soustractionFractionModulo( RX, point.X )
       RY  =  corps.multiplicationFractionModulo( L, RY)
       RY =  corps.additionFractionModulo( RY, point.y )
       
-      pointRésultat.y = corps.négationFractionModulo( RY )
+      PointRésultat.y = corps.négationFractionModulo( RY )
       
-      renvoyer pointRésultat;
+      renvoyer PointRésultat;
      type : 458752
   procedure_templates : []
   property_templates : []
