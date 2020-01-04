@@ -983,10 +983,10 @@ class :
       	I est entier = K._8Bits(X)
       	SI I<>0 ALORS
       		// récup de  G = I* (2^X) précalculé 
-      		valeurKPow2X   est Point256 = TabPointPow2PreCalculé_256[ I+X*256 ]
+      		valeurKPow2X   est Point256 = TabPointPow2PreCalculé_256[ i+X*256 ]
       		dbgAssertion( pointEstSurLaCourbe( valeurKPow2X ), "pointEstSurLaCourbe FAILED")
       		// Addition du point précalculé
-      		PointRésultat = pointPlusPoint( PointRésultat, valeurKPow2X )
+      		pointRésultat = pointPlusPoint( pointRésultat, valeurKPow2X )
       	FIN
       FIN
       
@@ -1004,23 +1004,48 @@ class :
       // version utilisation les coordonnées de Jacobi pour minimiser les divisions modulaires
       procédure multiplicationScalairePointJacobi(  point est Point256, K est Entier256 ) : Point256
       
-      PointRésultatJ	est Point256_3D		// 0
-      Ppow2JI			est Point256_3D		// p^(2*i)
       // conversion en coordonnées de Jacobi
-      Ppow2JI.VersJacobi(point) // init à 1*P
-      POUR i = 0 À 255
-      	SI K.bit(i) ALORS
-      		// r = r + 2^k
-      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  Ppow2JI  )
+      P est Point256_3D 
+      P.VersJacobi(point) // init à 1*P
+      // précalcul de 2*P,3*P, 
+      _2P est Point256_3D = pointDouble_Jacobi(P)
+      _3P est Point256_3D = pointPlusPoint_Jacobi(_2P, P)
+      
+      PointRésultatJ	est Point256_3D		// 0
+      // parcourt en partant du bit de poids fort par bloc de 2 bits
+      POUR i = 255 À 1 pas -2
+      	n est un entier = K.bit(i)*2 + K.bit(i-1)
+      	selon n
+      		cas 0:
+      			// rien
+      		cas 1:
+      			// r = r + 2^k
+      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  P    )
+      		CAS 2:
+      			// r = r + 2^k
+      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _2P  )
+      		CAS 3:
+      			// r = r + 2^k
+      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _3P  )			
+      	FIN
+      
+      	SI PointRésultatJ.estZéro() ALORS
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
-      		si i=255 _et_ PointRésultatJ.estZéro() ALORS
+      		si i=1  alors
       			// renvoie (0,0)
       			_P0 est Point256 
-      			renvoyer _P0
-      		FIN
+      			RENVOYER _P0
+      		fin
+      		// sinon c'est qu'on a pas encore rencontré de 1
+      		continuer
+      	FIN	
+      	SI i=1  ALORS
+      		sortir
       	FIN
-      	// p = p*2
-      	Ppow2JI = pointDouble_Jacobi(Ppow2JI)
+      	
+      	// r = r*4
+      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
+      	
       FIN
       
       // conversion depuis jacobi:

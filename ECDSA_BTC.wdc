@@ -191,6 +191,7 @@ class :
       Coef2 est Entier256 = corpsOrdre.multiplicationModulo(signature.R, inverseDeY)
       P1 est Point256     = courbeBtc.MultiplicationScalairePointGenérateur( 	            Coef1 )
       P2 est Point256     = courbeBtc.multiplicationScalairePointJacobi(     CléPublique, Coef2 ) 
+      //@TEst
       //P2_DBG est Point256 = courbeBtc.MultiplicationScalairePoint(           CléPublique, Coef2 ) 
       //dbgAssertion( P2_DBG.PointestEgalA( P2 ))
       // PRes = P1 + P2
