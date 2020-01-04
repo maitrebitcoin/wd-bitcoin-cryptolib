@@ -616,6 +616,14 @@ window :
       -
         type : 161
         enabled : false
+  -
+    name : Image1
+    identifier : 0x2e10ace804c9b359
+    internal_properties : BQAAAAUAAABuF+PqlZo3hdrhktPH9WCkdW/7hgJPod89maZuzT1/hzQ+Y2s4dF/kCiGfgGEz3F8TMiyYuCfTpzf8sMgt6XQnADrSnPm+qqboMVOC28SAkwkptrTUQR4rzXDE+1Mr505Yn3vTgGJ5hHvZCELz7MyDZjbEjTf3g7NNqWQeWl/Gb6G7+KhSUA7HtWgrngk58B/6eIJFl+4hSz1RVUUyPx3hFaVBF+HffND8CjGoK8hujw4rUMHbMQwtnd0CBdFsbvnb2W5z+95wJXhIVUEtgW7LBSVlcBU0mJY7x0saaAyi8E4tTJqdpsopCuPpOIHckdHCtuzeyvpzyoQ/Cf7ie0nGcuG0zi+CWdqRcyuby9qSBOidWJ+NQA9JFG1UdoJ+pZdg6DNW0oAc6ZTHXBPnwAwGQsiOSoIpnRwBu7H1dzd+euXrR+MKEvdfAnjUG3bxZT20uuiw1qLWJqMwYLmp2+KlugSpt4RIuWQJc2js0UuCaUQJFPhwbXCtesyWLIeR9SUnVats4spj+1T9855rj1xVUaLRCDeaIMRUkkeMKuNVpL/ULVm35J4frFA3KXYyxnF6DBmfz6jvppfsdIgNshJIxOo9tdjwdlu4+qXtacDkKpHN6E8k7EyhoN+cJgHK4YTKnAAXsIlM7TUS7Z6qHKNr72dTLqtWdBtOdUiI34TbgrZ6w0CoU56W1u5XAMS3V0q8RLZSczReyMXw1gIfgG3KFcQemAoSuHNdfz+UFLJC/zM4n/+yDXxH7NbtPBNgeiHXkMk3FGdpK9bMQBbWrhCZJayrL/nObo+F3hNjKtB7PiSXPeL17M7OkbRluzX4XHW2iEyh4WehFXHzUMYCbZUY83b2InQXjRLtZ/YDs2OZ
+    type : 8
+    code_elements :
+     type_code : 8
+     p_codes : []
  menu :
   name : _Menu
   identifier : 0x292573e513b5f221
