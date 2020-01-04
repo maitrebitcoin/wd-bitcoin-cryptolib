@@ -63,16 +63,16 @@ procedure_set :
       
      type : 458752
    -
-     name : VerifieiSignature
+     name : VerifieSignature
      procedure_id : 2024539397447712176
      type_code : 15
      code : |1+
       // vérifie que <signature> est bien la signature de <Nombre> avec un clé correspondant a <CléPublique>
-      procédure VerifieiSignature( NombreASigner Entier256, CléPublique Point256, signature SignatureEcdsa, erreurSiEchec_OUT est chaîne ) : booléen
+      procédure VerifieSignature( NombreASigner Entier256, CléPublique Point256, signature SignatureEcdsa, erreurSiEchec_OUT est chaîne ) : booléen
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond
-      renvoyer  m_gpclEDCSA.VerifieiSignature( NombreASigner , CléPublique , signature , erreurSiEchec_OUT  ) 
+      renvoyer  m_gpclEDCSA.VerifieSignature( NombreASigner , CléPublique , signature , erreurSiEchec_OUT  ) 
       
      type : 458752
    -

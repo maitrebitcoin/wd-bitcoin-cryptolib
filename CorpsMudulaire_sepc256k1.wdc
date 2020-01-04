@@ -239,6 +239,17 @@ class :
       FIN
       
       renvoyer resultat
+      
+     type : 458752
+   -
+     name : MultiplicationPar3Modulo
+     procedure_id : 2166353342056722807
+     type_code : 12
+     code : |1-
+      Procédure MultiplicationPar3Modulo( nombre Entier256 ) : entier256
+      
+      //@A optimiser
+      RENVOYER multiplicationParUI32Modulo( nombre, 3 )
      type : 458752
    -
      name : multiplicationPar4Modulo

@@ -136,13 +136,13 @@ class :
       renvoyer signature
      type : 458752
    -
-     name : VerifieiSignature
+     name : VerifieSignature
      procedure_id : 1979779374274356610
      type_code : 12
      code : |1+
-      // vérifique que <signature> est bien la singature de <Nombre> avec un clé correspondant a <CléPublique>
-      procédure VerifieiSignature( NombreSigné Entier256, CléPublique point256, signature SignatureEcdsa, erreurSiEchec_OUT est chaine  ) : booléen
-      //CléPubliqueFraction est PointFraction256( CléPublique )
+      // vérifie que <signature> est bien la signature de <Nombre> avec une clé correspondant a <CléPublique>
+      procédure VerifieSignature( NombreSigné Entier256, CléPublique point256, signature SignatureEcdsa, erreurSiEchec_OUT est chaine  ) : booléen
+      
       
       // vérification des pré-requis sur la clé publique
       si CléPublique.estZéro() ALORS
