@@ -432,9 +432,6 @@ class :
       si resultat.estSupérieurOuEgalA( P ) ALORS
       	resultat = soustraction(resultat, P )
       FIN
-      // TEST pour debug
-      resultat_DBG est un entier256  = additionModulo(nombreA,nombreA)
-      dbgAssertion(resultat.estEgalA(resultat_DBG), resultat.VersChaineHexa() + RC + resultat_DBG.VersChaineHexa()  )
       
       renvoyer resultat
      type : 458752
@@ -449,7 +446,7 @@ class :
       resultat est Fraction256
       resultat.numérateur   = multiplicationPar2Modulo(X.numérateur)
       resultat.dénominateur = X.dénominateur
-      RENVOYER  résultat
+      RENVOYER  resultat
       
      type : 458752
    -

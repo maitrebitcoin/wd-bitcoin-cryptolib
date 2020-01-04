@@ -40,12 +40,12 @@ class :
       PROCEDURE Destructeur()
      type : 655360
    -
-     name : InitDepuis2D
+     name : VersJacobi
      procedure_id : 2165919932557667799
      type_code : 12
      code : |1+
       // convertion d'un point 2D vers 3D
-      procédure InitDepuis2D( source est Point256 )
+      procédure VersJacobi( source est Point256 )
       
       x = source.x
       y = source.y
