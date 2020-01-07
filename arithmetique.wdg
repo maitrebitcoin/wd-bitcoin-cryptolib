@@ -2182,7 +2182,7 @@ procedure_set :
      type_code : 15
      code : |1+
       // renvoie l'inverse modulaire de B256 modulo A256
-      // ( U1 U2 V1 V2 ) tels que :
+      // algo : calcule ( U1 U2 V1 V2 ) tels que :
       //    A2 = U1*A - V1*B
       //    B2 = U2*A - V2*B
       // soient des entiers de 64 bits ( ou un peu plus )

@@ -301,7 +301,7 @@ class :
       FIN 
       
       //@Test
-      renvoyer MultiplicationModulo_Montgomery( nombreA, nombreB)
+      //renvoyer MultiplicationModulo_Montgomery( nombreA, nombreB)
       
       resultat est un entier256
       // calcul d'un cache des valeur de A * K pour K de 0 a 255
@@ -330,10 +330,10 @@ class :
       
       FIN
       
-      resultatDBG est Entier256 =  MultiplicationModulo_Montgomery( nombreA, nombreB)
-      si pas resultatDBG.estEgalA( resultat) alors
-      	dbgAssertion(faux, resultatDBG.VersChaineHexa() + RC + resultat.VersChaineHexa() )
-      fin
+      //resultatDBG est Entier256 =  MultiplicationModulo_Montgomery( nombreA, nombreB)
+      //si pas resultatDBG.estEgalA( resultat) alors
+      //	dbgAssertion(faux, resultatDBG.VersChaineHexa() + RC + resultat.VersChaineHexa() )
+      //fin
       
       renvoyer resultat
      type : 458752
