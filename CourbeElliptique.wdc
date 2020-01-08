@@ -76,7 +76,19 @@ class :
       // le point si sur la courbe si égalité
       renvoyer Y2.estEgalA( X3plusB ) 
       
+     type : 458752
+   -
+     name : pointNégation
+     procedure_id : 2167743073166274897
+     type_code : 12
+     code : |1-
+      // négation d'un point: ie renvoie -P
+      PROCÉDURE pointNégation(point Point256)  : Point256
       
+      PointRésultat est Point256  
+      PointRésultat.x = point.x 
+      PointRésultat.y = corps.négationModulo( point.y )
+      renvoyer PointRésultat
      type : 458752
    -
      name : pointDouble
@@ -149,6 +161,18 @@ class :
       
       
       renvoyer PointRésultat;
+      
+     type : 458752
+   -
+     name : pointMoinsPoint
+     procedure_id : 2167758444854660272
+     type_code : 12
+     code : |1-
+      // soustraction d'un point avec une autre
+      PROCÉDURE pointMoinsPoint(pointA Point256, pointB Point256)  : Point256
+      
+      moins_pointB est Point256 = pointNégation(pointB)
+      renvoyer pointPlusPoint(pointA,moins_pointB)
      type : 458752
    -
      name : pointPlusPoint_InvModulairePrécalculé
