@@ -53,7 +53,7 @@ window :
   -
     name : FIn1
     identifier : 0x2b8390ec00c21e47
-    internal_properties : BQAAAAUAAADvVxCRDq2WcpDMP4QcjCXSUoQ9c8455MSdvbXKpeaJwbVkXqn4sg2J6/RUcD49GE0d/vRQRtq5URpXzhjSHrVYbLOanVnUZkcPPJeWSP7cdEqkA5jbEv9mSGQRodOMUGJutfOVEcFaCjFEiq1czaR8BaXV4JKa+guRNgvKMASJgjPmpwY8afe8w+fdMmdr3MhtQE1PW7JYef8rkNr+rKpp3YxfJ+yqLqslb/EyArcBgxhihXj0qYUAO2I7F6SctOGLEt6yjx63gGLR2sZv12R9KdPcPsZoS/V8PaMgw80fq2xRoES19VnQ/+EnzE2FuEPg1+vj6m0R5LQL2VSSLRhVub0iy1apH9/N/9R36PeKuE64gGdTSnSGu77f3zALwcBrk0Jo6RrD3DP73im1uVD6ZFq/bSPuWWOuZ1c1xqrlioPK+rsu3K9WndfpeYap2lDKNIDFFVQ83vYXVIDn0M8kf2czQmXHiE2ErZ1O3c4f8aOoYnrP7n70ILdDMgGVOgUDwIrHo7z4DPb74xxYZWP3lvQgDJSbbGbyhBs+xYXgJwOtFtO8LQNzL3c1TBiWMcE7DBJTVstla3VpszNhOrRrLLwuZv2ewqzW9/CnkhlWaG6KNHOhMJgvbXGZcC27sYjuJO+xnjtpGCKiwMv5e8YxS+pBXln1CiSZFQnJoriBMAoB4KvJXh9qGeiYfebdKJ9xhDpy6PWrvMRWCZb9X2ykBdhk
+    internal_properties : BQAAAAUAAABnP/iJFoX+irg0l2zEJM1K2rzVuwbhHExVdV3i/U4hqY0spkFAarUhE7wMOEb1oCVltiwYHoIxGdKPFlCKpi3ghFvClUHsbj8XBK/+sJbETDIcW+DzepdOoDzZWWt06MrmPfuNObmC4hlsYnUEZcxUcwElxCoirqchQidSwPzVUoPSD3K0ASsAUxPBarfbYPgdjG07+4q8nQev9KoG7LZBDXD/gzxiEgdVK6Wqmi+NI7gGPdTMQancKx6XF7QMcMHrBs7Gp/ajHEINTu6vD2DVMU+sui4Qj/lMiS8wa21rO/xdoEi1/V3c753LdD3NhIvA03NXskWV4LTH9eTiDbx10RnqZ/ZBSxtNS3ifgFdeMNYaJo250MYIXZg9xZ4BO0bRFYDuZ5hFPgUthA+bL9qAwiTtkxnMA23oSU07zLDviIHUgCG0ShkAP4lvT5Q3tCZIZpabw+LGyNAZWnZVRgFSTWH5KPNtMgd2X8OM2xxpP2HKCOBVZOheUnHheEc7/MO5CkDVkZIKbkitKfJ2042dBJamUlLZrujU3pmEA1Oi5RGvJMFCo3VV0QlbYm4Mm6cRZvp7PiO9w51Bmws5UpxTNESm/lVGatQOv8iPusEuQEbinJuJCHAHNYmhaCWzuZCWTIcpFoOx4PrK+JOBw35pAyIJBqGtwlzBzbFhOhApWNJJuEMhBseScbDQBW4lYFeJnML6UE0DFGyOMa7Vd1SMbUDc
     type : 4
     code_elements :
      type_code : 4
@@ -424,7 +424,7 @@ window :
   -
     name : TEST_PGCD
     identifier : 0x2badc0020158377f
-    internal_properties : BQAAAAUAAAAWaRWDOlHIAACdr24JsAnL/ZM5J7eX7POiKFNP/i2CdeQkU4JaPdlUfK5Z2CkLuH/vBsvRxGq2uxyzk3+WmvxDQ7dL6X5kg1HYDrVtC78KLneYhiXQcW4eSYTgpMeF/RnYvWkRtHiDlNIhMeftVth9+JmHw9vJwBU2DIWcCX65VjWnHZIU5WoWrsBrm7z59WFJGYgQS51DtlBrkZlvo2mbVGvVsTQy4h9sgJ3OMBeG2nNRb6PaoAxBEjdB5r9q6ynC1HTTSthKaw4xc0BrOMCEBaXMuWCd2VCD1H76jn8a4KvBNtV0CpK/TpI3ZigB+B3I/6IARYvUla2gqIodTzAicGDcTBJUdr1y06CFGRAQ3TTosKg7fYWaKV90rKnSrKqXpiET6C/KaGHI0dyU7OMCZhsw1mD3VEOEXprKBzNW7Df36Q7lpTr0Ccr8wht0nZrarwkIdPfFvOIMjWWY/RyKM26C8diaeZNo9Gwnyq3a/qm9GTG620UQemLUoQwqQxcT4ee8xHHfmKxKRvfPXgTLkI+752NufepooXqZdY+g7bfAITpnKtK3dab++yuDiRtDzX/+pfNUfZ1mRKLEd8WN4JO3hzPsCL8gmH9SKYiJDk2gZU6bGlF8kyfn2t26QMzsuoB/pofbTjNzbGug4Jc3cl6JRmCfqY3wVUXwLBEWiOgiUKGfWTettskO85PmLdRg6uDmwISngqDgBKO+9rxTjcIclc/Q4EZeHxc=
+    internal_properties : BQAAAAUAAACOgZ0bstlAiJgl1+bxyBHDxdtRz1/vFMsKgCv3NtX6PZz8+xrShRGc1JYhcPGjIFfXrkNZTOI+M6QrKyduwrSL+8+zAZbMG9lQFp2ls3dS5j9APs14ydZWcTx4zL8tFQGw1RFJTKAbHOqpuX9V7qC1AAH/C+MBCE1Y9HVELXpRwkm/EUZgAbrGUsBri0hVbU0tgfx0r+F7nkx7mYFjR2GvgNN5dfBWyg+gWD1+DPP+9neJI4fmhHxpfi8xznsOK+3OLBi/vuzC24qx++jfvFDg2V2IdSQxQSCPrHa6SoNylCdRkpmYBhKX6lp3hqw9OJl0x3788Z8U3XFAKCIpm+CWVCBQwL5IfkUeazhtxaQwqZBgTJwv8w8sRzmiUhdoVvAJKIdJru1c+td6pzrasqWwoIVO1GZNjgVqoHB4ddng2rHp32STy5ROj0xyiCFKh0AsAT+u0k0PBiD248sGc54YvfAAf05oS+2+9nLdgBt8bMPv36eIGZfq2AxiP2LANYXt4+Vael/REjrENMUd7P7Bkomx/Vl8X9QWG+B/Ax3KG3H6/7jlMNzJG+hMqQnZ8+ElBydGbSuMNUXezNo8700VaBvP/8sUMGeYANc60fAhpuU4jZZDsumU+98vkpXyiJTUovj3Pi+D9uu7JLPoqE9vCvYRzugXIQV4rS3IxGm+MDDqqNlX4b81DpFGu1suZYy4QkgOqJy/mogYzJu27kTbNWq0DUdYaM7Wh48=
     type : 4
     code_elements :
      type_code : 4
@@ -471,7 +471,7 @@ window :
   -
     name : priv_pub1
     identifier : 0x2dc68581035feaad
-    internal_properties : BQAAAAUAAAAJz8rKp2oxgM9EQwa3UXbTe9QHbjlYy8v5HkIkEh+cgKqNERj/4db2tZv783KF3DrlcZcW+PoXHJvfrjK0wY3fV4vyLx1kGlEtZIUR+cE7/hNNYOKazqVFyGd/PjGwCgCLZioOERFArC3OIGZWRD4c1ZQOsGMaJk47h61Hl0H24dbQQj1nBLGIhrFA7DZ8JXS2rHoMUUwPImxx59TNzi05rMN2S/zUpH1inX/PStkbUBp1JtOu+dB4b8xRHQ0q79ciaTnXYgF2IbWlXa34AT4GyAffenC4N8kgXzfHSAaObYYwx4xdbhmo+K8Zfkf7krCz7YQi0mV80BeMGbgIN4f7P3a0XoruWOyqv+yEMS7s43FxnHgKhknZJBmKa92UOUI9WtmGq73R+MUEq1+6WjR2Yen6gWesvlyysRqzvJ62tkhFBSKvXbl3iZY64/mIxvpQ9nfXXTxV2D2l1HnnhtbvJYIAJksY9a0ncare6Z1D4MmG9KmzOGMrSYiA5kz4Bu2GYQ5m+dhv4sgGKcn2lvEJ2SfpbXIrsKnJjHvN2wQ2Wzj35m5/53X5A7LwhCo3W8YjuYA2M34vtUtvq8cRZs5YJWcBboea7Zo1gjoseF/paHvi9JC0h3Jjj6TF2UTCQorBYVoE6RwRCvZlDFLc1kLeA7kOejv1/Mr0rxs0CP/ryCv5maMYu9Vn0fxKSlBLmmFRzhzrRrbDp+JWUoI4GQP9lN9zYdmi+c8Tp1w6Tsl9aeY469rex3XwqlYJi3Uh9yFD1RFNAkJlJHDDrfvAxemogsJMZJbN
+    internal_properties : BQAAAAUAAAB539raV3ohkL90U7bnQWYja2TXPmkoexupTlIUgo/MUJqdISjvcUYGJQuLoyI1TAqVgefmqMqHrIsPviKk8b1vB1tCf820iuGdlNVBqbHrDsMdMDJKntUV+BePbmGgepA79rqegSGwvJ2+MBaGdC7sReSeQBMqFt4rt713x3EmsQagUs2XlGFYtqGQHGZsFUSmvAocQVx/MtzhNwQ9/l3JnBOuu7z0VE0SHc/Paql7oKrltrO+iXBY7zxRDR2KX9ei6flHomFGkSUlzY0YkV62OFfvuqAoF6lAb/f3uMZezQZwR3zdjilYKG9JHmeLssCjvXQiIjW8EPeceUgY9ze7nxb0zsoOiDx6n/yEMZ5sc+HBjHia1il5hOnKm61U6YJ9WhlWKx0BiBUk+7fSEjw+2VFSyX+ENsQ6CdLrFDYeHiCt/SpH1TH/Mc5yuxFg7qLofg9flTRNwMU9bJEfft73vSo47kOwTXXP6WI24ZXrSMHubDGL0PszUcC4XqSwbhU+6QaukVCnKjB+YaHujpnx0Q9B1SpjyDFRxNNls3xeA1CfnhaXX+1hiwpoHILPw677QRhmA65fZTufWxeh9r5INXcRXpeK3Yolsup8iC+ZmAtyBIDEt6ITf9T16VTSsnrRcWp0eYyB+uaVPGIsZjLOE0me6stlbLrk38tEGM+beHtJaVNoa4WXAaz6muDbCtEhHuyblmZz19JGQpIIKXNtZC/DkamS6T+DV4zK3lnt2XZI+8ru96WgGsb5m0VxJ9GTpWH9UjJVFGDzXQvQ1dmYktJcVKb9
     type : 4
     code_elements :
      type_code : 4
@@ -750,7 +750,7 @@ window :
      type_code : 4
      p_codes :
       -
-        code : |1-
+        code : |1+
          CrytoLib est ECDSA_BTC
          corps	est CorpsModulaire dynamique = CrytoLib.corpsOrdre	
          
@@ -774,6 +774,7 @@ window :
          _2 est Entier256(2)
          //_1_MoinsRacineCaréeDe3 est Entier256 = corps.soustractionModulo(_moins1, racineDeMoins3)
          _moins1_PlusRacineCaréeDe3 est Entier256 = corps.additionModulo(_moins1, racineDeMoins3 )
+         //_moins1_PlusRacineCaréeDe3 est Entier256 = corps.soustractionModulo(_moins1, racineDeMoins3 )
          //trace( "-1-sqrt(-3)   = " + _1_MoinsRacineCaréeDe3.VersChaineHexa())
          _L est Entier256 = corps.divisionModulo( _moins1_PlusRacineCaréeDe3 ,  _2 )
          trace( "-1-sqrt(-3)/2 = " + _L.VersChaineHexa())
@@ -781,8 +782,8 @@ window :
          
          // racine de X^2 + X + 1 = 0 ( modulo xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141 )
          //_Racine est Entier256("ac9c52b33fa3cf1f5ad9e3fd77ed9ba4a880b9fc8ec739c2e0cfc810b51283ce")
-         //_Racine est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
-         _Racine est Entier256= _L //("0xac9c52b33fa3cf1f5ad9e3fd77ed9ba4a880b9fc8ec739c2e0cfc810b51283cf")
+         _Racine est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
+         //_Racine est Entier256= _L //("0xac9c52b33fa3cf1f5ad9e3fd77ed9ba4a880b9fc8ec739c2e0cfc810b51283cf")
          x est Entier256 = corps.additionModulo( corps.carréModulo(_Racine), _Racine )
          x =  corps.additionModulo(x, _1)
          dbgAssertion(x.estEgalAZero())
@@ -790,6 +791,10 @@ window :
          
          
          P est Point256 = CrytoLib.courbeBtc.pointGen
+         P =  CrytoLib.courbeBtc.pointDouble(P)
+         
+         // _Racine^2 marche ausi ?
+         // _Racine = CrytoLib.corpsECC.multiplicationModulo(_Racine,_Racine)
          
          // on doit avoir _map(P) = _Racine * P
          mapP  est Point256 = _map(P)
@@ -798,8 +803,8 @@ window :
          trace(mapP.y.VersChaineHexa())
          //moinsX est Entier256 = CrytoLib.corpsECC.négationModulo( mapP.x )
          //Trace(moinsX.VersChaineHexa())
-         KP  est Point256 =  CrytoLib.courbeBtc.MultiplicationScalairePointGenérateur( _Racine )
-         Trace(" K*P : " )
+         KP  est Point256 =  CrytoLib.courbeBtc.MultiplicationScalairePoint( P, _Racine )
+         Trace(" K*P : k = "+ _Racine.VersChaineHexa()  )
          Trace(KP.x.VersChaineHexa())
          Trace(KP.y.VersChaineHexa())
          
@@ -812,8 +817,9 @@ window :
          	renvoyer pointRésultat
          FIN
          
-         // L*L + L = -1 (mod n)
-         L est Entier256
+         PROCÉDURE INTERNE _map2( _p est Point256 ) : Point256
+         	RENVOYER _map(_map(P))
+         fin
         type : 18
       -
         type : 161
@@ -860,6 +866,73 @@ window :
          
          
          
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : TEST_MAP2
+    identifier : 0x2e155cf800e36084
+    internal_properties : BQAAAAUAAACcHtQpjHeTRpjizo0OV3LDvHTu4sCEPDXEzCdboH3hSBsgxEQw3vYbSVWLJWjh4gRA7gC3tn/CgQgRdl7T44zUhKdXWv9xnP3W+xEVJsZsnkYMrGZ6ia0mc9no3j/fTgrnXVeqIdNLRC5Hi8o129D+n6+rT1W0+dsHUT+CkaxeIt9rDXZDKMG2eq/6bIV+FBem5pByY+3N5njNlU9cNiN5pjCko1NBkjj9k9vIe2Sem9HGjMtRxbEm0MIuow48aELYC9yttR/6o/FXz4ECpiku0wtRt5HqW9MUqDPJPPPl9iLxJ9t9/caJmWkaUcXcJLW9sD4z9zc639Jxk8XTcE901YN/yL/GY27hYELqO/NbAXxaoMmIZBJ0REhanEIasZHWzucRczubBOxNhaqhvDo//5H85O+BCdPfR1Z+uKUNUSQvicruxS2UJqHMPtZoeskB18UsAddyxJODBccTNYG5Lo5CVQPGbmOLFXjV9cWjQfRxh00j9Y4Ez1U8c5FyVgAY7VOMr8nq/gcr0tWEWOXWQ3XNlTrmEtxZRAwXMgHdi5v9oEHzVeSSQyIXWl0y6917IITvAXkRF6qlflCR+daoZ3l1QVpMJSm3icsSsNCqOcDu9YjI1Gg+kB7FKNZ08ScXEnRUUHhb/bPJHVIirRNHLCvwV7WVwumNMBMLCTX5mZRPjeSrXOIpcxS9PEwRH3GTbGzr22Tzb6IJC0Rc987e2UTABQr041vk4z5Z
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         CrytoLib est ECDSA_BTC
+         corps	est CorpsModulaire dynamique = CrytoLib.corpsOrdre	
+         
+         
+         _P est Entier256("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F")
+         
+         
+         
+         P est Point256 = CrytoLib.courbeBtc.pointGen
+         //P =  CrytoLib.courbeBtc.pointDouble(P)
+         
+         // Test que 2 P = map(P) - map(map(P)) ?
+         
+         // on doit avoir _map(P) = _Racine * P
+         mapP    est Point256 = _mapFrobenius(P)
+         dbgAssertion(  CrytoLib.courbeBtc.pointEstSurLaCourbe(mapP))
+         mapP_2  est Point256 = _mapFrobeniusCarré(P)
+         moinsMapP_2  est Point256 =   CrytoLib.courbeBtc.pointNégation(mapP_2)
+         moinsMapP    est Point256 =   CrytoLib.courbeBtc.pointNégation(mapP)
+         
+         _2_MoinsP est entier256("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f")
+         _T_fois_mapP  est Point256 =  CrytoLib.courbeBtc.MultiplicationScalairePoint( mapP_2 , _2_MoinsP )
+         
+         _P_  est Point256 =  CrytoLib.courbeBtc.pointMoinsPoint( mapP_2, _T_fois_mapP )
+         
+         // ---1
+         trace("  Map(P) - Map(Map(P))   : " )
+         trace(_P_.x.VersChaineHexa())
+         trace(_P_.y.VersChaineHexa())
+         ///---2
+         _2 est Entier256(2)
+         _1 est Entier256(1)
+         
+         
+         
+         _1P  est Point256 =  CrytoLib.courbeBtc.MultiplicationScalairePointGenérateur( _1 )
+         Trace(" P :"  )
+         Trace(_1P.x.VersChaineHexa())
+         Trace(_1P.y.VersChaineHexa())
+         
+         
+         // (x, y) => (x^2, y^2) 
+         procédure interne _mapFrobenius( _Pt est Point256 ) : Point256
+         	pointRésultat est Point256 
+         	pointRésultat.x = CrytoLib.corpsECC.puissanceModulo(  _Pt.x, _P )
+         	pointRésultat.y = CrytoLib.corpsECC.puissanceModulo(  _Pt.y, _P )
+         	renvoyer pointRésultat
+         FIN
+         
+         // (x, y) => (x^4, y^4) 
+         PROCÉDURE INTERNE _mapFrobeniusCarré( _Pt est Point256 ) : Point256
+         	RENVOYER _mapFrobenius(_mapFrobenius(_Pt))
+         fin
         type : 18
       -
         type : 161
