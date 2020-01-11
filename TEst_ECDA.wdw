@@ -1194,44 +1194,48 @@ window :
          
          
          	// coefficients tels que "(K,0) - B1*V1 + B2*V2" soit sur 128 bits
-          	_B1 est Entier256
-         	_B2 est Entier256
+          	_B1      est Entier256("0x2b6a121d1ef84b440996421265b4e26e")
+         	_moinsB2 est Entier256("0x085428ac856e542bb711d2bb9e408611")
          
-         	K_Y2      est Entier512 = multiplication256x256_512( _k, V2_Y)	
-         	moinsK_Y1 est Entier512 = multiplication256x256_512( _k, moinsV1_Y)
+         	//K_Y2      est Entier512 = multiplication256x256_512( _k, V2_Y)	
+         	//moinsK_Y1 est Entier512 = multiplication256x256_512( _k, moinsV1_Y)
          		
          	// calcul de B1 =  K*Y1 / _Delta
          	//	         B2 = -K*Y2 / _Delta
          	_DeltaLow est entier256 = _moinsDelta
          //	_DeltaLow.multiplieParUnePuissanceDe2(128)
-         	     K_Y2.multitpliePar2puissance128()
-         	moinsK_Y1.multitpliePar2puissance128()
+         //	     K_Y2.multitpliePar2puissance128()
+         	//moinsK_Y1.multitpliePar2puissance128()
          	// calcul de la division entière : donne un nombre de 128 bits si K est sur 256 bits
-         	reste est Entier256
-         	(     _B1,reste) = divisionEuclidienne256(     K_Y2.valPoidsFort, _DeltaLow  )
-         	_B1.multiplieParUnePuissanceDe2(128)
+         //	reste est Entier256
+         	//(     _B1,reste) = divisionEuclidienne256(     K_Y2.valPoidsFort, _DeltaLow  )
+         	//_B1.multiplieParUnePuissanceDe2(128)
+         	//'0x1a08ee06c6ba89c9f5498001ad0306fdd4382c84d8d3008c7fd6305c0da8a294'
          	// idem B2
-         	(     _B2,reste) = divisionEuclidienne256(moinsK_Y1.valPoidsFort, _DeltaLow  )
-         	_B2.multiplieParUnePuissanceDe2(128)
-         	trace("_B1:"+ _B1.VersChaineHexa())
-         	trace("_B2:"+ _B2.VersChaineHexa())
+         	//(     _B2,reste) = divisionEuclidienne256(moinsK_Y1.valPoidsFort, _DeltaLow  )
+         	//_B2.multiplieParUnePuissanceDe2(128)
+         	trace("_B1: "+ _B1.VersChaineHexa())
+         	trace("_B2:-"+ _moinsB2.VersChaineHexa())
          	
          	// v = B1*V1 + B2*V2
          	// B1*V1
-         	B1V1X	est Entier512	= multiplication256x256_512( _B1, V1_X )
-         	B1V1Y	est Entier512	= multiplication256x256_512( _B1, moinsV1_Y )
+         	B1V1X  	   est Entier512	= multiplication256x256_512( _B1, V1_X )
+         	moinsB1VY1	est Entier512	= multiplication256x256_512( _B1, moinsV1_Y )
          	// B2*V2
-         	B2V2X	est Entier512	= multiplication256x256_512( _B2, V2_X )
-         	B2V2Y	est Entier512	= multiplication256x256_512( _B2, V2_Y )
+         	moinsB2V2X	est Entier512	= multiplication256x256_512( _moinsB2, V2_X )
+         	moinsB2V2Y	est Entier512	= multiplication256x256_512( _moinsB2, V2_Y )
          	dbgAssertion(B1V1X.valPoidsFort.estEgalAZero())
-         	dbgAssertion(B1V1Y.valPoidsFort.estEgalAZero())
-         	dbgAssertion(B2V2X.valPoidsFort.estEgalAZero())
-         	dbgAssertion(B2V2Y.valPoidsFort.estEgalAZero())
+         	dbgAssertion(moinsB1VY1.valPoidsFort.estEgalAZero())
+         	dbgAssertion(moinsB2V2X.valPoidsFort.estEgalAZero())
+         	dbgAssertion(moinsB2V2Y.valPoidsFort.estEgalAZero())
          	
-         	// vx     = b2*v2.x - b1*v1.x
-         	moinsVX	est Entier256	 = soustraction(  B1V1X.valPoidsFaible,  B2V2X.valPoidsFaible )
-         	// vy     = b1*v2.y - b2*v1.y
-         	VY      est Entier256    = soustraction(  B1V1Y.valPoidsFaible,  B2V2Y.valPoidsFaible )
+         	// vx     = b1*v1.x + b2*v2.x
+         	VX	est Entier256		 = addition(  B1V1X.valPoidsFaible,       moinsB2V2X.valPoidsFaible )
+         	// vy     = b1*v1.y + b2*v2.y
+         	B1VY1_256 est Entier256 = corps.négationModulo(moinsB1VY1.valPoidsFaible)
+         	VY est Entier256         = addition(  B1VY1_256, 		      moinsB2V2Y.valPoidsFaible )
+         	Trace(" VY ="  +VY      .VersChaineHexa())
+         	moinsVX est Entier256    = corps.négationModulo(VX)
          	moinsVY est Entier256    = corps.négationModulo(VY)
          		
          	// k - vx = K - (b2*v2.x - b1*v1.x)
@@ -1240,16 +1244,19 @@ window :
          	Trace(" -VY ="  + moinsVY.VersChaineHexa())
          	
          	//_0_256_ est entier256
-         	//VX_Test	est Entier256 = VX; // corps.additionModulo(     B1V1X.valPoidsFaible , B2V2X.valPoidsFaible ) 
-         	//VY_Test	est Entier256 = VY; //corps.soustractionModulo( B1V1Y.valPoidsFaible , B2V2Y.valPoidsFaible ) 
+         	VX_Test	est Entier256 = KmoinsVX; // corps.additionModulo(     B1V1X.valPoidsFaible , B2V2X.valPoidsFaible ) 
+         	VY_Test	est Entier256 = moinsVY; //corps.soustractionModulo( B1V1Y.valPoidsFaible , B2V2Y.valPoidsFaible ) 
          	
          	// renvoie le vecteur (Lamda-(b1*v1+b2*v2))
-         	renvoyer ( KmoinsVX, moinsVY )
+         	renvoyer ( VX_Test, VY_Test )
          fin
          
          soit (k1,k2) = _calcVecteurOpimise(K)
          
          _Tmp = _F(k1, k2 )
+         Trace("-------------------------------------------------------------")
+         Trace("k1:    =" + k1.VersChaineHexa()) 
+         Trace("k2:    =" + k2.VersChaineHexa()) 
          Trace("k1+k2*L=" +_Tmp.VersChaineHexa())
          //_Tmp = _FMoins(k1, k2 )
          //Trace(_Tmp.VersChaineHexa())
