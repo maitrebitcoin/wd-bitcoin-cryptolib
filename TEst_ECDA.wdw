@@ -1106,7 +1106,24 @@ window :
          dbgAssertion(r1.estEgalA(r_))
          dbgAssertion(i_ = i)
          
-         _Tmp	est Entier256 
+         
+         // vérifie que  S*A + T*B = R 
+         _SA			est Entier512	= multiplication256x256_512(s1,N)
+         _TB			est Entier512	= multiplication256x256_512(t1,_Lambda)
+         _Tmp		est Entier256 
+         // r = SA + TB  : 
+         bSPositif	est un booléen	= EstPair(i)
+         SI bSPositif ALORS
+         	//  avec T négatif  =>
+         	//  R = SA - TB 
+         	_Tmp = soustraction( _SA.valPoidsFaible, _TB.valPoidsFaible  ) 
+         SINON
+         	//  avec S négatif  =>
+         	//  R = - SA + TB 		
+         	_Tmp = soustraction( _TB.valPoidsFaible , _SA.valPoidsFaible ) 
+         FIN
+         Trace(_Tmp.VersChaineHexa())
+         
          
          Trace("************Trouve :")
          //trace("s:"+s.VersChaineHexa())
@@ -1120,8 +1137,8 @@ window :
          dbgAssertion((i0=i-1))
          dbgAssertion(pas s0.estEgalAZero())
          // R+2
-         soit (s2,t2,r2,i2) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i+1)
-         dbgAssertion((i2=i+1))
+         soit (s2,t2,r2,i2) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i+2)
+         dbgAssertion((i2=i+2))
          dbgAssertion(PAS s2.estEgalAZero())
          
          Trace("************ -1  :")
@@ -1151,22 +1168,22 @@ window :
          V1_X      est Entier256  = r1
          moinsV1_Y est Entier256  = t1
          V2_X      est Entier256	 = r2
-         V2_Y      est Entier256	 = t2 
+         moinsV2_Y est Entier256	 = t2 
          //_Tmp est entier256
          _Tmp = _FMoins(V1_X, moinsV1_Y )
          dbgAssertion( _Tmp.estEgalAZero())
-         _Tmp = _F(V2_X, V2_Y )
+         _Tmp = _FMoins(V2_X, moinsV2_Y )
          dbgAssertion( _Tmp.estEgalAZero())
          //Trace("****** ")
          Trace("X1 (v1.x) = " +V1_X.VersChaineHexa())
+         Trace("Y1 (v1.x) =-" +moinsV2_Y.VersChaineHexa())
          Trace("X2 (v2.x) = " +V2_X.VersChaineHexa())
-         Trace("Y1 (v1.x) =-" +moinsV1_Y.VersChaineHexa())
-         Trace("Y2 (v2.x) = " +V2_Y.VersChaineHexa())
+         Trace("Y2 (v2.x) =-" +moinsV2_Y.VersChaineHexa())
          
-         X1Y2 est un entier512 = multiplication256x256_512(V1_X,V2_Y) 
-         dbgAssertion(X1Y2.valPoidsFort.estEgalAZero())
-         moinsX2Y1 est un entier512 = multiplication256x256_512(V2_X,moinsV1_Y)
-         dbgAssertion(moinsX2Y1.valPoidsFort.estEgalAZero())
+         moinsX1Y2 est un entier512 = multiplication256x256_512(V1_X, moinsV2_Y) 
+         //dbgAssertion(moinsX1Y2.valPoidsFort.estEgalAZero())
+         moinsX2Y1 est un entier512 = multiplication256x256_512(V2_X, moinsV1_Y)
+         //dbgAssertion(moinsX2Y1.valPoidsFort.estEgalAZero())
          // Delta = x1y2 - x2y1
          _Delta est Entier256 
          //si X1Y2.valPoidsFaible.estSupérieurOuEgalA(  X1Y2.valPoidsFaible ) alors
@@ -1174,9 +1191,9 @@ window :
          //sinon
          	//_Delta = soustraction(  X1Y2.valPoidsFaible, X2Y1.valPoidsFaible )  
          	//_Delta = negation(addition( X2Y1.valPoidsFaible, moinsX1Y2.valPoidsFaible  ))
-         trace(X1Y2.valPoidsFaible.VersChaineHexa())	
+         trace(moinsX1Y2.valPoidsFaible.VersChaineHexa())	
          trace(moinsX2Y1.valPoidsFaible.VersChaineHexa())	
-         _Delta = addition(X1Y2.valPoidsFaible, moinsX2Y1.valPoidsFaible   )
+         _Delta = soustraction( moinsX2Y1.valPoidsFaible , moinsX1Y2.valPoidsFaible )
          //fin
          _moinsDelta est Entier256  = negation(_Delta)
          //_Delta est Entier256 = corps.soustractionModulo( corps.multiplicationModulo(V1_X,V2_Y), corps.multiplicationModulo(V2_X,V1_Y) )
@@ -1187,22 +1204,24 @@ window :
          // Test de multiplication par K (nombre "au hasard")
          K est Entier256("0x071e443c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef878")
          
-         // renvoie V1,V2 tels que
-         // V1 + V2*R = K ( modulo N)
-         // avec V1 et V2 "petits" = sur 128 bits ou a peut-prêt
-         procédure interne _calcVecteurOpimise( _k est Entier256 )  : (Entier256,Entier256) 
+         // renvoie V1,V2,signe tels que
+         // V1 + signe*V2*R = K ( modulo N)
+         // avec V1 et V2 "petits" = sur ~128 bits 
+         // signe vaut +1 ou -1
+         procédure interne _calcVecteurOpimise( _k est Entier256 )  : (Entier256,Entier256, entier) 
          
          
-         	// coefficients tels que "(K,0) - B1*V1 + B2*V2" soit sur 128 bits
-          	_B1      est Entier256("0x2b6a121d1ef84b440996421265b4e26e")
-         	_moinsB2 est Entier256("0x085428ac856e542bb711d2bb9e408611")
+         	// coefficients tels que "(K,0) - (B1*V1 + B2*V2)" soit sur ~128 bits
+          	_B1      est Entier256("0x276e6bcbe7ba30a0b216a78e91107e13")
+         	_moinsB2 est Entier256("0x0658d53831aae2574117afb315cc83da")
+         	//_moinsB2 = corps.négationModulo(_moinsB2)
          
          	//K_Y2      est Entier512 = multiplication256x256_512( _k, V2_Y)	
          	//moinsK_Y1 est Entier512 = multiplication256x256_512( _k, moinsV1_Y)
          		
          	// calcul de B1 =  K*Y1 / _Delta
          	//	         B2 = -K*Y2 / _Delta
-         	_DeltaLow est entier256 = _moinsDelta
+         //	_DeltaLow est entier256 = _moinsDelta
          //	_DeltaLow.multiplieParUnePuissanceDe2(128)
          //	     K_Y2.multitpliePar2puissance128()
          	//moinsK_Y1.multitpliePar2puissance128()
@@ -1219,41 +1238,58 @@ window :
          	
          	// v = B1*V1 + B2*V2
          	// B1*V1
-         	B1V1X  	   est Entier512	= multiplication256x256_512( _B1, V1_X )
-         	moinsB1VY1	est Entier512	= multiplication256x256_512( _B1, moinsV1_Y )
+         	B1V1X  	    est Entier512	= multiplication256x256_512( _B1,      V1_X      )
+         	moinsB1VY1	est Entier512	= multiplication256x256_512( _B1,      moinsV1_Y )
          	// B2*V2
-         	moinsB2V2X	est Entier512	= multiplication256x256_512( _moinsB2, V2_X )
-         	moinsB2V2Y	est Entier512	= multiplication256x256_512( _moinsB2, V2_Y )
+         	moinsB2V2X	est Entier512	= multiplication256x256_512( _moinsB2, V2_X      )
+         	B2V2Y	    est Entier512	= multiplication256x256_512( _moinsB2, moinsV2_Y )
          	dbgAssertion(B1V1X.valPoidsFort.estEgalAZero())
          	dbgAssertion(moinsB1VY1.valPoidsFort.estEgalAZero())
          	dbgAssertion(moinsB2V2X.valPoidsFort.estEgalAZero())
-         	dbgAssertion(moinsB2V2Y.valPoidsFort.estEgalAZero())
+         	dbgAssertion(B2V2Y.valPoidsFort.estEgalAZero())
          	
          	// vx     = b1*v1.x + b2*v2.x
-         	VX	est Entier256		 = addition(  B1V1X.valPoidsFaible,       moinsB2V2X.valPoidsFaible )
+         	VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
+         	Trace(" B1V1X= "  +  B1V1X   .VersChaineHexa())
+         	Trace(" B2V2X=-"  +  moinsB2V2X   .VersChaineHexa())
+         	Trace(" VX ="  + VX	.VersChaineHexa())
+         	
          	// vy     = b1*v1.y + b2*v2.y
-         	B1VY1_256 est Entier256 = corps.négationModulo(moinsB1VY1.valPoidsFaible)
-         	VY est Entier256         = addition(  B1VY1_256, 		      moinsB2V2Y.valPoidsFaible )
-         	Trace(" VY ="  +VY      .VersChaineHexa())
-         	moinsVX est Entier256    = corps.négationModulo(VX)
+         	//B1VY1_256 est Entier256 = corps.négationModulo(moinsB1VY1.valPoidsFaible)
+         	VY est Entier256         = corps.soustractionModulo(  B2V2Y.valPoidsFaible,  moinsB1VY1.valPoidsFaible   )
+         	//moinsVY est Entier256    = addition(  moinsB1VY1.valPoidsFaible,  moinsB2V2X.valPoidsFaible ) 
+         	Trace(" VY ="  +VY.VersChaineHexa())
+         	//moinsVX est Entier256    = corps.négationModulo(VX)
          	moinsVY est Entier256    = corps.négationModulo(VY)
          		
          	// k - vx = K - (b2*v2.x - b1*v1.x)
-         	KmoinsVX est Entier256 = addition( _k,moinsVX)
-         	Trace("K-VX ="  + KmoinsVX.VersChaineHexa())
-         	Trace(" -VY ="  + moinsVY.VersChaineHexa())
+         	KmoinsVX est Entier256 = corps.soustractionModulo( _k, VX)
+         	//Trace("K-VX ="  + KmoinsVX.VersChaineHexa())
+         	//Trace(" -VY ="  + moinsVY.VersChaineHexa())
          	
          	//_0_256_ est entier256
+         	signeY est entier = 1
          	VX_Test	est Entier256 = KmoinsVX; // corps.additionModulo(     B1V1X.valPoidsFaible , B2V2X.valPoidsFaible ) 
          	VY_Test	est Entier256 = moinsVY; //corps.soustractionModulo( B1V1Y.valPoidsFaible , B2V2Y.valPoidsFaible ) 
+         	// si VX_Test<0
+         	si VX_Test.bit(255)=1 ALORS
+         		// x' = -x
+         		// y' = -y
+         		VX_Test = corps.négationModulo( VX_Test ) 
+         		signeY  = -1
+         	FIN
          	
          	// renvoie le vecteur (Lamda-(b1*v1+b2*v2))
-         	renvoyer ( VX_Test, VY_Test )
+         	renvoyer ( VX_Test, VY_Test, signeY )
          fin
          
-         soit (k1,k2) = _calcVecteurOpimise(K)
+         soit (k1,k2,signek2) = _calcVecteurOpimise(K)
          
-         _Tmp = _F(k1, k2 )
+         si signek2 = 1
+         	_Tmp = _F(k1, k2 )
+         sinon
+         	_Tmp =  corps.négationModulo( _FMoins(k1, k2 ) )
+         fin
          Trace("-------------------------------------------------------------")
          Trace("k1:    =" + k1.VersChaineHexa()) 
          Trace("k2:    =" + k2.VersChaineHexa()) 
@@ -1262,10 +1298,13 @@ window :
          //Trace(_Tmp.VersChaineHexa())
          Trace("K=      " +K.VersChaineHexa())
          
+         retour
+         
          // P = ordre de la courbe = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
          // un nombre d'odre 3.
          // ie tel que :  beta^3 = 1 modulo P
          // NB : tout nombre d'ordre 3 est OK.
+         
          beta  	est Entier256("7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")
          // R tel que map(P) = R*P
          // racine du polynome : X^2 + X + 1 = 0 ( modulo P )
