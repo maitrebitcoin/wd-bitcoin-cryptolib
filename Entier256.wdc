@@ -27,6 +27,7 @@ class :
       	BUF_LOW_ENDIAN = 0  // poids faible au début. 0x1234 => 0x34 0x12
       	BUF_BIG_ENDIAN = 1  // poids fort au début
       fin
+      
      type : 131072
   procedures :
    -
@@ -656,10 +657,16 @@ class :
       dbgAssertion(nPuisssance<8)
       
       //@ 0xFF : contourne un bug 23
+      //@ var temp x: contourne un bug 25
+      x est entier sur 8 sans signe
+      nDécaleDroite est un entier= 64 - nPuisssance
       nMasqueFF est un entier = bitDécaleDroite( 0xFF, 8-nPuisssance )
-      val3 = bitDécaleGauche( val3, nPuisssance)  | ( bitDécaleDroite(val2, 64-nPuisssance ) & nMasqueFF)
-      val2 = bitDécaleGauche( val2, nPuisssance)  | ( bitDécaleDroite(val1, 64-nPuisssance ) & nMasqueFF)
-      val1 = bitDécaleGauche( val1, nPuisssance)  | ( bitDécaleDroite(val0, 64-nPuisssance ) & nMasqueFF)
+      x    = bitDécaleDroite( val2, nDécaleDroite) & nMasqueFF
+      val3 = bitDécaleGauche( val3, nPuisssance)   | x
+      x    = bitDécaleDroite( val1, nDécaleDroite) & nMasqueFF
+      val2 = bitDécaleGauche( val2, nPuisssance)   | x
+      x    = bitDécaleDroite( val0, nDécaleDroite) & nMasqueFF
+      val1 = bitDécaleGauche( val1, nPuisssance)   | x 
       val0 = bitDécaleGauche( val0, nPuisssance)  
      type : 458752
    -

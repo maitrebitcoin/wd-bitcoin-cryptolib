@@ -67,6 +67,23 @@ class :
       valPoidsFort.val0 += c
      type : 458752
    -
+     name : multitpliePar2puissance128
+     procedure_id : 2168923003762808136
+     type_code : 12
+     code : |1-
+      procédure multitpliePar2puissance128()
+      
+      // décalage de 128 bits:
+      valPoidsFort.val3   = valPoidsFort.val1
+      valPoidsFort.val2   = valPoidsFort.val0
+      valPoidsFort.val1   = valPoidsFaible.val3
+      valPoidsFort.val0   = valPoidsFaible.val2
+      valPoidsFaible.val3 = valPoidsFaible.val1
+      valPoidsFaible.val2 = valPoidsFaible.val0
+      valPoidsFaible.val1 = 0
+      valPoidsFaible.val0 = 0
+     type : 458752
+   -
      name : affecteAvecChaineHexa
      procedure_id : 1965888475079164130
      type_code : 12

@@ -903,7 +903,7 @@ procedure_set :
       	// R = N – (Q * D)
       	QxD  =  multiplication256x256_256(quotient, diviseur)
       
-      	// si a a évaluté un quotient trop grand de 1
+      	// si a a évalué un quotient trop grand de 1
       	bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
       	SI bResteNegatif ALORS
       		// Q = Q - 1
@@ -2845,6 +2845,118 @@ procedure_set :
       FIN
       
       renvoyer (  U1, V1,  U2, V2, AReste, BReste, b )
+     type : 458752
+   -
+     name : PGCD_Etendu_StopMax
+     procedure_id : 2168524413620160044
+     type_code : 15
+     code : |1+
+      // algo du calcul du PGCD de 2 nombre par l'algorithme d'Euclide étendu
+      // renvoie 3 entier (S,T ,R)) tels que S*A + T*B = R 
+      // des que R est < nombreRMax
+      // le dernier paramètre donne le signe de S/T. PAIR : S>0 et T<0. IMPAIR : S<0 et T>0
+      PROCÉDURE PGCD_Etendu_StopMax( nombreA Entier256, nombreB Entier256, nombreRMax Entier256, iMax Entier=-1 ) : (Entier256, Entier256, Entier256, Entier)
+      
+      // Algorithme d'euclide étendu
+      s est Entier256
+      r est Entier256
+      sOld est Entier256
+      rOld est Entier256
+      sTemp est  Entier256
+      tTemp est  Entier256
+      
+      // Init
+      sOld  = _1_256; // S0
+      s	  = _0_256; // S1
+      rOld  = nombreA;// R0 = A
+      r	  = nombreB;//
+      
+      
+      // t = rOld
+      tOld est Entier256 // T0
+      t    est Entier256 =  _1_256 // T1 
+      	
+      //Trace( "A=" + nombreA.VersChaineHexa()  )
+      //Trace( "B=" + nombreB.VersChaineHexa() )	
+      	
+      // var temps. hors la boucle pour optim d'allocs
+      quotient64 est Entier sur 8 octets sans signe
+      reste  est Entier256
+      i est un entier
+      tantque pas r.estEgalAZero()
+      	
+      	// Division Euclidienne de rOld par r.
+      	// quotient = rOld / r + reste;
+      	( quotient64, reste ) = divisionEuclidienneSimplifiee64( rOld, r )
+      
+      	i++
+      	si iMax<>-1 _et_ i>=iMax ALORS
+      		sortir
+      	FIN
+      	
+      	dbgAssertion(i<1000)
+      //	TRACE( "s=" + s.VersChaineHexa()  )
+      //	TRACE( "t=" + t.VersChaineHexa() )
+      	QR est Entier256 = multiplication256x64_256(r, quotient64)
+      	QRplusReste est Entier256  = addition(QR , reste)
+      	dbgAssertion( QRplusReste.estEgalA( rOld), rOld.VersChaineHexa()  )
+      	// vérifie que  S*A + T*B = R 
+      	_SA est Entier512 = multiplication256x256_512(s,nombreA)
+      	_TB est Entier512 = multiplication256x256_512(t,nombreB)
+      	_Tmp est Entier256 
+      	// r = SA + TB  : 
+      	si estPair(i) alors
+      		//  avec T négatif  =>
+      		//  R = SA - TB 
+      		_Tmp = soustraction( _SA.valPoidsFaible, _TB.valPoidsFaible  ) 
+      	sinon
+      		//  avec S négatif  =>
+      		//  R = - SA + TB 		
+      		_Tmp = soustraction( _TB.valPoidsFaible , _SA.valPoidsFaible ) 
+      	fin
+      	
+      //	trace(_Tmp.VersChaineHexa()+":" + r.VersChaineHexa())
+      	dbgAssertion( _Tmp.estEgalA(r))
+      	
+      	// si on arrive a la fin
+      	SI iMax=-1 _et_ nombreRMax.estSupérieurOuEgalA(r) ALORS
+      		SORTIR
+      	FIN	
+      	
+      	// sauver les valeur précédentes
+      	sTemp  = sOld;
+      	tTemp  = tOld;
+      	rOld   = r;
+      	sOld   = s;
+      	tOld   = t;
+      	r      = reste;
+      	
+      	// OPTIM cas particulier Q = 1
+      	SI quotient64=0 ALORS
+      		s = sTemp
+      	sinon si quotient64=1 ALORS
+      		s =  addition( sTemp, sOld)
+      	SINON SI quotient64=2 ALORS
+      		soldFois2 est Entier256 = sOld 
+      		soldFois2.multipliePar2()
+      		s =  addition( sTemp, soldFois2 )		
+      	sinon
+      		// cas général
+      		// s = sOld -Q*s
+      		s = addition( sTemp, multiplication256x64_256(s, quotient64 ) )
+      	fin
+      	t = addition( tTemp, multiplication256x64_256(t, quotient64 ) )
+      
+      	
+      FIN
+      
+      //si estimpair(i) ALORS
+      //	RENVOYER soustraction( nombreB, sOld )
+      //FIN
+      //sPositif est un booléen = EstPair(i) 
+      
+      // renvoyer  u
+      renvoyer  (s, t, r, i) // sOld 
      type : 458752
   procedure_templates : []
   property_templates : []

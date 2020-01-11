@@ -53,7 +53,7 @@ window :
   -
     name : FIn1
     identifier : 0x2b8390ec00c21e47
-    internal_properties : BQAAAAUAAABnP/iJFoX+irg0l2zEJM1K2rzVuwbhHExVdV3i/U4hqY0spkFAarUhE7wMOEb1oCVltiwYHoIxGdKPFlCKpi3ghFvClUHsbj8XBK/+sJbETDIcW+DzepdOoDzZWWt06MrmPfuNObmC4hlsYnUEZcxUcwElxCoirqchQidSwPzVUoPSD3K0ASsAUxPBarfbYPgdjG07+4q8nQev9KoG7LZBDXD/gzxiEgdVK6Wqmi+NI7gGPdTMQancKx6XF7QMcMHrBs7Gp/ajHEINTu6vD2DVMU+sui4Qj/lMiS8wa21rO/xdoEi1/V3c753LdD3NhIvA03NXskWV4LTH9eTiDbx10RnqZ/ZBSxtNS3ifgFdeMNYaJo250MYIXZg9xZ4BO0bRFYDuZ5hFPgUthA+bL9qAwiTtkxnMA23oSU07zLDviIHUgCG0ShkAP4lvT5Q3tCZIZpabw+LGyNAZWnZVRgFSTWH5KPNtMgd2X8OM2xxpP2HKCOBVZOheUnHheEc7/MO5CkDVkZIKbkitKfJ2042dBJamUlLZrujU3pmEA1Oi5RGvJMFCo3VV0QlbYm4Mm6cRZvp7PiO9w51Bmws5UpxTNESm/lVGatQOv8iPusEuQEbinJuJCHAHNYmhaCWzuZCWTIcpFoOx4PrK+JOBw35pAyIJBqGtwlzBzbFhOhApWNJJuEMhBseScbDQBW4lYFeJnML6UE0DFGyOMa7Vd1SMbUDc
+    internal_properties : BQAAAAUAAABnP/iJFoX+irg0l2zEJM1K2rzVuwbhHExVdV3i/U4hqY0spkFAarUhE7wMOEb1oCVltiwYHoIxGdKPFlCKpi3ghFvClUHsbj8XBK/+sJbETDIcW+DzepdOoDzZWWt06MrmPfuNObmC4hlsYnUEZdTggzlVRIpyHvfpAq/y+PyVmtMiF0p8yXN4s2vRcscD+Lh1VE3Ly8p87a+fDNr+3MbpTXAH68RaCg+1E2XiSucF00C+vYQ8sWkcY+5/1/x8gEnb9mZuL+5LdJJFXraP98j1yRfsCq5gv0lUeXeQQ82b44ytKFANlfXED3XrrM21nBuoS0OXwvU1wIwXjQSqHfw9kSnSr85Zc3O9s8h3kF+2wG7uUjEFnMJ08eTx4fpFLzIF+fxiY/RRqok5mCv3Qz5c9pipt2W479kMpSFnONTTdLX4zBXARtUsQ+XjO0CL2NKsynK/L07yZKSl7oKhmpXu8aVVjK+5zuOqi+dIlyC9G7Wu1NTxgNQKdv1l9MPPYC8t/uwZTc5WKgzp3T6yl7G52Kpids6lulSICk3Af1emceXzwEVOT+ER9WUvjhoQn7M1Ch5zPiO9w51Bmws5UpxTNESm/lVGatQOv8iPusEuQEbinJuJCHAHNYmhaCWzuZCWTIcpFoOx4PrK+JOBw35pAyIJBqGtwlzBzbFhOhApWNJJuEMhBseScbDQBW4lYFeJnML6UE0DFGyOMa7Vd1SMbUDc
     type : 4
     code_elements :
      type_code : 4
@@ -424,7 +424,7 @@ window :
   -
     name : TEST_PGCD
     identifier : 0x2badc0020158377f
-    internal_properties : BQAAAAUAAACOgZ0bstlAiJgl1+bxyBHDxdtRz1/vFMsKgCv3NtX6PZz8+xrShRGc1JYhcPGjIFfXrkNZTOI+M6QrKyduwrSL+8+zAZbMG9lQFp2ls3dS5j9APs14ydZWcTx4zL8tFQGw1RFJTKAbHOqpuX9V7qC1AAH/C+MBCE1Y9HVELXpRwkm/EUZgAbrGUsBri0hVbU0tgfx0r+F7nkx7mYFjR2GvgNN5dfBWyg+gWD1+DPP+9neJI4fmhHxpfi8xznsOK+3OLBi/vuzC24qx++jfvFDg2V2IdSQxQSCPrHa6SoNylCdRkpmYBhKX6lp3hqw9OJl0x3788Z8U3XFAKCIpm+CWVCBQwL5IfkUeazhtxaQwqZBgTJwv8w8sRzmiUhdoVvAJKIdJru1c+td6pzrasqWwoIVO1GZNjgVqoHB4ddng2rHp32STy5ROj0xyiCFKh0AsAT+u0k0PBiD248sGc54YvfAAf05oS+2+9nLdgBt8bMPv36eIGZfq2AxiP2LANYXt4+Vael/REjrENMUd7P7Bkomx/Vl8X9QWG+B/Ax3KG3H6/7jlMNzJG+hMqQnZ8+ElBydGbSuMNUXezNo8700VaBvP/8sUMGeYANc60fAhpuU4jZZDsumU+98vkpXyiJTUovj3Pi+D9uu7JLPoqE9vCvYRzugXIQV4rS3IxGm+MDDqqNlX4b81DpFGu1suZYy4QkgOqJy/mogYzJu27kTbNWq0DUdYaM7Wh48=
+    internal_properties : BQAAAAUAAAAmeSUTqiE4sDAt3/75wBm7zSNJd2cnXCNSeAPfbr3SJbT04xLKjQmELP4JaJmbCC+/1tuhNDomK4yDgw8GKgwzk8fbOS6084EIXmX9+0+anodoFvWAgZ4OuZTQdPfVTcmozfmhpEizhMIxITcdJmjtSKlX00tZsMU6dM1MwVaJfr2HnZKkfQr2XtDr42xp/bF5gQD4ky27fuizaUlHi4kzvLv1UTRqMk+MoI2GILdeOvMJdyuSAMTp+q85xldie0EKxGRzipBaG+5Bk+jLKFjUxW30cWh9AfirLJa61mdKqNMBBhVkgpK/DkIHLuiBoI24x0oITVuM7cWY4ArFJxAKKPC8DOI8Bh3ig+C9eVBIrdRgyFAj0fGOpRNIsCVWGGbLakV3fCOmTF089dAAgB/uuh/EqsT7UEdA0t6u00dyyKvrjTIJSRbYBf6gpgdo6TYe0y1sKKthYO5wAckUcVgG57JGVXze5YcUKABr5oHWuo2xHeVO32G05lYoNWjOH2P39YsAiKXrrIieKquLYkBXRKO/S0fy+W7UdQ5N0TN8mZuEdT6rnm7bQRpST8f31deHga/O1YPkje02lBJ0pxVd0IOnlyP8GE+w6M8CmThZXj2QVV6LaqHMI7d3Sk0q0FwcajDPVtcrHsPDPFtQUCdHYk751tBved0AJZWgnIGmGBjSgPFP6cc9Bpleo0NWvWSQmhA2cNT3UnAw1JOu5kzjPXJM5X9gcNYuLyc=
     type : 4
     code_elements :
      type_code : 4
@@ -471,7 +471,7 @@ window :
   -
     name : priv_pub1
     identifier : 0x2dc68581035feaad
-    internal_properties : BQAAAAUAAAB539raV3ohkL90U7bnQWYja2TXPmkoexupTlIUgo/MUJqdISjvcUYGJQuLoyI1TAqVgefmqMqHrIsPviKk8b1vB1tCf820iuGdlNVBqbHrDsMdMDJKntUV+BePbmGgepA79rqegSGwvJ2+MBaGdC7sReSeQBMqFt4rt713x3EmsQagUs2XlGFYtqGQHGZsFUSmvAocQVx/MtzhNwQ9/l3JnBOuu7z0VE0SHc/Paql7oKrltrO+iXBY7zxRDR2KX9ei6flHomFGkSUlzY0YkV62OFfvuqAoF6lAb/f3uMZezQZwR3zdjilYKG9JHmeLssCjvXQiIjW8EPeceUgY9ze7nxb0zsoOiDx6n/yEMZ5sc+HBjHia1il5hOnKm61U6YJ9WhlWKx0BiBUk+7fSEjw+2VFSyX+ENsQ6CdLrFDYeHiCt/SpH1TH/Mc5yuxFg7qLofg9flTRNwMU9bJEfft73vSo47kOwTXXP6WI24ZXrSMHubDGL0PszUcC4XqSwbhU+6QaukVCnKjB+YaHujpnx0Q9B1SpjyDFRxNNls3xeA1CfnhaXX+1hiwpoHILPw677QRhmA65fZTufWxeh9r5INXcRXpeK3Yolsup8iC+ZmAtyBIDEt6ITf9T16VTSsnrRcWp0eYyB+uaVPGIsZjLOE0me6stlbLrk38tEGM+beHtJaVNoa4WXAaz6muDbCtEhHuyblmZz19JGQpIIKXNtZC/DkamS6T+DV4zK3lnt2XZI+8ru96WgGsb5m0VxJ9GTpWH9UjJVFGDzXQvQ1dmYktJcVKb9
+    internal_properties : BQAAAAUAAACJT0pKJ+qxAE/Ew4Y30fZT+1SH7rnYS0t5nsKkkp8cACoNkZh/YVZ2NRt7c/IFXLpl8ReWeHqXnBtfLrI0QQ1f1wtyr53kmtGt5AWReUG7fpPN4GIaTiXFSOf/vrEwioAL5qqOkZHALK1OoObWxL6cVRSOMOOaps67By3HF8F2YVZQwr3nhDEIBjHAbLb8pfQ2LPqM0cyPouzxZ1RNTq25LEPmC9y0BB1CHV8Pqrkb0Bq1BhOOmXBYDwxx3S1KLxdi6ZmXwqHWwdVlva2Yof5GCMc/utCYlynA3xfHKGYO7Ubw5wx9TvnImC95fiebUnBzraQi8kWc8PeMObjol8e7/7ZUXiqOeAyKv4xEkQ7sY/HxfDjqJqk5xJlq6320OcJ92rnGC53xGCXEyw8KymTmkfkK0RecjixCQcojzE4mZrjVFXJfjckHGeYq00k4tqoABgcnDWzl6A31RCl3NkYflRKQdvvIhb03QZoOOQ1zkPmWhHnj6PO72Riwlpyodh028Z426Ui/sphWmbnGxuF5ibf5vSIbgHmZnCt9q3RmC2iH9r7vF4WJk0IgtHqni/ZTCVC2s/6vNcvvK0eR5k7YpeeB7gcabRq1Arqs+N9p6PtidBA0B/LjDyRFWcRCwgpB4dqEaZyRinbljNJcVsJegzmO+rt1fEp0L5u0iH9rSKt5GSOYO1XnUXzKytDLGuHRTpxrxjZDJ2LW0gK4mYN9FF/z4VkieU+TJ9y6zkn96Wa4a1peR/VwKtaJC/Whd6HDVZHNgsLlpPBDLXtARWkoAkLM5BZN
     type : 4
     code_elements :
      type_code : 4
@@ -587,7 +587,7 @@ window :
   -
     name : ECDSA_SigneNombre_ECDSA_VerifieiSignature
     identifier : 0x2c02cf800181802d
-    internal_properties : BQAAAAUAAAC8KUEGDAsYVdztPVFT8sehDtlH/GDUSZ7sjbP1S1KQIMmqZImlmApusxG2rzujfmINY4YtoV4FPBR0LnNDjlUxBoTeNzWhD3g2EuWf0UjhGiuHKa6AuFfNtr8l02sqd/bNF6coF4b6Sl6q/PuOtSDCYjiZaoq5XKs6m4/9t/dC/8dMYGwEOw60jUMh4l12/92+tFCnTxQ2aXbVH7nBerKsPuEAekkMgsiw6W48VECQvTcUdjB9376xl9mkt1vHLgYTw9HpsKgblI6OaJoTI1BWvh0pCs2R2xRLRFzMVfKwLthlT8LaSyjl1+Txj15Q7ZcWFWTsVbxQzOx4NejfHJ5w8UenWGM+PgA+j3SgjdmMZ8cZqUhpV92ZwOb19BBpGdq5wlmCxV4gRSb9mhf3ozITe9Z/7V+mnc53mDToNJOFjSJhB2Hg4A/YCxSJVnrix4m5J42CHTwUpvuZaZkHNtVL/Fjdbg340HTptYZNMJ2lLyKezkwXZpYjmTQoN5qI5Pd3vQ8FhP3Dhfk+kGvL9g+NSgiAY+bXLP/oEydPUrPyFAlqHCFIxIFoNp0TjtL1fEaFlZEawRGDUDvgYLcy94XNH/YmO7rt1uEbMvl9GCn6qQfmnN1o0ylT2zfVKnuaqSuJ1VTamY7FMgQduzH40tNxDB3m6yLPE8UNe2oRB0jhhqvOM2C0hRn1hrCnpfrbdOdGKlxbWSevGunkDyzfUxFvbxcvD7mtrwPUNFmg9dbqpbfkoqWexxuOrZjuhhSBOves4p1K6fNtsD6ttQ==
+    internal_properties : BQAAAAUAAABgveWKkI9s6fixUXU3BpuV2pUjWEzgNUogWe9BZ65cbA3uqC35TB4CP4XKs583khYZf5LJTbqRSJiQOn9filEtSsgCq4nFI1yS1imzJewVvlfDZfp8xIN5WttBb9eW82Jhe9u8O5refop+ML9C+STGbjTV9jYViOfux1spg6O+e/swVBBI/8J42TeFxvFq0/HaANwz+5Cy9eqwrfPV8NxAfPWk0OeyisKqlZSq3EpmPZ0YlqqPAcrzBekyHXvtfEadi+Wb8povwlDiwmCzjbbeDJHpMONfk8qFeMriBaDCmoItY6SYwcCveUC3KSJ6Y1d4Hfg+q6oo2vZ0J+LbFrSYhwOPTkk8PvJ8B2K2/RfWS+VF4R7vLcWXahqfZpRPaw5HHqmc918vULVQtzTUzMOS4DUwUiQfBEEir60xzej2vLf4qI79Af7LJsuif6PXwJCmHo5nMjX7hYKsXo68bxJ2qaOyH15lY4ecvH/ukToG7gehy00Q6wEKqAfNdK9x/Q4QUJSODfK+dJDRdQjY9wTw20O9fBdkv5abUlgYi3i/12K51eaNZQDr/azEP4NamQEiAQWWRZUP3Lds/NMWE+Gpe0ry7/apihVP5i0B5H0uXVuy0CkcZ8Xvp0PhJn9mZWdFCQCutarZxugxT6V0Vlf1sLkKN9YTX5HZtxatm6QNsncSj4SQ4X1ZOuRrmfbfaNtaxuDH7UvLNvXwG9iDv62LC6u788VZU6eIeB3kMYq++WsQVnHCm/fqyWQ6cjht1hNIBrmudW/hJKJB2Q==
     type : 4
     code_elements :
      type_code : 4
@@ -649,14 +649,14 @@ window :
          
          //x		est Entier256("0x04") 
          //n=				   fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
-         nSur2 est Entier256("0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0")  // n/2 - 1
+         //nSur2 est Entier256("0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0")  // n/2 - 1
          //nPlus1Sur2 est Entier256("0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a1")  // n/2 - 1
-         nSur3 est Entier256("0x55555555555555555555555555555554e8e4f44ce51835693ff0ca2ef01215c0") 
-         nSur4_Moins1 est Entier256("0x3fffffffffffffffffffffffffffffffaeabb739abd2280eeff497a3340d9050") // n/4 - 1
-         nPlus1Sur4   est Entier256("0x3fffffffffffffffffffffffffffffffaeabb739abd2280eeff497a3340d9050") // (n+1)/4 
+         //nSur3 est Entier256("0x55555555555555555555555555555554e8e4f44ce51835693ff0ca2ef01215c0") 
+         //nSur4_Moins1 est Entier256("0x3fffffffffffffffffffffffffffffffaeabb739abd2280eeff497a3340d9050") // n/4 - 1
+         //nPlus1Sur4   est Entier256("0x3fffffffffffffffffffffffffffffffaeabb739abd2280eeff497a3340d9050") // (n+1)/4 
          //nSur4_Moins1 est Entier256("0x3fffffffffffffffffffffffffffffffaeabb739abd2280eeff497a3340d904F") 
-         n_8   est Entier256("0x1fffffffffffffffffffffffffffffffd755db9cd5e9140777fa4bd19a06c828") // n/8
-         n_16  est Entier256("0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414'") // n/16
+         //n_8   est Entier256("0x1fffffffffffffffffffffffffffffffd755db9cd5e9140777fa4bd19a06c828") // n/8
+         //n_16  est Entier256("0x0fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414'") // n/16
          
          // calcul racine cubique de X 
          Trace(x.VersChaineHexa())
@@ -818,7 +818,7 @@ window :
          FIN
          
          PROCÉDURE INTERNE _map2( _p est Point256 ) : Point256
-         	RENVOYER _map(_map(P))
+         	RENVOYER _map(_map( _p))
          fin
         type : 18
       -
@@ -873,7 +873,7 @@ window :
   -
     name : TEST_MAP2
     identifier : 0x2e155cf800e36084
-    internal_properties : BQAAAAUAAACcHtQpjHeTRpjizo0OV3LDvHTu4sCEPDXEzCdboH3hSBsgxEQw3vYbSVWLJWjh4gRA7gC3tn/CgQgRdl7T44zUhKdXWv9xnP3W+xEVJsZsnkYMrGZ6ia0mc9no3j/fTgrnXVeqIdNLRC5Hi8o129D+n6+rT1W0+dsHUT+CkaxeIt9rDXZDKMG2eq/6bIV+FBem5pByY+3N5njNlU9cNiN5pjCko1NBkjj9k9vIe2Sem9HGjMtRxbEm0MIuow48aELYC9yttR/6o/FXz4ECpiku0wtRt5HqW9MUqDPJPPPl9iLxJ9t9/caJmWkaUcXcJLW9sD4z9zc639Jxk8XTcE901YN/yL/GY27hYELqO/NbAXxaoMmIZBJ0REhanEIasZHWzucRczubBOxNhaqhvDo//5H85O+BCdPfR1Z+uKUNUSQvicruxS2UJqHMPtZoeskB18UsAddyxJODBccTNYG5Lo5CVQPGbmOLFXjV9cWjQfRxh00j9Y4Ez1U8c5FyVgAY7VOMr8nq/gcr0tWEWOXWQ3XNlTrmEtxZRAwXMgHdi5v9oEHzVeSSQyIXWl0y6917IITvAXkRF6qlflCR+daoZ3l1QVpMJSm3icsSsNCqOcDu9YjI1Gg+kB7FKNZ08ScXEnRUUHhb/bPJHVIirRNHLCvwV7WVwumNMBMLCTX5mZRPjeSrXOIpcxS9PEwRH3GTbGzr22Tzb6IJC0Rc987e2UTABQr041vk4z5Z
+    internal_properties : BQAAAAUAAABklqzRJA/73sCalrVGn0oLdPx2mmisFF08ND9TSNWJ4IO4PGzI1v7TEa0TDcAJWuxYlmjPnqeaKeD5Lja7m9SsLD8PwlfJBFVeExkdPs5k5j4UVH5ikaUuC2FgVgf3FmIPdY/SGStzHJY3BVDnk2zat7BcCh3iY4W1HXSNkYHv8ofcIeBQ0VhIGFCpfgUwHbjYKdAOE+H9SswZQcPoYgMZ2mTsn7NVukSBz7f8t/ieS42KnJ8haalSrBYSd6KIKHqEpzSJFRsaf8WDc+3eEqH2T4+Be8GGk6dYZPfdOA9Fpr5VB3cdcV71Fd2GzWE4XF0J3MaXz8tqo/Yd14n31P/k+Zf/jJd6o3Kd9EZeBycb+XgW4EWoSCBi/tro+kSYPyP43BVn9fGZcp7fI1iziuBhEUcqygG3N9FZ2SR0chuLy24lV/BwO5MKKLsSLADemDMrvSNCKy3AkqXVo819W+cbcHxYQx3sNPmF304zV+OBo/Z3HTtds+yC8RfK8UtYbFrSu4Ey4Z/Q5DnNAIs+DqsYNUsTw1REiKITFpfelEiOZFghKxa2E+3ikSiUlXgGqFxB/dNUXM5gIDo2RH4jp9Q0Qent2bI0DRGvseM6mPiCEThmfXDQzGA2mBbNIM5s+S8fGgzM6ODDZStxtfqKVeufhINY/x1tmsFVSDsjYc1hAXy3ZZzjZOoxSzxVpPR5t4mLZFTzw3wLBwqhk/wULxamAWz4XaIcCwNca7Yh
     type : 4
     code_elements :
      type_code : 4
@@ -910,7 +910,7 @@ window :
          trace(_P_.x.VersChaineHexa())
          trace(_P_.y.VersChaineHexa())
          ///---2
-         _2 est Entier256(2)
+         //_2 est Entier256(2)
          _1 est Entier256(1)
          
          
@@ -933,6 +933,145 @@ window :
          PROCÉDURE INTERNE _mapFrobeniusCarré( _Pt est Point256 ) : Point256
          	RENVOYER _mapFrobenius(_mapFrobenius(_Pt))
          fin
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : K1_K2
+    identifier : 0x2e1826970129ec26
+    internal_properties : BQAAAAUAAAAydTEutgA3uRna3vfSoyzmlgb8RrVEdh1kEsDdy4+0B1Zm7cTbPhNOnhADqjNNeuGJRA0/BgxbqTvREEm09mNKVd6sDz+sSxnrYW+3nA2kp6X7UP3Yxub082Mi4gp+YNqqpuSEAgi0n5nwjBSeoXTIivMnlAVvh0nVydvsT8oABaviMe/ZBxMPyzg2gUd0O9z9QG26kpjpSNLVl9PRKPQ4cwsvmMM3MXHQZz6yWVgnV9dOFopvqk978zc3YsFXfzUDdWWPgmeKWdFEok8eFV92W6RxgArGuirOrZaVRR6aYg50OblJkAnwnVUoZdeby0jzEvm5qkgPQKzlbYWemOk5a/czFWfB8fT9mEmk3t0SryVVMxQHP0NY653YJCFMIoz9mhsLIGH4nL2oH8y0xkkkRP8SPjDJEv+4NrAa0UxbGzwklv9UT6ADIhWrCobjZMNMH9/Hqxhzau4sHGuUEwjyVTTK6o5+zLkSXjQSevnrOISnSSRNP+Pc5FQ9FJ9nRumTk2iEMgudnEnUAMf/EoXzQZkaeeCjbmJCjxn6s3lEcKQiS9hXqXvy17wnytpZCH8gAKrcozzOJRI4fZnqKYsxzvH3Recx7vGiUGJpjL8i6t6RZy3jduwmYrekYT+geprap/jPblcKw0eex+k92Xh0evgs88p1c0/Ou/v6hrcgRm5QCnc1elfRojEio8f2Jdystsj6fGtwRb+3i4QvRffIKF1PylxzfeI6OzM=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1-
+         CrytoLib	est ECDSA_BTC
+         corps		est CorpsModulaire dynamique	= CrytoLib.corpsOrdre
+         N est Entier256 = corps.P	
+         // 					0x100000000000000000000000000000000 00000000000000000000000000000000
+         _Lambda est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
+         
+         nMax128Bit  est Entier256("0x100000000000000000000000000000000")
+         
+         // trouve x,t,r tels que
+         // s*N - t*_Racine = r et r < nMax128Bit
+         soit (s,t,r,i) = PGCD_Etendu_StopMax(N, _Lambda, nMax128Bit)
+         
+         // vérifie que  S*A + T*B = R 
+         _SA		est Entier512	= multiplication256x256_512(s,N)
+         _TB		est Entier512	= multiplication256x256_512(t,_Lambda)
+         _Tmp	est Entier256 
+         // r = SA + TB  : 
+         bSPositif est un booléen = estpair(i)
+         SI bSPositif ALORS
+         	//  avec T négatif  =>
+         	//  R = SA - TB 
+         	_Tmp = soustraction( _SA.valPoidsFaible, _TB.valPoidsFaible  ) 
+         SINON
+         	//  avec S négatif  =>
+         	//  R = - SA + TB 		
+         	_Tmp = soustraction( _TB.valPoidsFaible , _SA.valPoidsFaible ) 
+         FIN
+         trace(_Tmp.VersChaineHexa())
+         
+         
+         Trace("************Trouve :")
+         trace("s:"+s.VersChaineHexa())
+         trace(t.VersChaineHexa())
+         trace(r.VersChaineHexa())
+         
+         // R-1:
+         _0_256 est Entier256
+         soit (s0,t0,r0,i0) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i-1)
+         dbgAssertion((i0=i-1))
+         // R+2
+         soit (s2,t2,r2,i2) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i+1)
+         dbgAssertion((i2=i+1))
+         
+         Trace("************ -1  :")
+         Trace("s0:"+s0.VersChaineHexa())
+         Trace("t0:"+t0.VersChaineHexa())
+         Trace("r0:"+r0.VersChaineHexa())
+         
+         Trace("************ +1  :")
+         Trace(s2.VersChaineHexa())
+         Trace(t2.VersChaineHexa())
+         Trace(r2.VersChaineHexa())
+         
+         procédure interne _F( x Entier256, y Entier256 ) : Entier256
+         	res est Entier256 = corps.additionModulo( x, corps.multiplicationModulo( y, _Lambda ) )
+         	renvoyer res
+         fin
+         
+         // vecteurs tels que  X + Y*_Lamda = 0 modulo N
+         V1_X est Entier256  = r2
+         V1_Y est Entier256  = t2
+         V2_X est Entier256	= r
+         V2_Y est Entier256	= t//corps.négationModulo(t)
+         //_Tmp est entier256
+         _Tmp = _F(V1_X, V1_Y )
+         Trace(_Tmp.VersChaineHexa())
+         _Tmp = _F(V2_X, V2_Y )
+         Trace(_Tmp.VersChaineHexa())
+         Trace("****** ")
+         Trace("X1 (v1.x) = " +V1_X.VersChaineHexa())
+         Trace("X2 (v2.x) = " +V2_X.VersChaineHexa())
+         Trace("Y1 (v1.x) = " +V1_Y.VersChaineHexa())
+         Trace("Y2 (v2.x) = " +V2_Y.VersChaineHexa())
+         
+         X1Y2 est un entier512 = multiplication256x256_512(V1_X,V2_Y)
+         X2Y1 est un entier512 = multiplication256x256_512(V2_X,V1_Y)
+         _Delta est Entier256 = soustraction( X2Y1.valPoidsFaible, X1Y2.valPoidsFaible )  
+         Trace("_Delta = " + _Delta.VersChaineHexa())
+         //trace(X1Y2.valPoidsFaible.VersChaineHexa())
+         //trace(X1Y2.valPoidsFaible.VersChaineHexa())
+         
+         // Test de multiplication par K (nombre "au hasard")
+         K est Entier256("0x071e443c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef878")
+         
+         //  = K * Y1 / Delta
+         //   =K * Y2 / Delta
+         _B1 est Entier256("0x085428ac856e542bb711d2bb9e408611")
+         
+         K_Y2 est Entier512 = multiplication256x256_512(K,V2_Y)
+         
+         
+         _DeltaLow est entier256 = _Delta
+         K_Y2.multitpliePar2puissance128()
+         _DeltaLow.diviseParUnePuissanceDe2(128)
+         reste est Entier256
+         trace(K_Y2.valPoidsFort.VersChaineHexa())
+         trace(_DeltaLow.VersChaineHexa())
+         
+         (_B1,reste) = divisionEuclidienne256(K_Y2.valPoidsFort, _DeltaLow  )
+         trace("_B1:" + _B1.VersChaineHexa())
+          
+         
+         _B2 est Entier256("0x2b6a121d1ef84b440996421265b4e26d")
+         K_Y1 est Entier512 = multiplication256x256_512(K,V1_Y)
+         K_Y1.multitpliePar2puissance128()
+         (_B2,reste) = divisionEuclidienne256(K_Y1.valPoidsFort, _DeltaLow  )
+         Trace("_B2:" + _B2.VersChaineHexa())
+         
+         
+         
+         // v = b1*V1 + b*V2
+         VX1 est Entier512 = multiplication256x256_512( _B1, V1_X )
+         VX2 est Entier512 = multiplication256x256_512( _B2, V2_X )
+         
+         YY1	est Entier512	= multiplication256x256_512( _B1, V1_Y )
+         VY2	est Entier512	= multiplication256x256_512( _B2, V2_Y )
+         
+         VX est Entier256 = soustraction( VX2.valPoidsFaible, VX1.valPoidsFaible )
+         trace(VX.VersChaineHexa())
+         K_VX est Entier256 = soustraction( K, VX)
+         
+         Trace("K-VX=" + K_VX.VersChaineHexa())
+         
+         VY est Entier256 = soustraction( VY2.valPoidsFaible, YY1.valPoidsFaible )
+         Trace("VY=  " +VY.VersChaineHexa())
         type : 18
       -
         type : 161
