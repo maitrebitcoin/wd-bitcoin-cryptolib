@@ -53,7 +53,7 @@ window :
   -
     name : FIn1
     identifier : 0x2b8390ec00c21e47
-    internal_properties : BQAAAAUAAABnP/iJFoX+irg0l2zEJM1K2rzVuwbhHExVdV3i/U4hqY0spkFAarUhE7wMOEb1oCVltiwYHoIxGdKPFlCKpi3ghFvClUHsbj8XBK/+sJbETDIcW+DzepdOoDzZWWt06MrmPfuNObmC4hlsYnUEZdTggzlVRIpyHvfpAq/y+PyVmtMiF0p8yXN4s2vRcscD+Lh1VE3Ly8p87a+fDNr+3MbpTXAH68RaCg+1E2XiSucF00C+vYQ8sWkcY+5/1/x8gEnb9mZuL+5LdJJFXraP98j1yRfsCq5gv0lUeXeQQ82b44ytKFANlfXED3XrrM21nBuoS0OXwvU1wIwXjQSqHfw9kSnSr85Zc3O9s8h3kF+2wG7uUjEFnMJ08eTx4fpFLzIF+fxiY/RRqok5mCv3Qz5c9pipt2W479kMpSFnONTTdLX4zBXARtUsQ+XjO0CL2NKsynK/L07yZKSl7oKhmpXu8aVVjK+5zuOqi+dIlyC9G7Wu1NTxgNQKdv1l9MPPYC8t/uwZTc5WKgzp3T6yl7G52Kpids6lulSICk3Af1emceXzwEVOT+ER9WUvjhoQn7M1Ch5zPiO9w51Bmws5UpxTNESm/lVGatQOv8iPusEuQEbinJuJCHAHNYmhaCWzuZCWTIcpFoOx4PrK+JOBw35pAyIJBqGtwlzBzbFhOhApWNJJuEMhBseScbDQBW4lYFeJnML6UE0DFGyOMa7Vd1SMbUDc
+    internal_properties : BQAAAAUAAADPt/DxLo32krAsXyQ87IVy8qTdk65ZhCR9XZUqhYYpoZVEPomYEu0pC1T0EF6d+G29HpRwJnrZMfp3rvgyPtW4zBN6fXm0RmevnDc2aN48lOpEIzg7Mp9GqATxgTOs8MJOldP1MaG6KlGkqk38rQScL0lFpEoCnrcJQi9CGNwFWhOCF/qsCUNoo3shctez2MhlpF3Lq7pcDa+frGoevHaJbdCH27RaWr+lY7UCOrclg5AuzWR8QemcY45fp9wcUGn7tkb+P057BKK1zjYfpwgFOSc8qg6QH+lUefego60LA6yNSAC9FQV0n6W7bB0lXCt4W7PXwsX1AGz3bZQKfQydcUlSX945o4ONo7g3II82EF7GagmtJErMyWwpieJ9R0oNMfQaS/yZIsHh0BNfm1b0ntBBD41At/FETVlvwCwLrF3whI3ITh2kmy2bo+ijMKq0IorXF1b6PLwNpsrpck2mmT3NxNdBFtti81/wvzhVMx0mjAw5aPyCroX9fEunGOd1tuRRlZbe4oTx1Waar4mRIGKajhZtQqwAksUIR+9eqU0rWN0Wl2lJzQ1HdkIo9wudIjKz9msFi1WJU1NBWpRLDJwOBl1+ooz219CHsvl2CI6q1NNBULjPzRE5kA3bkehOhE/RfhtJeEKCIKuZ22ZRa4rhPnmVqkT5talpAlhhEGrhwEspPv9KOcj43Qa9yD+RpNrSiBXLXKR2Kbbdf0yEZbhE
     type : 4
     code_elements :
      type_code : 4
@@ -471,7 +471,7 @@ window :
   -
     name : priv_pub1
     identifier : 0x2dc68581035feaad
-    internal_properties : BQAAAAUAAACJT0pKJ+qxAE/Ew4Y30fZT+1SH7rnYS0t5nsKkkp8cACoNkZh/YVZ2NRt7c/IFXLpl8ReWeHqXnBtfLrI0QQ1f1wtyr53kmtGt5AWReUG7fpPN4GIaTiXFSOf/vrEwioAL5qqOkZHALK1OoObWxL6cVRSOMOOaps67By3HF8F2YVZQwr3nhDEIBjHAbLb8pfQ2LPqM0cyPouzxZ1RNTq25LEPmC9y0BB1CHV8Pqrkb0Bq1BhOOmXBYDwxx3S1KLxdi6ZmXwqHWwdVlva2Yof5GCMc/utCYlynA3xfHKGYO7Ubw5wx9TvnImC95fiebUnBzraQi8kWc8PeMObjol8e7/7ZUXiqOeAyKv4xEkQ7sY/HxfDjqJqk5xJlq6320OcJ92rnGC53xGCXEyw8KymTmkfkK0RecjixCQcojzE4mZrjVFXJfjckHGeYq00k4tqoABgcnDWzl6A31RCl3NkYflRKQdvvIhb03QZoOOQ1zkPmWhHnj6PO72Riwlpyodh028Z426Ui/sphWmbnGxuF5ibf5vSIbgHmZnCt9q3RmC2iH9r7vF4WJk0IgtHqni/ZTCVC2s/6vNcvvK0eR5k7YpeeB7gcabRq1Arqs+N9p6PtidBA0B/LjDyRFWcRCwgpB4dqEaZyRinbljNJcVsJegzmO+rt1fEp0L5u0iH9rSKt5GSOYO1XnUXzKytDLGuHRTpxrxjZDJ2LW0gK4mYN9FF/z4VkieU+TJ9y6zkn96Wa4a1peR/VwKtaJC/Whd6HDVZHNgsLlpPBDLXtARWkoAkLM5BZN
+    internal_properties : BQAAAAUAAAApb6oqB0qRIC8kY6aXcRZz2zSnDtl466sZPqIEsn/84Eot8fhfQbYWFXsbE9Il/NrF0Te2mJo3/Dt/jpJUoW2/9ytSD/1E+vENRCWxWWHbHvMtAIK6bkWlaIffntGQ6mCrhgrucXEgTI2uQAa2ZN48NXQu0IM6xq5bp40ntyHWwfZwIp3H5BEo5hHgjJYcRZQWDJqs8WyvggyRRzTtrg0ZQn/+OyRgKPXuCQuvkgULrE7BTovepQwY80D1vaUGz6v+VdHnmpWyedl52e04nb4SBFOv+tAUYxlsW3tnMFJWURKkj8ydyo3wFKtFHid3Ejz36ZRy0qF4gDNYlaAQWw/Pc+L0NuLaxDzOQ3hM6Trsf52N3Bh6UmU5qO22axXAcbaR/pl+I8lFyIFQ1xV4cDIwNxeom60y/Ir4T6hJopwECL4z+wy1c7cFB+wwwXcevLSOhAVhq8r7fuvT0hfNpBRhW1jm8DG2U4vV72gkl6OZ+t+MciNZfolRv2aOzFLGNJ/MDzzoH96NECZkR6d0HG+TL/23F9i5LqffKpnr0SIE7U6dFOAdHUvP0dgWWnj9EQB5x5aYEV4PlWtPiyexxm74RQehzic6jTqVIlrM2P9JyNtCVDAUZ1JDr4QluWSiYqrhAfrkCTwxKtaFLHI8diI+45lumhvV3CoUj3uUqF8L6MsZuYM4W3WHMZzq6jBr+sExLvyLphYjBwI2smLYeaMdtP8TwXnCGe9zR/xarmndyUaYS3o+p1XQSrbp65UBl0Fj9TGtouIFRFDjTRsgZUkIYiIsBPat
     type : 4
     code_elements :
      type_code : 4
@@ -946,7 +946,7 @@ window :
      type_code : 4
      p_codes :
       -
-        code : |1-
+        code : |1+
          CrytoLib	est ECDSA_BTC
          corps		est CorpsModulaire dynamique	= CrytoLib.corpsOrdre
          N est Entier256 = corps.P	
@@ -1038,6 +1038,7 @@ window :
          K_Y2 est Entier512 = multiplication256x256_512(K,V2_Y)
          
          
+         
          _DeltaLow est entier256 = _Delta
          K_Y2.multitpliePar2puissance128()
          _DeltaLow.diviseParUnePuissanceDe2(128)
@@ -1072,6 +1073,238 @@ window :
          
          VY est Entier256 = soustraction( VY2.valPoidsFaible, YY1.valPoidsFaible )
          Trace("VY=  " +VY.VersChaineHexa())
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : K1_K3
+    identifier : 0x2e19a33400edabb1
+    internal_properties : BQAAAAUAAAAIT70/Cc+OyZKmC9GXeqDKivK6i33fGLPan6OBu2zGewPewe//SBPrVSdoMWU0kyeL00Nc8YWpouk/6spyIIDdxn11YVG8hSAntpEvsC5Z+2ZPRK+26FZdxtPQ+O5RhlBq7NaOHoZYx6HcY1XC26Mv+elD+N1uxmkj7GnW8zVYKqDK3Lerg9e82ZIWABa7H79S0XvCVrBXAiGz0K06azfadRpnF1ThLvQlAp5RSSNTg3NGhoOSwhniHNRrjfmcuhyGGtI5attPVUdOf93hQkjry7m896BWDoDLBwGbsPYma68xQzFj5FNWcoP7fXR5CA+Wzphcd2r+xIvlDWl0DwftK/WUHowojgtdrF/o6Ik/b8IiW1kE9aOx3ZWUH2VzTyndrOIl8ca8C0zx3YcvmJZzwqbPuF9/5Q8UE4GKwbosRUfXpWFDsOz8bFtwvmAiToyeulwftNSuviOfu82rTF9+iKuTWN9VlNpo1k666WzL7OYZwSAgWBo/AkTKYNNC2G0GjQnRGn54OxZ+WAiIlgRiABBq1+NF5G5mnztjjD6+3xgfgS910+B0P7JtRT2QGni0AbG/hfagc7yzcYDqCpF2lKAK2YQEvonE4u3xCHpOqbLeDDIFEwxHENRVz4qWMEO6GJU0OEyZp3RFyZ8LmIzTCF45LSPvcbPzWgv4R+F/iLz96ExAePyYMFpA2cGZuIHgoduHQRFbdpXXX40TE7XYY8I3+Yrfafg=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         CrytoLib	est ECDSA_BTC
+         corps		est CorpsModulaire dynamique	= CrytoLib.corpsOrdre
+         N est Entier256 = corps.P	
+         // 					0x100000000000000000000000000000000 00000000000000000000000000000000
+         _Lambda est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
+         _0_256 est Entier256
+         nMax128Bit  est Entier256("0x100000000000000000000000000000000")
+         
+         // trouve x,t,r tels que
+         // s*N - t*_Racine = r et r < nMax128Bit
+         soit (s1,t1,r1,i) = PGCD_Etendu_StopMax(N, _Lambda, nMax128Bit)
+         
+         soit (s_,t_,r_,i_) = PGCD_Etendu_StopMax(N, _Lambda, _0_256, i)
+         dbgAssertion(s1.estEgalA(s_))
+         dbgAssertion(t1.estEgalA(t_))
+         dbgAssertion(r1.estEgalA(r_))
+         dbgAssertion(i_ = i)
+         
+         _Tmp	est Entier256 
+         
+         Trace("************Trouve :")
+         //trace("s:"+s.VersChaineHexa())
+         Trace("r1:"+r1.VersChaineHexa())
+         trace("t1:"+t1.VersChaineHexa())
+         
+         
+         // R-1:
+         
+         soit (s0,t0,r0,i0) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i-1)
+         dbgAssertion((i0=i-1))
+         dbgAssertion(pas s0.estEgalAZero())
+         // R+2
+         soit (s2,t2,r2,i2) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i+1)
+         dbgAssertion((i2=i+1))
+         dbgAssertion(PAS s2.estEgalAZero())
+         
+         Trace("************ -1  :")
+         //Trace("s0:"+s0.VersChaineHexa())
+         Trace("r0:"+r0.VersChaineHexa())
+         Trace("t0:"+t0.VersChaineHexa())
+         
+         Trace("************ +1  :")
+         //Trace(s2.VersChaineHexa())
+         Trace("r2:"+r2.VersChaineHexa())
+         Trace("t2:"+t2.VersChaineHexa())
+         
+         
+         // renvoie x + L*y mod N
+         procédure interne _F( x Entier256, y Entier256 ) : Entier256
+         	res est Entier256 = corps.additionModulo( x, corps.multiplicationModulo( y, _Lambda ) )
+         	renvoyer res
+         fin
+         // renvoie x - L*y mod N
+         PROCÉDURE INTERNE _FMoins( x Entier256, y Entier256 ) : Entier256
+         	res est Entier256 = corps.soustractionModulo( x, corps.multiplicationModulo( y, _Lambda ) )
+         	RENVOYER res
+         FIN
+         
+         
+         // vecteurs tels que  X + Y*_Lamda = 0 modulo N
+         V1_X      est Entier256  = r1
+         moinsV1_Y est Entier256  = t1
+         V2_X      est Entier256	 = r2
+         V2_Y      est Entier256	 = t2 
+         //_Tmp est entier256
+         _Tmp = _FMoins(V1_X, moinsV1_Y )
+         dbgAssertion( _Tmp.estEgalAZero())
+         _Tmp = _F(V2_X, V2_Y )
+         dbgAssertion( _Tmp.estEgalAZero())
+         //Trace("****** ")
+         Trace("X1 (v1.x) = " +V1_X.VersChaineHexa())
+         Trace("X2 (v2.x) = " +V2_X.VersChaineHexa())
+         Trace("Y1 (v1.x) =-" +moinsV1_Y.VersChaineHexa())
+         Trace("Y2 (v2.x) = " +V2_Y.VersChaineHexa())
+         
+         X1Y2 est un entier512 = multiplication256x256_512(V1_X,V2_Y) 
+         dbgAssertion(X1Y2.valPoidsFort.estEgalAZero())
+         moinsX2Y1 est un entier512 = multiplication256x256_512(V2_X,moinsV1_Y)
+         dbgAssertion(moinsX2Y1.valPoidsFort.estEgalAZero())
+         // Delta = x1y2 - x2y1
+         _Delta est Entier256 
+         //si X1Y2.valPoidsFaible.estSupérieurOuEgalA(  X1Y2.valPoidsFaible ) alors
+         //	_Delta = addition( moinsX2Y1.valPoidsFaible, X1Y2.valPoidsFaible )  
+         //sinon
+         	//_Delta = soustraction(  X1Y2.valPoidsFaible, X2Y1.valPoidsFaible )  
+         	//_Delta = negation(addition( X2Y1.valPoidsFaible, moinsX1Y2.valPoidsFaible  ))
+         trace(X1Y2.valPoidsFaible.VersChaineHexa())	
+         trace(moinsX2Y1.valPoidsFaible.VersChaineHexa())	
+         _Delta = addition(X1Y2.valPoidsFaible, moinsX2Y1.valPoidsFaible   )
+         //fin
+         _moinsDelta est Entier256  = negation(_Delta)
+         //_Delta est Entier256 = corps.soustractionModulo( corps.multiplicationModulo(V1_X,V2_Y), corps.multiplicationModulo(V2_X,V1_Y) )
+         Trace("_Delta = " + _moinsDelta.VersChaineHexa())
+         //trace(X1Y2.valPoidsFaible.VersChaineHexa())
+         //trace(X1Y2.valPoidsFaible.VersChaineHexa())
+         
+         // Test de multiplication par K (nombre "au hasard")
+         K est Entier256("0x071e443c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef878")
+         
+         // renvoie V1,V2 tels que
+         // V1 + V2*R = K ( modulo N)
+         // avec V1 et V2 "petits" = sur 128 bits ou a peut-prêt
+         procédure interne _calcVecteurOpimise( _k est Entier256 )  : (Entier256,Entier256) 
+         
+         
+         	// coefficients tels que "(K,0) - B1*V1 + B2*V2" soit sur 128 bits
+          	_B1 est Entier256
+         	_B2 est Entier256
+         
+         	K_Y2      est Entier512 = multiplication256x256_512( _k, V2_Y)	
+         	moinsK_Y1 est Entier512 = multiplication256x256_512( _k, moinsV1_Y)
+         		
+         	// calcul de B1 =  K*Y1 / _Delta
+         	//	         B2 = -K*Y2 / _Delta
+         	_DeltaLow est entier256 = _moinsDelta
+         //	_DeltaLow.multiplieParUnePuissanceDe2(128)
+         	     K_Y2.multitpliePar2puissance128()
+         	moinsK_Y1.multitpliePar2puissance128()
+         	// calcul de la division entière : donne un nombre de 128 bits si K est sur 256 bits
+         	reste est Entier256
+         	(     _B1,reste) = divisionEuclidienne256(     K_Y2.valPoidsFort, _DeltaLow  )
+         	_B1.multiplieParUnePuissanceDe2(128)
+         	// idem B2
+         	(     _B2,reste) = divisionEuclidienne256(moinsK_Y1.valPoidsFort, _DeltaLow  )
+         	_B2.multiplieParUnePuissanceDe2(128)
+         	trace("_B1:"+ _B1.VersChaineHexa())
+         	trace("_B2:"+ _B2.VersChaineHexa())
+         	
+         	// v = B1*V1 + B2*V2
+         	// B1*V1
+         	B1V1X	est Entier512	= multiplication256x256_512( _B1, V1_X )
+         	B1V1Y	est Entier512	= multiplication256x256_512( _B1, moinsV1_Y )
+         	// B2*V2
+         	B2V2X	est Entier512	= multiplication256x256_512( _B2, V2_X )
+         	B2V2Y	est Entier512	= multiplication256x256_512( _B2, V2_Y )
+         	dbgAssertion(B1V1X.valPoidsFort.estEgalAZero())
+         	dbgAssertion(B1V1Y.valPoidsFort.estEgalAZero())
+         	dbgAssertion(B2V2X.valPoidsFort.estEgalAZero())
+         	dbgAssertion(B2V2Y.valPoidsFort.estEgalAZero())
+         	
+         	// vx     = b2*v2.x - b1*v1.x
+         	moinsVX	est Entier256	 = soustraction(  B1V1X.valPoidsFaible,  B2V2X.valPoidsFaible )
+         	// vy     = b1*v2.y - b2*v1.y
+         	VY      est Entier256    = soustraction(  B1V1Y.valPoidsFaible,  B2V2Y.valPoidsFaible )
+         	moinsVY est Entier256    = corps.négationModulo(VY)
+         		
+         	// k - vx = K - (b2*v2.x - b1*v1.x)
+         	KmoinsVX est Entier256 = addition( _k,moinsVX)
+         	Trace("K-VX ="  + KmoinsVX.VersChaineHexa())
+         	Trace(" -VY ="  + moinsVY.VersChaineHexa())
+         	
+         	//_0_256_ est entier256
+         	//VX_Test	est Entier256 = VX; // corps.additionModulo(     B1V1X.valPoidsFaible , B2V2X.valPoidsFaible ) 
+         	//VY_Test	est Entier256 = VY; //corps.soustractionModulo( B1V1Y.valPoidsFaible , B2V2Y.valPoidsFaible ) 
+         	
+         	// renvoie le vecteur (Lamda-(b1*v1+b2*v2))
+         	renvoyer ( KmoinsVX, moinsVY )
+         fin
+         
+         soit (k1,k2) = _calcVecteurOpimise(K)
+         
+         _Tmp = _F(k1, k2 )
+         Trace("k1+k2*L=" +_Tmp.VersChaineHexa())
+         //_Tmp = _FMoins(k1, k2 )
+         //Trace(_Tmp.VersChaineHexa())
+         Trace("K=      " +K.VersChaineHexa())
+         
+         // P = ordre de la courbe = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
+         // un nombre d'odre 3.
+         // ie tel que :  beta^3 = 1 modulo P
+         // NB : tout nombre d'ordre 3 est OK.
+         beta  	est Entier256("7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")
+         // R tel que map(P) = R*P
+         // racine du polynome : X^2 + X + 1 = 0 ( modulo P )
+         _Racine est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
+         dbgAssertion(_Lambda.estEgalA(_Racine))
+         
+         	// (x, y) => (βx, y) 
+         	PROCÉDURE INTERNE _map( _p est Point256 ) : Point256
+         		pointRésultat est Point256 
+         		pointRésultat.x	=  CrytoLib.corpsECC.multiplicationModulo( beta, _p.x )
+         		pointRésultat.y	= _p.y
+         		RENVOYER pointRésultat
+         	FIN
+         
+         
+         P est Point256 = CrytoLib.courbeBtc.pointGen
+         P =  CrytoLib.courbeBtc.pointDouble(P)
+         
+         // on doit avoir _map(P) = _Racine * P
+         mapP  est Point256 = _map(P)
+         Trace("Map(P) : " )
+         Trace(mapP.x.VersChaineHexa())
+         Trace(mapP.y.VersChaineHexa())
+         //moinsX est Entier256 = CrytoLib.corpsECC.négationModulo( mapP.x )
+         //Trace(moinsX.VersChaineHexa())
+         //_Racine_FoisP  est Point256 =  CrytoLib.courbeBtc.MultiplicationScalairePoint( P, _Racine )
+         //Trace(" K*P : k = "+ _Racine.VersChaineHexa()  )
+         //Trace(_Racine_FoisP.x.VersChaineHexa())
+         //Trace(_Racine_FoisP.y.VersChaineHexa())
+         
+         // calcul optimisé
+         P1_optim		est Point256	=  CrytoLib.courbeBtc.MultiplicationScalairePoint( P,       k1   )
+         P2_optim		est Point256	=  CrytoLib.courbeBtc.MultiplicationScalairePoint( mapP,    k2  )
+         
+         KfoisP_optim	est Point256	= CrytoLib.courbeBtc.pointPlusPoint(P1_optim, P2_optim )  
+         Trace("KfoisP_optim=")
+         Trace(KfoisP_optim.x.VersChaineHexa())
+         Trace(KfoisP_optim.y.VersChaineHexa())
+         
+         // calcul standard de "KP"
+         KfoisP_defaut  est Point256 =  CrytoLib.courbeBtc.MultiplicationScalairePoint( P, K )
+         Trace("KfoisP_defaut=")
+         Trace(KfoisP_defaut.x.VersChaineHexa())
+         Trace(KfoisP_defaut.y.VersChaineHexa())
+         
+         
         type : 18
       -
         type : 161

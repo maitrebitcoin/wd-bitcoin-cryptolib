@@ -2920,7 +2920,10 @@ procedure_set :
       	
       	// si on arrive a la fin
       	SI iMax=-1 _et_ nombreRMax.estSupérieurOuEgalA(r) ALORS
-      		SORTIR
+      		//iMax=i+1
+      		//RENVOYER  (sOld, tOld, rOld, i-1)
+      		RENVOYER  (s, t, r, i) 
+      		//SORTIR
       	FIN	
       	
       	// sauver les valeur précédentes
