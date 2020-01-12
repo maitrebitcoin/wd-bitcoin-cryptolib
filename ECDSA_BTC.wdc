@@ -19,8 +19,8 @@ class :
       // gestion des point d'entrée pour la cryptographie ECDSA pour Bitcoin
       ECDSA_BTC est une Classe
       	courbeBtc    est CourbeElliptique_secp256k1 // pour opérations sur les points de la courbe a la norme secp256k1
-      	corpsECC     est CorpsModulaire dynamique // pointeur sur le corps utilisé par <courbeBtc> pour les points
-      	corpsOrdre   est CorpsModulaire dynamique // pointeur sur le corps utilisé pour l'ordre de la courbe ( pour signer/vérifier la signature )
+      	corpsECC     est CorpsModulaire dynamique   // pointeur sur le corps utilisé par <courbeBtc> pour les points
+      	corpsOrdre   est CorpsModulaire dynamique   // pointeur sur le corps utilisé pour l'ordre de la courbe ( pour signer/vérifier la signature )
       FIN
      type : 131072
   procedures :
@@ -31,14 +31,15 @@ class :
      code : |1+
       PROCEDURE Constructeur()
       
-      // Init hasard (1s), fait dans un thread pour optim : ne pas attendre 1s dasn les appel ultérieurs (signature)
+      // Init hasard (1s), fait dans un thread pour optim : ne pas attendre 1s dans les appel ultérieurs (signature)
       	Procédure interne _Init_Hasard()
       		HasardCryptoBuffer(1)
       	fin
       	ThreadExécute(DonneGuid(),threadNormal,_Init_Hasard)
       
       corpsECC <-  courbeBtc.corps
-      corpsOrdre = allouer un CorpsModulaire( courbeBtc.Ordre.VersChaineHexa() )
+      //corpsOrdre = allouer un CorpsModulaire( courbeBtc.Ordre.VersChaineHexa() )
+      corpsOrdre <-  courbeBtc.corpsOrdre
      type : 589824
    -
      name : Destructeur
@@ -191,7 +192,7 @@ class :
       Coef1 est Entier256 = corpsOrdre.multiplicationModulo(NombreSigné, inverseDeY)
       Coef2 est Entier256 = corpsOrdre.multiplicationModulo(signature.R, inverseDeY)
       P1 est Point256     = courbeBtc.MultiplicationScalairePointGenérateur( 	            Coef1 )
-      P2 est Point256     = courbeBtc.multiplicationScalairePointJacobi(     CléPublique, Coef2 ) 
+      P2 est Point256     = courbeBtc.multiplicationScalairePoint_Optimise(  CléPublique, Coef2 ) 
       //@TEst
       //P2_DBG est Point256 = courbeBtc.MultiplicationScalairePoint(           CléPublique, Coef2 ) 
       //dbgAssertion( P2_DBG.PointestEgalA( P2 ))

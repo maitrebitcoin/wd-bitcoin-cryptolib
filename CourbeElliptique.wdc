@@ -16,15 +16,16 @@ class :
    -
      code : |1+
       CourbeElliptique est une Classe
-      	// coefficient de y2 = (x3 + ax + b) [mod n]
+      	// coefficient de y2 = (x3 + ax + b) [mod p]
       	//coefA est Entier256 // OTIM, non géré car non nécessaire pour secp256k1
       	coefB est Entier256
       	
-      	// corps des entiers modulo p
+      	// corps des entiers modulo p, pour calculs sur les x,y des points
       	corps est CorpsModulaire dynamique
-      	//P est Entier256;
-      	// ordre de la courbe : plus petit entier tel que nG = 0
+      	// ordre de la courbe : plus petit entier <n> tel que nG = 0
       	Ordre est entier256;
+      	// corps des entiers modulo N, pour calculs entres les multiples de points
+      	corpsOrdre est CorpsModulaire dynamique 
       FIN
      type : 131072
   procedures :
@@ -37,6 +38,7 @@ class :
         corps = allouer un corps( moduloHexa )
         
         Ordre.affecteAvecChaineHexa(ordreHexa)
+        corpsOrdre = allouer un CorpsModulaire( ordreHexa )
      type : 589824
    -
      name : Constructeur
@@ -48,6 +50,7 @@ class :
       corps = corps_
       
       Ordre.affecteAvecChaineHexa(ordreHexa)
+      corpsOrdre = allouer un CorpsModulaire( ordreHexa )
      type : 589825
    -
      name : Destructeur

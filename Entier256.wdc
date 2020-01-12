@@ -317,7 +317,42 @@ class :
       FIN
       
       renvoyer bitDécaleDroite( n, indiceBit modulo 64) & 0x1
+     type : 458752
+   -
+     name : _4bit
+     procedure_id : 2169266463709775327
+     type_code : 12
+     code : |1+
+      // renvoie 4 bits au bit n°<indiceBit>
+      // avec 0  : poids faible
+      //     255 : poids fort
+      PROCÉDURE _4bit( indiceBit entier ) : entier
       
+      n est un entier sur 8 octets sans signe
+      SELON indiceBit
+      	CAS   0 À  63  
+      		n = val0
+      	CAS  64 À 127 
+      		n = val1
+      	CAS 128 À 191 
+      		n = val2
+      	CAS 192 À 255
+      		n = val3
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      		RENVOYER 0
+      FIN
+      
+      // récup mot de 4 bits
+      nDecalageBit est entier = (indiceBit modulo 64)
+      si nDecalageBit>0 ALORS
+      	nDecalageBit = nDecalageBit-3
+      FIN
+      resultat est entier = bitDécaleDroite( n, nDecalageBit ) & 0xF
+      //resultat_DBG est entier = bit(indiceBit)*8 + bit(indiceBit-1)*4 + bit(indiceBit-2)*2 + bit(indiceBit-3)
+      //dbgAssertion( resultat = resultat_DBG )
+      
+      renvoyer resultat
      type : 458752
    -
      name : _8Bits

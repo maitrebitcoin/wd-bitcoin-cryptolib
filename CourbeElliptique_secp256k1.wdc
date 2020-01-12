@@ -981,7 +981,7 @@ class :
       POUR X = 0 À 31
       	// recup de 8 bits K 
       	I est entier = K._8Bits(X)
-      	SI I<>0 ALORS
+      	SI i<>0 ALORS
       		// récup de  G = I* (2^X) précalculé 
       		valeurKPow2X   est Point256 = TabPointPow2PreCalculé_256[ i+X*256 ]
       		dbgAssertion( pointEstSurLaCourbe( valeurKPow2X ), "pointEstSurLaCourbe FAILED")
@@ -1007,16 +1007,10 @@ class :
       // conversion en coordonnées de Jacobi
       P est Point256_3D 
       P.VersJacobi(point) // init à 1*P
-      // précalcul de 2*P,3*P, 15*P
+      // précalcul de 2*P,3*P, ..., 15*P
       _MultiplesDeP est un tableau de 15  Point256_3D
       _MultiplesDeP[1] = P
       _MultiplesDeP[2] = pointDouble_Jacobi(P)
-      //_MultiplesDeP[3] = pointPlusPoint_Jacobi(_MultiplesDeP[2], P)
-      //_MultiplesDeP[4] = pointDouble_Jacobi(_MultiplesDeP[2]) 
-      //_MultiplesDeP[5] = pointPlusPoint_Jacobi(_MultiplesDeP[2], _MultiplesDeP[3])
-      //_MultiplesDeP[6] = pointDouble_Jacobi(_MultiplesDeP[3])
-      //_MultiplesDeP[7] = pointPlusPoint_Jacobi(_MultiplesDeP[6], P)
-      //_MultiplesDeP[8] = pointDouble_Jacobi(_MultiplesDeP[4]) 
       pour i = 3 a  15
       	si EstPair(i) ALORS
       		// P = P[I/2] * 2
@@ -1027,15 +1021,11 @@ class :
       	fin
       FIN
       
-      
-      _2P est Point256_3D = pointDouble_Jacobi(P)
-      _3P est Point256_3D = pointPlusPoint_Jacobi(_2P, P)
-      
       PointRésultatJ	est Point256_3D		// 0
       // parcourt en partant du bit de poids fort par bloc de 4 bits
       POUR i = 255 À 3 pas -4
-      	//@Récup 16 bits
-      	n est un entier = K.bit(i)*8 + K.bit(i-1)*4 + K.bit(i-2)*2 + K.bit(i-3)
+      	// Récup de 16 bits de K
+      	n est un entier = K._4bit(i)
       	selon n
       		cas 0:
       			// rien
@@ -1174,6 +1164,241 @@ class :
       
       renvoyer pointRésultat
       
+     type : 458752
+   -
+     name : multiplicationScalaire2PointJacobi
+     procedure_id : 2169263272548855874
+     type_code : 12
+     code : |1+
+      // renvoie K1 * P1 + K2 *  P2
+      // version utilisation les coordonnées de Jacobi pour minimiser les divisions modulaires
+      procédure multiplicationScalaire2PointJacobi(  point1 est Point256, K1 est Entier256 , point2 est Point256, K2 est Entier256   ) : Point256
+      
+      // conversion en coordonnées de Jacobi
+      P1 est Point256_3D 
+      P2 est Point256_3D 
+      P1.VersJacobi(point1) // init à 1*P
+      P2.VersJacobi(point2) // init à 1*P
+      // précalcul de 2*P,3*P, 15*P
+      _MultiplesDeP1 est un tableau de 15  Point256_3D
+      _MultiplesDeP1[1] = P1
+      _MultiplesDeP1[2] = pointDouble_Jacobi(P1)
+      pour i = 3 a  15
+      	si EstPair(i) ALORS
+      		// P = P[I/2] * 2
+      		_MultiplesDeP1[i] = pointDouble_Jacobi(   _MultiplesDeP1[i/2]   ) 
+      	sinon
+      		// P = P[I-1] + 1
+      		_MultiplesDeP1[i] = pointPlusPoint_Jacobi(_MultiplesDeP1[i-1], P1) 
+      	fin
+      FIN
+      // idem P2
+      _MultiplesDeP2 est un tableau de 15  Point256_3D
+      _MultiplesDeP2[1] = P2
+      _MultiplesDeP2[2] = pointDouble_Jacobi(P2)
+      POUR i = 3 a  15
+      	_MultiplesDeP2[i] = pointPlusPoint_Jacobi(_MultiplesDeP2[i-1], P2) 
+      FIN
+      
+      iMax est un entier = 255
+      // OPTIM pour ca K "petit"
+      si k1.val3=0  _et_ k2.val3=0  alors  iMax-=64
+      si k1.val2<16 _et_ k2.val2<16 alors  iMax-=60
+      
+      PointRésultatJ	est Point256_3D		// 0
+      // parcourt en partant du bit de poids fort par bloc de 4 bits
+      POUR i = iMax À 3 pas -4
+      	// Récup 16 bits P1
+      	//n est un entier = K1.bit(i)*8 + K1.bit(i-1)*4 + K1.bit(i-2)*2 + K1.bit(i-3)
+      	n est un entier = k1._4bit(i)
+      	selon n
+      		cas 0:
+      			// rien
+      		autres cas:
+      			// r = r + 2^k
+      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
+      	FIN
+      	// Récup 16 bits P2
+      	n  = k2.bit(i)*8 + k2.bit(i-1)*4 + k2.bit(i-2)*2 + k2.bit(i-3)
+      	SELON n
+      		CAS 0:
+      		// rien
+      		AUTRES CAS:
+      			// r = r + 2^k
+      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n]   )
+      	FIN	
+      
+      	SI PointRésultatJ.estZéro() ALORS
+      		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
+      		si i=3  alors
+      			// renvoie (0,0)
+      			_P0 est Point256 
+      			RENVOYER _P0
+      		fin
+      		// sinon c'est qu'on a pas encore rencontré de 1
+      		continuer
+      	FIN	
+      	SI i=3  ALORS
+      		sortir
+      	FIN
+      	
+      	// r = r*16
+      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
+      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
+      	
+      FIN
+      
+      // conversion depuis jacobi:
+      //  x=X/Z2
+      //  y=Y/Z3
+      pointRésultat est Point256 = _JacobiVersPoint(PointRésultatJ  )
+      // le point devrait être sur la courbe ou null, sinon erreur de calcul
+      dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      
+      
+      RENVOYER pointRésultat
+      
+     type : 458752
+   -
+     name : _calcVecteurOpimisePourMult
+     procedure_id : 2169272227556508116
+     type_code : 12
+     code : |1+
+      // renvoie V1,V2,signeV1,signeV2 tels que
+      // V1 + V2*R = K ( modulo N)
+      // avec V1 et V2 "petits" = sur ~128 bits 
+      // <signeV1> et <signeV2> valent +1 ou -1
+      PROCÉDURE protégée _calcVecteurOpimisePourMult ( _k est Entier256 )  : (Entier256,Entier256, entier,entier)  
+      	
+      // constantes calculées par utilPourOptim.CalculeCoefConstantEuclide() pour _Lamda = 0x5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72
+      V1_X		est Entier256("0x03086d221a7d46bcde86c90e49284eb15")
+      moinsV1_Y	est Entier256("0x0e4437ed6010e88286f547fa90abfe4c3")
+      V2_X		est Entier256("0x00e5e9bd2461792dd1aca54cdd1d8b2a6")
+      moinsV2_Y	est Entier256("0x58a1bcb25ae2b9cc084678edad30447a7")
+      //_moinsDelta	est Entier256("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141")	// X2*Y1 -X1*Y2
+      
+      // B2,B2 : coefficients tels que "(K,0) - (B1*V1 + B2*V2)" soit sur ~128 bits
+      _B1			est Entier256	// ex : "0x276e6bcbe7ba30a0b216a78e91107e13"
+      _moinsB2	est Entier256	// ex : "0x0658d53831aae2574117afb315cc83da"
+      moinsK_Y2	est Entier512	= multiplication256x256_512( _k, moinsV2_Y)	
+      moinsK_Y1	est Entier512	= multiplication256x256_512( _k, moinsV1_Y)
+      
+      // calcul de B1 =  K*Y1 / _Delta
+      //	         B2 = -K*Y2 / _DeltaZ
+      /// comme delta = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141 ~= 2^256, 
+      //  on approxime la division par un décalage de 256 bits vers la droite.
+      // Résultat sur 128 bits car V1_X, .. le sont
+      _B1		 	= moinsK_Y2.valPoidsFort
+      _moinsB2	= moinsK_Y1.valPoidsFort
+      		
+      // v = B1*V1 + B2*V2
+      // B1*V1
+      B1V1X		est Entier512	= multiplication256x256_512( _B1,      V1_X      )
+      moinsB1VY1	est Entier512	= multiplication256x256_512( _B1,      moinsV1_Y )
+      // B2*V2
+      moinsB2V2X	est Entier512	= multiplication256x256_512( _moinsB2, V2_X      )
+      B2V2Y		est Entier512	= multiplication256x256_512( _moinsB2, moinsV2_Y )
+      // résultat est sur ~256 bits. parfois 257, mais comme on soustrait on doit trouver un nombre ~128 bits
+      dbgAssertion(B1V1X.valPoidsFort.estEgalA( moinsB2V2X.valPoidsFort)  )
+      dbgAssertion(B2V2Y.valPoidsFort.estEgalA( moinsB1VY1.valPoidsFort)  )
+      	
+      // vx     = b1*v1.x + b2*v2.x
+      VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
+      // vy     = b1*v1.y + b2*v2.y
+      VY est Entier256          = corps.soustractionModulo(  B2V2Y.valPoidsFaible,  moinsB1VY1.valPoidsFaible   )
+      moinsVY		est Entier256 = corps.négationModulo(VY)
+      	
+      // k - vx = K - (b2*v2.x - b1*v1.x)
+      KmoinsVX	est Entier256 = corps.soustractionModulo( _k, VX)
+      
+      // Résultat :
+      signeX		est entier			= 1
+      signeY		est entier			= 1
+      VX_Resultat	est Entier256		= KmoinsVX;	
+      VY_Resultat	est Entier256		= moinsVY;	
+      // si VX_Test<0
+      SI VX_Resultat.bit(255)=1 ALORS
+      	// x' = -x
+      	VX_Resultat	= corps.négationModulo( VX_Resultat ) 
+      	signeX		= -1
+      FIN
+      // si VX_Test<0
+      SI VY_Resultat.bit(255)=1 ALORS
+      	// y' = -y
+      	VY_Resultat	= corps.négationModulo( VY_Resultat ) 
+      	signeY		= -1
+      FIN	
+      	
+      // renvoie le vecteur (Lamda-(b1*v1+b2*v2))
+      RENVOYER ( VX_Resultat, VY_Resultat, signeX, signeY )
+      
+     type : 458752
+   -
+     name : multiplicationScalairePoint_Optimise
+     procedure_id : 2169274014262991166
+     type_code : 12
+     code : |1+
+      // renvoie le point : K * point
+      // version utilisation les coordonnées de Jacobi + optim de décomsition de K en 2 nombres de 128 bits
+      PROCÉDURE multiplicationScalairePoint_Optimise(  point est Point256, K est Entier256  ) : Point256
+      
+      // N = générateur du groupe des points  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
+      // P = ordre de la courbe               = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
+      
+      // un nombre d'ordre 3 sur <corps>
+      // ie tel que :_N_Ordre3^3 = 1 modulo P
+      // NB : tout nombre d'ordre 3 est OK.
+      _N_Ordre3	est Entier256("7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")
+      // racine du polynôme sur corpsOrdre : X^2 + X + 1 = 0 ( modulo N ) 
+      // A la propriété que map(P) = _MulticateurP * P
+      _RacineQuiMuliplie est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
+      
+      	// fonction qui renvoie _RacineQuiMuliplie * P
+      	// (x, y) => ( _N_Ordre3*x, y) 
+      	PROCÉDURE INTERNE _MultipleDePoint( _p est Point256 ) : Point256
+      		pointRésultat est Point256 
+      		pointRésultat.x	= corps.multiplicationModulo( _N_Ordre3, _p.x )
+      		pointRésultat.y	= _p.y
+      		RENVOYER pointRésultat
+      	FIN
+      	// renvoie x + _RacineQuiMuliplie*y mod N
+      	PROCÉDURE INTERNE _F( x Entier256, y Entier256 ) : Entier256
+      		res est Entier256 =corpsOrdre.additionModulo( x, corpsOrdre.multiplicationModulo( y, _RacineQuiMuliplie ) )
+      		RENVOYER res
+      	FIN
+      	
+      // on décompose K en 2 nombres k1, K2
+      // tels que K = k1 + k2 * _Lambda (modulo N)
+      // et _Lambda est tel qu'on peut trouve _Lambda*P par une simple multiplication de P.X
+      soit (k1,k2,signek1,signek2) = _calcVecteurOpimisePourMult(K)
+      
+      // on vérifie que le résultat a bien les propriétés attendues
+      k1AvecSigne	est entier256	= (signek1 = -1) ?  corpsOrdre.négationModulo(k1) sinon k1
+      k2AvecSigne	est entier256	= (signek2 = -1) ?  corpsOrdre.négationModulo(k2) sinon k2
+      _Tmp		est Entier256
+      _Tmp = _F(k1AvecSigne, k2AvecSigne )
+      dbgAssertion( _Tmp.estEgalA(K) ,"nombre pas OK")
+      // k1 et k2 doivent êtres "petits"
+      dbgAssertion( k1AvecSigne.val3 = 0)
+      dbgAssertion( k1AvecSigne.val2 < 0x1000)
+      dbgAssertion( k2AvecSigne.val3 = 0)
+      dbgAssertion( k2AvecSigne.val2 < 0x1000)
+      
+      // on doit avoir _map(P) = _Lambda * P
+      P 		   est Point256 = point
+      _Lambda_P  est Point256 = _MultipleDePoint(point)
+      // gestion du cas ou les coefficients sont négatifs
+      SI signek1 = -1 ALORS
+      	// P = -P
+      	P     = pointNégation( point )
+      FIN
+      SI signek2 = -1 ALORS
+      	// P = -P
+      	_Lambda_P =  pointNégation( _Lambda_P )
+      FIN
+      
+      // renvoie k1*P + k2*Lamda*P
+      renvoyer multiplicationScalaire2PointJacobi( P, k1,  _Lambda_P, k2 )
      type : 458752
   procedure_templates : []
   property_templates : []

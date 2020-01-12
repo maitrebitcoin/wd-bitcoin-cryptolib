@@ -1,0 +1,147 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : utilPourOptim
+ major_version : 25
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x1e1ac0b9006af5bb
+ internal_properties : BQAAAAUAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      
+     type : 720898
+  procedures :
+   -
+     name : CalculeCoefConstantEuclide
+     procedure_id : 2169258247434507825
+     type_code : 15
+     code : |1+
+      // calcule les coefficients constant a utiliser pour trouver les coef. 128 bits
+      // permettant d'optimiser la multiplication d'un point : K*P => k1*P + k2*Lamda*P
+      procédure CalculeCoefConstantEuclide( _Lambda est Entier256 )
+      
+      CrytoLib	est ECDSA_BTC
+      corps		est CorpsModulaire dynamique	= CrytoLib.corpsOrdre
+      N			est Entier256					= corps.P	
+      // 					0x100000000000000000000000000000000 00000000000000000000000000000000
+      //_Lambda		est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
+      _0_256		est Entier256
+      nMax128Bit	est Entier256("0x100000000000000000000000000000000")
+      
+      // trouve x,t,r tels que
+      // s*N - t*_Racine = r et r < nMax128Bit
+      soit (s1,t1,r1,i) = PGCD_Etendu_StopMax(N, _Lambda, nMax128Bit)
+      
+      soit (s_,t_,r_,i_) = PGCD_Etendu_StopMax(N, _Lambda, _0_256, i)
+      dbgAssertion(s1.estEgalA(s_))
+      dbgAssertion(t1.estEgalA(t_))
+      dbgAssertion(r1.estEgalA(r_))
+      dbgAssertion(i_ = i)
+      
+      
+      // vérifie que  S*A + T*B = R 
+      _SA			est Entier512	= multiplication256x256_512(s1,N)
+      _TB			est Entier512	= multiplication256x256_512(t1,_Lambda)
+      _Tmp		est Entier256 
+      // r = SA + TB  : 
+      bSPositif	est un booléen	= EstPair(i)
+      SI bSPositif ALORS
+      	//  avec T négatif  =>
+      	//  R = SA - TB 
+      	_Tmp = soustraction( _SA.valPoidsFaible, _TB.valPoidsFaible  ) 
+      SINON
+      	//  avec S négatif  =>
+      	//  R = - SA + TB 		
+      	_Tmp = soustraction( _TB.valPoidsFaible , _SA.valPoidsFaible ) 
+      FIN
+      Trace(_Tmp.VersChaineHexa())
+      
+      
+      Trace("************Trouve :")
+      //trace("s:"+s.VersChaineHexa())
+      Trace("r1:"+r1.VersChaineHexa())
+      Trace("t1:"+t1.VersChaineHexa())
+      
+      
+      // R-1:
+      
+      soit (s0,t0,r0,i0) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i-1)
+      dbgAssertion((i0=i-1))
+      dbgAssertion(PAS s0.estEgalAZero())
+      // R+2
+      soit (s2,t2,r2,i2) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i+2)
+      dbgAssertion((i2=i+2))
+      dbgAssertion(PAS s2.estEgalAZero())
+      
+      Trace("************ -1  :")
+      //Trace("s0:"+s0.VersChaineHexa())
+      Trace("r0:"+r0.VersChaineHexa())
+      Trace("t0:"+t0.VersChaineHexa())
+      
+      Trace("************ +1  :")
+      //Trace(s2.VersChaineHexa())
+      Trace("r2:"+r2.VersChaineHexa())
+      Trace("t2:"+t2.VersChaineHexa())
+      
+      
+      	// renvoie x - L*y mod N
+      	_Lambda_local est Entier256=_Lambda
+      	PROCÉDURE INTERNE _FMoins( x Entier256, y Entier256 ) : Entier256
+      		res est Entier256 = corps.soustractionModulo( x, corps.multiplicationModulo( y, _Lambda_local ) )
+      		RENVOYER res
+      	FIN
+      
+      
+      // vecteurs tels que  X + Y*_Lamda = 0 modulo N
+      V1_X		est Entier256	= r1
+      moinsV1_Y	est Entier256	= t1
+      V2_X		est Entier256	= r2
+      moinsV2_Y	est Entier256	= t2 
+      //_Tmp est entier256
+      _Tmp = _FMoins(V1_X, moinsV1_Y )
+      dbgAssertion( _Tmp.estEgalAZero())
+      _Tmp = _FMoins(V2_X, moinsV2_Y )
+      dbgAssertion( _Tmp.estEgalAZero())
+      //Trace("****** ")
+      Trace("X1 (v1.x) = " +V1_X.VersChaineHexa())
+      Trace("Y1 (v1.x) =-" +moinsV1_Y.VersChaineHexa())
+      Trace("X2 (v2.x) = " +V2_X.VersChaineHexa())
+      Trace("Y2 (v2.x) =-" +moinsV2_Y.VersChaineHexa())
+      
+      
+      moinsX1Y2	est un entier512	= multiplication256x256_512(V1_X, moinsV2_Y) 
+      //dbgAssertion(moinsX1Y2.valPoidsFort.estEgalAZero())
+      moinsX2Y1	est un entier512	= multiplication256x256_512(V2_X, moinsV1_Y)
+      //dbgAssertion(moinsX2Y1.valPoidsFort.estEgalAZero())
+      // Delta = x1y2 - x2y1
+      _Delta		est Entier256 
+      //si X1Y2.valPoidsFaible.estSupérieurOuEgalA(  X1Y2.valPoidsFaible ) alors
+      //	_Delta = addition( moinsX2Y1.valPoidsFaible, X1Y2.valPoidsFaible )  
+      //sinon
+      //_Delta = soustraction(  X1Y2.valPoidsFaible, X2Y1.valPoidsFaible )  
+      //_Delta = negation(addition( X2Y1.valPoidsFaible, moinsX1Y2.valPoidsFaible  ))
+      Trace(moinsX1Y2.valPoidsFaible.VersChaineHexa())	
+      Trace(moinsX2Y1.valPoidsFaible.VersChaineHexa())	
+      _Delta = soustraction( moinsX2Y1.valPoidsFaible , moinsX1Y2.valPoidsFaible )
+      
+      _moinsDelta est Entier256  = negation(_Delta)
+      Trace("_Delta =-" + _moinsDelta.VersChaineHexa())
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : ProcéduresGlobales1
+resources :
+ string_res :
+  identifier : 0x1e1ac0a50068a902
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
