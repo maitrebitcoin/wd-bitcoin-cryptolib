@@ -1096,8 +1096,8 @@ window :
          //_0_256 est Entier256
          //nMax128Bit  est Entier256("0x100000000000000000000000000000000")
          
-         //CalculeCoefConstantEuclide( _Lambda )
-         //retour
+         CalculeCoefConstantEuclide( _Lambda )
+         retour
          
          // renvoie x + L*y mod N
          procédure interne _F( x Entier256, y Entier256 ) : Entier256
@@ -1109,6 +1109,17 @@ window :
          
          // Test de multiplication par K (nombre "au hasard")
          K est Entier256("0x071e443c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef878")
+         // cas a pb
+         //K.val0	=0x8C9709EE2C00DB85
+         //K.val1	=0xED340B2E31901BFD 
+         //K.val2	=0x5DCE66E6049C6A08
+         //K.val3	=0x7B5AAE134D8FDABF
+         // cas a pb 2
+         K.val0	=0xCD20AFA495B7BF2B	
+         K.val1	=0xC1605B209D915713	 
+         K.val2	=0x732947073A8716AF	
+         K.val3	=0xF5CDDA00DF9C6B90	
+         
          
          // renvoie V1,V2,signeV1,signeV2 tels que
          // V1 + V2*R = K ( modulo N)
@@ -1172,6 +1183,7 @@ window :
          	// vx     = b1*v1.x + b2*v2.x
          	VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
          	Trace(" B1V1X= "  +  B1V1X   .VersChaineHexa())
+         	$
          	Trace(" B2V2X=-"  +  moinsB2V2X   .VersChaineHexa())
          	Trace(" VX ="  + VX	.VersChaineHexa())
          	
@@ -1268,14 +1280,14 @@ window :
          	// P = -P
          	mapP = CrytoLib.courbeBtc.pointNégation(mapP)
          FIN
-         
+         bSigneOpose est un booléen = signek1<>signek2
          ChronoDébut()
          // calcul optimisé
          //P1_optim		est Point256	=  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( P,       k1   )
          //P2_optim		est Point256	=  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( mapP,    k2  )
          
          //KfoisP_optim	est Point256	= CrytoLib.courbeBtc.pointPlusPoint(P1_optim, P2_optim )  
-         KfoisP_optim	est Point256	= CrytoLib.courbeBtc.multiplicationScalaire2PointJacobi(P,k1, mapP ,k2)  
+         KfoisP_optim	est Point256	= CrytoLib.courbeBtc._multiplicationScalaire2PointJacobi(P, k1, bSigneOpose ,k2)  
          
          trace(chronofin())
          Trace("KfoisP_optim=")
@@ -1308,7 +1320,13 @@ window :
          CrytoLib	est ECDSA_BTC
          
          // Test de multiplication par K (nombre "au hasard")
-         K est Entier256("0x071e443c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef878")
+         //K est Entier256("0x071e443c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef878")
+         K est Entier256
+         // cas a pb
+         K.val0=0xCD20AFA495B7BF2B	
+         K.val1=0xC1605B209D915713	 
+         K.val2=0x732947073A8716AF	
+         K.val3=0xF5CDDA00DF9C6B90	
          
          //Point = 2*G , pour test
          P est Point256 = CrytoLib.courbeBtc.pointGen

@@ -41,7 +41,16 @@ class :
       	pointGen 		 est Point256
       	pointFractionGen est PointFraction256
       
+      prive
+      	// un nombre d'ordre 3 sur <corps>
+      	// ie tel que :_N_Ordre3^3 = 1 modulo P
+      	// NB : tout nombre d'ordre 3 est OK.
+      	_N_Ordre3			est Entier256// = "7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee"
+      	// racine du polynôme sur corpsOrdre : X^2 + X + 1 = 0 ( modulo N ) 
+      	// A la propriété que map(P) = _MulticateurP * P
+      	_RacineQuiMuliplie	est Entier256 // = "5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72"
       FIN
+      
      type : 131072
   procedures :
    -
@@ -53,6 +62,8 @@ class :
       // P =0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F : nombre utilisé pour le modulo des coord. des points
       // N =0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 : ordre de la courbe
       Constructeur CourbeElliptique(allouer un CorpsMudulaire_sepc256k1( ),"0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
+      Constructeur _N_Ordre3(         "7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")
+      Constructeur _RacineQuiMuliplie("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
       coefB.affecteAvecEntierPositif(7)
       
       // Init point générateur
@@ -1166,13 +1177,16 @@ class :
       
      type : 458752
    -
-     name : multiplicationScalaire2PointJacobi
+     name : _multiplicationScalaire2PointJacobi
      procedure_id : 2169263272548855874
      type_code : 12
      code : |1+
-      // renvoie K1 * P1 + K2 *  P2
-      // version utilisation les coordonnées de Jacobi pour minimiser les divisions modulaires
-      procédure multiplicationScalaire2PointJacobi(  point1 est Point256, K1 est Entier256 , point2 est Point256, K2 est Entier256   ) : Point256
+      // renvoie K1 * P1 + K2 * P2 avec P2 = _PointMultRacine(P1)
+      // .Utilise le cood de. Jacobi pour minimiser les divisions modulaires
+      procédure _multiplicationScalaire2PointJacobi(  point1 est Point256, K1 est Entier256, bSigneOpose booléen, K2 est Entier256   ) : Point256
+      
+      point2  est Point256 = _PointMultRacine(point1)
+      si bSigneOpose alors point2 = pointNégation(point2)
       
       // conversion en coordonnées de Jacobi
       P1 est Point256_3D 
@@ -1194,23 +1208,42 @@ class :
       FIN
       // idem P2
       _MultiplesDeP2 est un tableau de 15  Point256_3D
-      _MultiplesDeP2[1] = P2
-      _MultiplesDeP2[2] = pointDouble_Jacobi(P2)
-      POUR i = 3 a  15
-      	_MultiplesDeP2[i] = pointPlusPoint_Jacobi(_MultiplesDeP2[i-1], P2) 
+      // OPTIM : P2 = L*P1, inutile de calculer 15 points.
+      // 
+      PROCÉDURE interne _PointMultRacinJocobi( _p est Point256_3D ) : Point256_3D
+      	pointRésultat est Point256_3D 
+      	pointRésultat.x	= corps.multiplicationModulo( _N_Ordre3, _p.x )
+      	pointRésultat.y	= _p.y
+      	pointRésultat.z	= _p.z
+      	RENVOYER pointRésultat
+      fin
+      PROCÉDURE INTERNE _pointNégationJocobi( _p est Point256_3D ) : Point256_3D
+      	pointRésultat est Point256_3D 
+      	pointRésultat.x	= _p.x
+      	pointRésultat.y	=  corps.négationModulo(_p.y)
+      	pointRésultat.z	= _p.z
+      	RENVOYER pointRésultat
       FIN
+      
+      _MultiplesDeP2[1] = P2
+      POUR i = 1 a  15
+      	_MultiplesDeP2[i] = _PointMultRacinJocobi( _MultiplesDeP1[i] )
+      	SI bSigneOpose ALORS _MultiplesDeP2[i] = _pointNégationJocobi(_MultiplesDeP2[i])
+      
+      FIN
+      
       
       iMax est un entier = 255
       // OPTIM pour ca K "petit"
-      si k1.val3=0  _et_ k2.val3=0  alors  iMax-=64
-      si k1.val2<16 _et_ k2.val2<16 alors  iMax-=60
+      si K1.val3=0  _et_ K2.val3=0  alors  iMax-=64
+      si K1.val2<16 _et_ K2.val2<16 alors  iMax-=60
       
       PointRésultatJ	est Point256_3D		// 0
       // parcourt en partant du bit de poids fort par bloc de 4 bits
       POUR i = iMax À 3 pas -4
       	// Récup 16 bits P1
       	//n est un entier = K1.bit(i)*8 + K1.bit(i-1)*4 + K1.bit(i-2)*2 + K1.bit(i-3)
-      	n est un entier = k1._4bit(i)
+      	n est un entier = K1._4bit(i)
       	selon n
       		cas 0:
       			// rien
@@ -1219,7 +1252,7 @@ class :
       			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
       	FIN
       	// Récup 16 bits P2
-      	n  = k2.bit(i)*8 + k2.bit(i-1)*4 + k2.bit(i-2)*2 + k2.bit(i-3)
+      	n  = K2.bit(i)*8 + K2.bit(i-1)*4 + K2.bit(i-2)*2 + K2.bit(i-3)
       	SELON n
       		CAS 0:
       		// rien
@@ -1334,6 +1367,20 @@ class :
       
      type : 458752
    -
+     name : _PointMultRacine
+     procedure_id : 2169286937824428775
+     type_code : 12
+     code : |1+
+      // fonction qui renvoie _RacineQuiMuliplie * P
+      // (x, y) => ( _N_Ordre3*x, y) 
+      PROCÉDURE _PointMultRacine( _p est Point256 ) : Point256
+      
+      pointRésultat est Point256 
+      pointRésultat.x	= corps.multiplicationModulo( _N_Ordre3, _p.x )
+      pointRésultat.y	= _p.y
+      RENVOYER pointRésultat
+     type : 458752
+   -
      name : multiplicationScalairePoint_Optimise
      procedure_id : 2169274014262991166
      type_code : 12
@@ -1345,22 +1392,6 @@ class :
       // N = générateur du groupe des points  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
       // P = ordre de la courbe               = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
       
-      // un nombre d'ordre 3 sur <corps>
-      // ie tel que :_N_Ordre3^3 = 1 modulo P
-      // NB : tout nombre d'ordre 3 est OK.
-      _N_Ordre3	est Entier256("7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")
-      // racine du polynôme sur corpsOrdre : X^2 + X + 1 = 0 ( modulo N ) 
-      // A la propriété que map(P) = _MulticateurP * P
-      _RacineQuiMuliplie est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
-      
-      	// fonction qui renvoie _RacineQuiMuliplie * P
-      	// (x, y) => ( _N_Ordre3*x, y) 
-      	PROCÉDURE INTERNE _MultipleDePoint( _p est Point256 ) : Point256
-      		pointRésultat est Point256 
-      		pointRésultat.x	= corps.multiplicationModulo( _N_Ordre3, _p.x )
-      		pointRésultat.y	= _p.y
-      		RENVOYER pointRésultat
-      	FIN
       	// renvoie x + _RacineQuiMuliplie*y mod N
       	PROCÉDURE INTERNE _F( x Entier256, y Entier256 ) : Entier256
       		res est Entier256 =corpsOrdre.additionModulo( x, corpsOrdre.multiplicationModulo( y, _RacineQuiMuliplie ) )
@@ -1379,26 +1410,27 @@ class :
       _Tmp = _F(k1AvecSigne, k2AvecSigne )
       dbgAssertion( _Tmp.estEgalA(K) ,"nombre pas OK")
       // k1 et k2 doivent êtres "petits"
-      dbgAssertion( k1AvecSigne.val3 = 0)
-      dbgAssertion( k1AvecSigne.val2 < 0x1000)
-      dbgAssertion( k2AvecSigne.val3 = 0)
-      dbgAssertion( k2AvecSigne.val2 < 0x1000)
+      dbgAssertion( k1.val3 = 0)
+      dbgAssertion( k1.val2 < 0x1000)
+      dbgAssertion( k2.val3 = 0)
+      dbgAssertion( k2.val2 < 0x1000)
       
       // on doit avoir _map(P) = _Lambda * P
       P 		   est Point256 = point
-      _Lambda_P  est Point256 = _MultipleDePoint(point)
+      //_Lambda_P  est Point256 = _PointMultRacine(point)
       // gestion du cas ou les coefficients sont négatifs
       SI signek1 = -1 ALORS
       	// P = -P
       	P     = pointNégation( point )
       FIN
-      SI signek2 = -1 ALORS
-      	// P = -P
-      	_Lambda_P =  pointNégation( _Lambda_P )
-      FIN
+      //SI signek2 = -1 ALORS
+      //	// P = -P
+      //	_Lambda_P =  pointNégation( _Lambda_P )
+      //FIN
+      bSigneOpose est un booléen = signek1 <> signek2
       
       // renvoie k1*P + k2*Lamda*P
-      renvoyer multiplicationScalaire2PointJacobi( P, k1,  _Lambda_P, k2 )
+      renvoyer _multiplicationScalaire2PointJacobi( P, k1, bSigneOpose,  k2 )
      type : 458752
   procedure_templates : []
   property_templates : []
