@@ -1204,11 +1204,11 @@ window :
          // Test de multiplication par K (nombre "au hasard")
          K est Entier256("0x071e443c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef878")
          
-         // renvoie V1,V2,signe tels que
-         // V1 + signe*V2*R = K ( modulo N)
+         // renvoie V1,V2,signeV1,signeV2 tels que
+         // V1 + V2*R = K ( modulo N)
          // avec V1 et V2 "petits" = sur ~128 bits 
-         // signe vaut +1 ou -1
-         procédure interne _calcVecteurOpimise( _k est Entier256 )  : (Entier256,Entier256, entier) 
+         // signeV1 et signeV2 valent +1 ou -1
+         procédure interne _calcVecteurOpimise( _k est Entier256 )  : (Entier256,Entier256, entier,entier)  
          
          
          	// coefficients tels que "(K,0) - (B1*V1 + B2*V2)" soit sur ~128 bits
@@ -1268,28 +1268,36 @@ window :
          	//Trace(" -VY ="  + moinsVY.VersChaineHexa())
          	
          	//_0_256_ est entier256
+         	signeX est entier = 1
          	signeY est entier = 1
-         	VX_Test	est Entier256 = KmoinsVX; // corps.additionModulo(     B1V1X.valPoidsFaible , B2V2X.valPoidsFaible ) 
-         	VY_Test	est Entier256 = moinsVY; //corps.soustractionModulo( B1V1Y.valPoidsFaible , B2V2Y.valPoidsFaible ) 
+         	VX_Resultat	est Entier256 = KmoinsVX; // corps.additionModulo(     B1V1X.valPoidsFaible , B2V2X.valPoidsFaible ) 
+         	VY_Resultat	est Entier256 = moinsVY; //corps.soustractionModulo( B1V1Y.valPoidsFaible , B2V2Y.valPoidsFaible ) 
          	// si VX_Test<0
-         	si VX_Test.bit(255)=1 ALORS
+         	si VX_Resultat.bit(255)=1 ALORS
          		// x' = -x
-         		// y' = -y
-         		VX_Test = corps.négationModulo( VX_Test ) 
-         		signeY  = -1
+         		VX_Resultat = corps.négationModulo( VX_Resultat ) 
+         		signeX  = -1
          	FIN
+         		// si VX_Test<0
+         	SI VY_Resultat.bit(255)=1 ALORS
+         		// y' = -y
+         		VY_Resultat	= corps.négationModulo( VY_Resultat ) 
+         		signeY	= -1
+         	FIN	
          	
          	// renvoie le vecteur (Lamda-(b1*v1+b2*v2))
-         	renvoyer ( VX_Test, VY_Test, signeY )
+         	renvoyer ( VX_Resultat, VY_Resultat, signeX, signeY )
          fin
          
-         soit (k1,k2,signek2) = _calcVecteurOpimise(K)
+         soit (k1,k2,signek1,signek2) = _calcVecteurOpimise(K)
          
-         si signek2 = 1
-         	_Tmp = _F(k1, k2 )
-         sinon
-         	_Tmp =  corps.négationModulo( _FMoins(k1, k2 ) )
-         fin
+         k1AvecSigne est entier256 = (signek1 = -1) ?  corps.négationModulo(k1) sinon k1
+         k2AvecSigne est entier256 = (signek2 = -1) ?  corps.négationModulo(k2) sinon k2
+         _Tmp = _F(k1AvecSigne, k2AvecSigne )
+         dbgAssertion( _Tmp.estEgalA(K) ,"nombre pas OK")
+         //sinonK
+         //	_Tmp =  corps.négationModulo( _FMoins(k1, k2 ) )
+         //fin
          Trace("-------------------------------------------------------------")
          Trace("k1:    =" + k1.VersChaineHexa()) 
          Trace("k2:    =" + k2.VersChaineHexa()) 
@@ -1298,7 +1306,7 @@ window :
          //Trace(_Tmp.VersChaineHexa())
          Trace("K=      " +K.VersChaineHexa())
          
-         retour
+         //retour
          
          // P = ordre de la courbe = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
          // un nombre d'odre 3.
@@ -1322,9 +1330,19 @@ window :
          
          P est Point256 = CrytoLib.courbeBtc.pointGen
          P =  CrytoLib.courbeBtc.pointDouble(P)
-         
          // on doit avoir _map(P) = _Racine * P
          mapP  est Point256 = _map(P)
+         // gestion du cas ou les coefficients sont négatifs
+         si signek1 = -1 ALORS
+         	// P = -P
+         	P = CrytoLib.courbeBtc.pointNégation(P)
+         FIN
+         SI signek2 = -1 ALORS
+         	// P = -P
+         	mapP = CrytoLib.courbeBtc.pointNégation(mapP)
+         FIN
+         
+         
          Trace("Map(P) : " )
          Trace(mapP.x.VersChaineHexa())
          Trace(mapP.y.VersChaineHexa())
