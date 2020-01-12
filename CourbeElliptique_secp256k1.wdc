@@ -1182,17 +1182,17 @@ class :
      type_code : 12
      code : |1+
       // renvoie K1 * P1 + K2 * P2 avec P2 = _PointMultRacine(P1)
-      // .Utilise le cood de. Jacobi pour minimiser les divisions modulaires
-      procédure _multiplicationScalaire2PointJacobi(  point1 est Point256, K1 est Entier256, bSigneOpose booléen, K2 est Entier256   ) : Point256
+      // .Utilise et renvouer en cood de. Jacobi pour minimiser les divisions modulaires
+      procédure _multiplicationScalaire2PointJacobi(  P1 est Point256_3D, K1 est Entier256,  K2 est Entier256 , bSigneOpose booléen ) : Point256_3D
       
-      point2  est Point256 = _PointMultRacine(point1)
-      si bSigneOpose alors point2 = pointNégation(point2)
-      
-      // conversion en coordonnées de Jacobi
-      P1 est Point256_3D 
-      P2 est Point256_3D 
-      P1.VersJacobi(point1) // init à 1*P
-      P2.VersJacobi(point2) // init à 1*P
+      //point2  est Point256 = _PointMultRacine(point1)
+      //si bSigneOpose alors point2 = pointNégation(point2)
+      //
+      //// conversion en coordonnées de Jacobi
+      //P1 est Point256_3D 
+      //P2 est Point256_3D 
+      //P1.VersJacobi(point1) // init à 1*P
+      //P2.VersJacobi(point2) // init à 1*P
       // précalcul de 2*P,3*P, 15*P
       _MultiplesDeP1 est un tableau de 15  Point256_3D
       _MultiplesDeP1[1] = P1
@@ -1209,7 +1209,6 @@ class :
       // idem P2
       _MultiplesDeP2 est un tableau de 15  Point256_3D
       // OPTIM : P2 = L*P1, inutile de calculer 15 points.
-      // 
       PROCÉDURE interne _PointMultRacinJocobi( _p est Point256_3D ) : Point256_3D
       	pointRésultat est Point256_3D 
       	pointRésultat.x	= corps.multiplicationModulo( _N_Ordre3, _p.x )
@@ -1225,7 +1224,6 @@ class :
       	RENVOYER pointRésultat
       FIN
       
-      _MultiplesDeP2[1] = P2
       POUR i = 1 a  15
       	_MultiplesDeP2[i] = _PointMultRacinJocobi( _MultiplesDeP1[i] )
       	SI bSigneOpose ALORS _MultiplesDeP2[i] = _pointNégationJocobi(_MultiplesDeP2[i])
@@ -1265,7 +1263,7 @@ class :
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
       		si i=3  alors
       			// renvoie (0,0)
-      			_P0 est Point256 
+      			_P0 est Point256_3D 
       			RENVOYER _P0
       		fin
       		// sinon c'est qu'on a pas encore rencontré de 1
@@ -1281,15 +1279,8 @@ class :
       	
       FIN
       
-      // conversion depuis jacobi:
-      //  x=X/Z2
-      //  y=Y/Z3
-      pointRésultat est Point256 = _JacobiVersPoint(PointRésultatJ  )
-      // le point devrait être sur la courbe ou null, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
       
-      
-      RENVOYER pointRésultat
+      RENVOYER PointRésultatJ
       
      type : 458752
    -
@@ -1331,20 +1322,15 @@ class :
       // B2*V2
       moinsB2V2X	est Entier512	= multiplication256x256_512( _moinsB2, V2_X      )
       B2V2Y		est Entier512	= multiplication256x256_512( _moinsB2, moinsV2_Y )
-      // résultat est sur ~256 bits. parfois 257, mais comme on soustrait on doit trouver un nombre ~128 bits
-      //dbgAssertion(B1V1X.valPoidsFort.estEgalA( moinsB2V2X.valPoidsFort)  )
-      //dbgAssertion(B2V2Y.valPoidsFort.estEgalA( moinsB1VY1.valPoidsFort)  )
-      	
+      // NB: résultat est sur ~256 bits. parfois 257
+      
       // vx     = b1*v1.x + b2*v2.x
-      //VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
       VX512	est Entier512		  = soustraction512(  B1V1X,   moinsB2V2X )
       dbgAssertion( VX512.valPoidsFort.estEgalAZero() _ou_  VX512.valPoidsFort.estEgalAmoins1())
       VX	    est Entier256 		  = VX512.valPoidsFaible
       // vy     = b1*v1.y + b2*v2.y
       moinsVY512   est Entier512         = soustraction512( moinsB1VY1, B2V2Y  )
       dbgAssertion( moinsVY512.valPoidsFort.estEgalAZero() _OU_  moinsVY512.valPoidsFort.estEgalAmoins1())
-      //VY      est Entier256 		   = VY512.valPoidsFaible
-      //VY est Entier256          = corps.soustractionModulo(  B2V2Y.valPoidsFaible,  moinsB1VY1.valPoidsFaible   )
       moinsVY		est Entier256 = moinsVY512.valPoidsFaible // corps.négationModulo(VY)
       	
       // k - vx = K - (b2*v2.x - b1*v1.x)
@@ -1390,7 +1376,7 @@ class :
      name : multiplicationScalairePoint_Optimise
      procedure_id : 2169274014262991166
      type_code : 12
-     code : |1+
+     code : |1-
       // renvoie le point : K * point
       // version utilisation les coordonnées de Jacobi + optim de décomsition de K en 2 nombres de 128 bits
       PROCÉDURE multiplicationScalairePoint_Optimise(  point est Point256, K est Entier256  ) : Point256
@@ -1435,8 +1421,20 @@ class :
       //FIN
       bSigneOpose est un booléen = signek1 <> signek2
       
+      // conversion en coord de Jacobi
+      PJ est Point256_3D
+      PJ.VersJacobi(P) // init à 1*P
+      
       // renvoie k1*P + k2*Lamda*P
-      renvoyer _multiplicationScalaire2PointJacobi( P, k1, bSigneOpose,  k2 )
+      K_PJ est Point256_3D =  _multiplicationScalaire2PointJacobi( PJ, k1, k2, bSigneOpose  )
+      
+      // conversion depuis jacobi:
+      //  x=X/Z2
+      //  y=Y/Z3
+      pointRésultat est Point256 = _JacobiVersPoint( K_PJ  )
+      // le point devrait être sur la courbe ou null, sinon erreur de calcul
+      dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      renvoyer pointRésultat
      type : 458752
   procedure_templates : []
   property_templates : []

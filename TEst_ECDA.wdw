@@ -1288,26 +1288,26 @@ window :
          	mapP = CrytoLib.courbeBtc.pointNégation(mapP)
          FIN
          bSigneOpose est un booléen = signek1<>signek2
-         ChronoDébut()
+         //ChronoDébut()
          // calcul optimisé
          //P1_optim		est Point256	=  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( P,       k1   )
          //P2_optim		est Point256	=  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( mapP,    k2  )
          
          //KfoisP_optim	est Point256	= CrytoLib.courbeBtc.pointPlusPoint(P1_optim, P2_optim )  
-         KfoisP_optim	est Point256	= CrytoLib.courbeBtc._multiplicationScalaire2PointJacobi(P, k1, bSigneOpose ,k2)  
-         
-         trace(chronofin())
-         Trace("KfoisP_optim=")
-         Trace(KfoisP_optim.x.VersChaineHexa())
-         Trace(KfoisP_optim.y.VersChaineHexa())
-         
-         // calcul standard de "KP"
-         ChronoDébut()
-         KfoisP_defaut  est Point256 =  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( P, K )
-         Trace(ChronoFin())
-         Trace("KfoisP_defaut=")
-         Trace(KfoisP_defaut.x.VersChaineHexa())
-         Trace(KfoisP_defaut.y.VersChaineHexa())
+         //KfoisP_optim	est Point256	= CrytoLib.courbeBtc._multiplicationScalaire2PointJacobi(P, k1, k2, bSigneOpose )  
+         //
+         //trace(chronofin())
+         //Trace("KfoisP_optim=")
+         //Trace(KfoisP_optim.x.VersChaineHexa())
+         //Trace(KfoisP_optim.y.VersChaineHexa())
+         //
+         //// calcul standard de "KP"
+         //ChronoDébut()
+         //KfoisP_defaut  est Point256 =  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( P, K )
+         //Trace(ChronoFin())
+         //Trace("KfoisP_defaut=")
+         //Trace(KfoisP_defaut.x.VersChaineHexa())
+         //Trace(KfoisP_defaut.y.VersChaineHexa())
          
          
         type : 18
