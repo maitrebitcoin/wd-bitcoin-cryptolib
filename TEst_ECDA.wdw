@@ -53,7 +53,7 @@ window :
   -
     name : FIn1
     identifier : 0x2b8390ec00c21e47
-    internal_properties : BQAAAAUAAACP97Axbk02UnDsH+R8rEUyMmQdU26ZRGS9ndVqRcZp4VWE/snY0i3pyxS00J5duC393tQw5rqZcTq37jjyfhX4jFM6vbl0hidvXPf2qJ78VCoEY/j7cl+G6EQxwfPsMAIO1ZM1cWH66hFkag08bcRcbRUlwFJKOgvx9ks6EKQZAlNGZxYMqeeM0/ctEnebvLjd8D3vu0L42T9rEGp+LHqJfcx/l7yqnjv1f2Fy8odhkwgSVdj02UVA+4I7pySc5KHLEh5C3x6nUDIBKqb/RwTtOSPMXkaYC/W8HcOwQw3vq8zRYLSl1amAT5E3DL1V+JOwR3sDyr0xxHTrucTyDYgV2R3ie6ZpT289z8RXeGcKKF7AaO/Lwuxuo9bnN0iTqajjG4rQgZI7JDvzxgFN4fgiXELn9TvmEcsWP5/tvtLtkrtSYqMmNAd+pQ+Rsf6xIhgC3MgtTWwUZp5PfFh/WHfMt89bSt1/QBVMRcWmNbbHmZvQ6uJnBpZ8iC8rKjl9wo37yPJPm5QQ9N6zK/RwTQsfjhwo1GzTpI463OPWHY3Ij1s1Xnv05Xu7Vy8dRNDeucnzVPJzNivFy5VJkxMBmtQLTFxORh2+4ky2F5DH8rk2SE7qlJOBEHgPDdF5UM0b0aiORI8RPluJOALC4OvZmyaRK8qh/rlVaoQ5dekpwpih0KqhAIvpfj8K+Qi4HUZ9iH9R5JqSyNWLnOQ2aXadv4xEpXiE
+    internal_properties : BQAAAAUAAACHXxipdqWeapjUd8wkxG0qOhw1GybBfGx1VX2Cna4BSS3MRmGgCtUBc1zsGCYVQIXFlgz4vuKROfJvtvCqhg2ApHvitaGMjh93JI9ekLZkLJJ8u0CTWvduQBz5+YvUSGoG3ZstmVkiwvkMQlXkhWw0W3H1ZGqS7ifhAgdCIJxl8kNSr4JkYfvwA8ORCsfLwOiNvL17u3q8HQevNBrmjEahjfAf8yxCoveF+xUqCn/tE6iWDZTs0Uk8C753x5RsoGFrJk4W9/aTbHLdvi4f36DlgV9cGm5AT/msqU8Aq+0725y9gFilHW0MPy17FA39xJvwI6P3EpV1ALQndXTijcwVUZlqdyYhm0udG0hf8GdewGZizrXx6B7Q5fCFXbaJY24p3cj233DdJm0lrCfz14Ioeiw1G3GkG7XwIZXzhBh3EHncyCmsojFoh8EXBww/vK7ALj5Du/reULixwu7N7sma5YmBkKuFSi9e92uEE6Qxhzky8OhtPMAmeinJsL8jRIuRUgi9KSqiFtAF8SquGxWlHH7umqqRZhAclsEcWxtKjamXzIn6my3dGeGjOgZ0w09JLtobnoMdo70h++vZsjzzVGRGXvXmCnTu3+ivmuEOoCbC/Dvp6FBnVWmBSMUT2bC2bKcJNqPRgFpqGLPhY97J4wJppgENIjzhrZFB2nBJePJpWCNBJueyUdDwJU5FQLdp/KKasC3jdIxuEY71V3SsDeB8
     type : 4
     code_elements :
      type_code : 4
@@ -471,7 +471,7 @@ window :
   -
     name : priv_pub1
     identifier : 0x2dc68581035feaad
-    internal_properties : BQAAAAUAAACJT0pKJ+qxAE/Ew4Y30fZT+1SH7rnYS0t5nsKkkp8cACoNkZh/YVZ2NRt7c/IFXLpl8ReWeHqXnBtfLrI0QQ1f1wtyr53kmtGt5AWReUG7fpPN4GIaTiXFSOf/vrEwioAL5qqOkZHALK1OoObWxL6cVRSOMOOaps67By3HF8F2YVZQwr3nhDEIBjHAbLb8pfQ2LPqM0cyPouzxZ1RNTq25LEPWS7yU5H0i3f+Pitkb0Fp1ppOu+VC4b8wRHQ1qrxciKXnXokE2IfVlXW24AT4GiIffuvC4t4mg3/dHSMZOrYbwBwwdrtmouO8ZPof7kjBzbQRiUuV8kJcM2bgId8e7P7Z03koumOzqf+xE8a7sYzFxnLgKhskZpJnKa13U+YK9mhmG630R+IVEK79aupSWAQmaoYeMXnySETqTXP6W1ujlJUJPvdkXafZawxloJhpwlpf3/Zz1+B2FdNkHZjYPxSKgRuv4lc0H0cq+if0jAGkmFMnTmANLqWggRuxY5o2mAa4GGTiPAihmSakWdtGp+ccJjZILUMkp7Bst++SWe9gXBo4fR5UZY5KQZMqXu2ZDWSC2s/6vNcvvK0eR5k7YpeeB7gcabRq1Arqs+N9p6PtidBA0B/LjDyRFWcRCwgpB4dqEaZyRinbljNJcVsJegzmO+rt1fEp0L5u0iH9rSKt5GSOYO1XnUXzKytDLGuHRTpxrxjZDJ2LW0gK4mYN9FF/z4VkieU+TJ9y6zkn96Wa4a1peR/VwKtaJC/Whd6HDVZHNgsLlpPBDLXtARWkoAkLM5BZN
+    internal_properties : BQAAAAUAAACl6yaes9YtrKtQ7yp7xfqn/xi7Gi18z8/9IoZwvnuInKZJ7Vy7HeLiUQdnV+b5sB65JUtSnC7rQF9jUk4AnUkbA1euU9mg1h1pILElzeVfkkdhVM7uMvmJjFsz+s1MhrxnQtYiPb38iEmaXLrKqHLQCchSjMf+aoJve/FDk03y7cKcfgEjsB2k0n18MEqwaTjq8E7IdfADFnAFC+Ap6lnVmA96L0gQcOk+Kevj/v1PlI45il+yjRSomDCR/YWo+3dYP/sFriNWQXODufH0G9oyho2F1KyiizGmzZ+71CDa1XA6ERIxYOlcQnFlno/xYuQNVy6g9q+kEAmmXdCIpWcjJYRqcGrUyDRILfCw/dCQs+ODzhZq3OllxrvCA91CjT5HfCOE44udTKMSI7RxnU0VnPyflKpTBaX1jEWQb9W7+bvAcp0q9BDM3HHFSORvg/3TcWBG5FfARagoZ8IqfePyRFHVmY4/PPJChB1X5HxE53whHcCq0yZcuG9Hw0MLl8T1wNdloKMSl78F2EJ1MVbsCCZm8Plei3KQ26p+4CzaP2yzqlqTm+HVP75coI7Th7J/zSxy97JbYSeLt/NFUtpk0Ys9olPWIU75xv5gtBO9vC8euFz4e25fi6DBJYiOfkYdxTY4pVhVzorJ4IYIumaCp+UiVl+JiFZAe1fwzDs3lBfthbf05/kLtRBefowPXqUVCsC3imp/4y7i7i7sVU9JQAMvJQV+3TO3G8Ce6i2RfZp0r4Yiu2HcRrLVx6kd8x1f6T2Rzr7ZmOR30Z+s6c2M5q6gkHoh
     type : 4
     code_elements :
      type_code : 4
@@ -585,9 +585,9 @@ window :
      type_code : 8
      p_codes : []
   -
-    name : ECDSA_SigneNombre_ECDSA_VerifieiSignature
+    name : ECDSA_SigneNombre_ECDSA_VérifieSignature
     identifier : 0x2c02cf800181802d
-    internal_properties : BQAAAAUAAABgveWKkI9s6fixUXU3BpuV2pUjWEzgNUogWe9BZ65cbA3uqC35TB4CP4XKs583khYZf5LJTbqRSJiQOn9filEtSsgCq4nFI1yS1imzJewVvlfDZfp8xIN5WttBb9eW82Jhe9u8O5refop+ML9C+STGbjTV9jYViOfux1spg6O+e/swVBBI/8J42TeFxvFq0/HaANwz+5Cy9eqwrfPV8NxAfPWk0OeyisKqlZSq3EpmPZ0YlqqPAcrzBekyHXvtfEadi+Wb8povwlDiwmCzjbbeDJHpMONfk8qFeMriBaDCmoItY6SYwcCveUC3KSJ6Y1d4Hfg+q6oo2vZ0J+LbFrSYhwOPTkk8PvJ8B2K2/RfWS+VF4R7vLcWXahqfZpRPaw5HHqmc918vULVQtzTUzMOS4DUwUiQfBEEir60xzej2vLf4qI79Af7LJsuif6PXwJCmHo5nMjX7hYKsXo68bxJ2qaOyH15lY4ecvH/ukToG7gehy00Q6wEKqAfNdK9x/Q4QUJSODfK+dJDRdQjY9wTw20O9fBdkv5abUlgYi3i/12K51eaNZQDr/azEP4NamQEiAQWWRZUP3Lds/NMWE+Gpe0ry7/apihVP5i0B5H0uXVuy0CkcZ8Xvp0PhJn9mZWdFCQCutarZxugxT6V0Vlf1sLkKN9YTX5HZtxatm6QNsncSj4SQ4X1ZOuRrmfbfaNtaxuDH7UvLNvXwG9iDv62LC6u788VZU6eIeB3kMYq++WsQVnHCm/fqyWQ6cjht1hNIBrmudW/hJKJB2Q==
+    internal_properties : BQAAAAUAAACcjQCQjAy5FJrHLRQtZe/Zp2Kira8wAAoNB6r/3DTK4ZgxRNzgblRMzODFr7Z0VL0PX4ST2bcca48LxB4tu8U+eWEL54+JPlt8jHECVIVcVS9/DQKgIcLw6qFNAhBEKFxtVznjVqcuo8JvOoL6uasXd+lcZv/suYwhN+zO3EukyVfgsMSZhDoCvAVKxOtsPnPfuE4Eh+k22shE++X0ZeYpQ5qjldrgKtiE15ZqDfurd+x+DekGN84JjH5Oyd+YRCfYmCYlpCsEMF/zNhtKDq5sQAno+8EqCR668TNmCI8zOD7YgbsJMwsowwXbMtYxaeFdWS8+aFLlS/kLwrBNHSTNnNotlKLXVo9OYeE+D26MflK6sjcoz6qKkJlNTvUI4lsUH0MYnadWjUcMuzdFhwUgbdHHdh8kiuSo83tgSnsOhCIK9wwiNt6QQlG4toT0ei7ZuB0NEW7fkFZqfql1tsaKgt09yztaiUxIpvkDlPnySvTnKuX5nmVJinvNV6hYIxBFhMXeDC82D4wzXXNlSsDMToW0Yrb95Vc9Tl715s9VGR9XopTKusaOfWpKQiCNU69TaTSwSNSr0cXUioDJcFN/gphPL58IjnbRypUmm4S2VabMt3kdhI8YnQ/z9wbROwnSl7n2rGVJ2XDvi1ANnUe16fsXJQ2aU2y9/DLDOwoYz2kVpPYCO5bMkPsljEkbno3RdlmPz8qr/8+mDxcM6fdcSeixwTHwu2T/v77+3Y2Phr2qqILaYTfEcvZYKydiDtaKk2Sk76ADaJivtk4PqA==
     type : 4
     code_elements :
      type_code : 4
@@ -610,6 +610,10 @@ window :
          Trace(signature.S.VersChaineHexa())
          
          CléPublique est Point256 = CrytoLib.DériveCléPubliqueDepuisCléPrivée( ClePrivee )
+         Trace("Clé publique : ")
+         Trace(CléPublique.x.VersChaineHexa())
+         Trace(CléPublique.y.VersChaineHexa())
+         
          sERR est chaine
          ChronoDébut()
          bOK est un booléen =  CrytoLib.VerifieSignature( N, CléPublique, signature, sERR )
@@ -1175,13 +1179,16 @@ window :
          	// B2*V2
          	moinsB2V2X	est Entier512	= multiplication256x256_512( _moinsB2, V2_X      )
          	B2V2Y	    est Entier512	= multiplication256x256_512( _moinsB2, moinsV2_Y )
-         	dbgAssertion(B1V1X.valPoidsFort.estEgalAZero())
-         	dbgAssertion(moinsB1VY1.valPoidsFort.estEgalAZero())
-         	dbgAssertion(moinsB2V2X.valPoidsFort.estEgalAZero())
-         	dbgAssertion(B2V2Y.valPoidsFort.estEgalAZero())
+         //	dbgAssertion(B1V1X.valPoidsFort.estEgalAZero())
+         //	dbgAssertion(moinsB1VY1.valPoidsFort.estEgalAZero())
+         //	dbgAssertion(moinsB2V2X.valPoidsFort.estEgalAZero())
+         //	dbgAssertion(B2V2Y.valPoidsFort.estEgalAZero())
          	
          	// vx     = b1*v1.x + b2*v2.x
-         	VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
+         	VX512	est Entier512	 = soustraction512(  B1V1X,   moinsB2V2X )
+         	dbgAssertion(VX512.valPoidsFort.estEgalAZero())
+         //	VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
+         	VX	est Entier256		  = VX512.valPoidsFaible
          	Trace(" B1V1X= "  +  B1V1X   .VersChaineHexa())
          	
          	Trace(" B2V2X=-"  +  moinsB2V2X   .VersChaineHexa())
@@ -1348,6 +1355,50 @@ window :
          Trace("KfoisP_defaut=")
          Trace(KfoisP_defaut.x.VersChaineHexa())
          Trace(KfoisP_defaut.y.VersChaineHexa())
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : ECDSA_VérifieSignature
+    identifier : 0x2e1b496d009cf43f
+    internal_properties : BQAAAAUAAAD5pU4mF32Wmp6zytg2kSGTob4O3ATpdBnPpSy1H5zRRsRNU2MgUbGQwSB8KWqMr/NEiFsIBjW1RJV1UjqNuj6F2bkyBdBghIaEZAghIjOwZmqzWnw4JWy9+mcw0guWV58KexbzgD2G+JAfViGJV0mUyYs7WVCs8EMBiAkCdvMuzdu2KuWGZk2lmdvOG2hSpRBFiiupwumO0hIL3X/PYilkUaNsqCrBA+lFTofeAVTmpWDpg1QI4syCWGFdh7dvGnOxut3Ba6lULEGu3Tonp46hz0nIxb0KE9dppaAtEnwQDYFbYclTy7j1ZLIyab29wj5Cq+TC57Z4AZb/wd8nu3QEG/thF+MPXvp6Gxl+q5svcYZfABj46shWKIsoghlumcH2GjF5G4trRKyVZWhFiPC5+ZP2/uOVRe+7c7YqapMdGewfYYQsh4VsQBPuKMTqiNtTnYOKp6mi1HuL7ZstiyvfpMAMHxnoKp//iahPSZFRs9ZHDdWvGTqwI9EIfyX+zPqCZzWkU3WMEJfTCuGoBL1ms/lHKfwkaLLrkqc80+Cu08PK+5x8hFl5Ytma8U6xADhUCV3khP8bIaB7UGqVVQIUgwFrtXTUMy+D1dOu0DA6SSBq4Ybu7mrQZIL/ngLWBNb8V28QwqatvhX8VVPWDTtRRGMfKFKxRiwO4Le6rLxybw07IeCc7AbY0EkpQhAIugmfOnriWYaoOsY5KIno2rLc4ntBiuupNts55eQJfEGlQEdBqSUr7cGJrA4dtg==
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         //CrytoLib est ECDSA_BTC
+         
+         
+         
+         
+         
+         // signature
+         signature est SignatureEcdsa
+         signature.R.affecteAvecChaineHexa("381d97bbc2cfbe448bf256bdb5ff9cd6fdbe27726ee4d603a4f92fa541fa7518")
+         signature.S.affecteAvecChaineHexa("040e51ef10775569752ce8258dd5c382e1a39ae6530ba1044a58bed5f8ca9d55")
+         // clé pub
+         CléPublique est Point256 //= CrytoLib.DériveCléPubliqueDepuisCléPrivée( ClePrivee )
+         CléPublique.x.affecteAvecChaineHexa("5b0ec43c0ea2bb19964c367e44bfba69b3ec528a3c15a4122bb90ff42bcef87b")
+         CléPublique.y.affecteAvecChaineHexa("b809f2a2d4c6423c2f946ff6499dffec78385fd75f97245910c358a4a55cfdb6")
+         
+         // valeur signée
+         N est Entier256("12345678")
+         
+         sERR est chaine
+         Trace("Calcul...")
+         ChronoDébut()
+         bOK est un booléen =  VerifieSignature( N, CléPublique, signature, sERR )
+         Trace( "Temps (ms) : " + ChronoFin())
+         trace("Vérif signature :" )
+         Trace(bOK)
+         Trace(sERR)
+         
          
          
         type : 18

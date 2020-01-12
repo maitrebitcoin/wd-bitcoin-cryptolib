@@ -1332,14 +1332,20 @@ class :
       moinsB2V2X	est Entier512	= multiplication256x256_512( _moinsB2, V2_X      )
       B2V2Y		est Entier512	= multiplication256x256_512( _moinsB2, moinsV2_Y )
       // résultat est sur ~256 bits. parfois 257, mais comme on soustrait on doit trouver un nombre ~128 bits
-      dbgAssertion(B1V1X.valPoidsFort.estEgalA( moinsB2V2X.valPoidsFort)  )
-      dbgAssertion(B2V2Y.valPoidsFort.estEgalA( moinsB1VY1.valPoidsFort)  )
+      //dbgAssertion(B1V1X.valPoidsFort.estEgalA( moinsB2V2X.valPoidsFort)  )
+      //dbgAssertion(B2V2Y.valPoidsFort.estEgalA( moinsB1VY1.valPoidsFort)  )
       	
       // vx     = b1*v1.x + b2*v2.x
-      VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
+      //VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
+      VX512	est Entier512		  = soustraction512(  B1V1X,   moinsB2V2X )
+      dbgAssertion( VX512.valPoidsFort.estEgalAZero() _ou_  VX512.valPoidsFort.estEgalAmoins1())
+      VX	    est Entier256 		  = VX512.valPoidsFaible
       // vy     = b1*v1.y + b2*v2.y
-      VY est Entier256          = corps.soustractionModulo(  B2V2Y.valPoidsFaible,  moinsB1VY1.valPoidsFaible   )
-      moinsVY		est Entier256 = corps.négationModulo(VY)
+      moinsVY512   est Entier512         = soustraction512( moinsB1VY1, B2V2Y  )
+      dbgAssertion( moinsVY512.valPoidsFort.estEgalAZero() _OU_  moinsVY512.valPoidsFort.estEgalAmoins1())
+      //VY      est Entier256 		   = VY512.valPoidsFaible
+      //VY est Entier256          = corps.soustractionModulo(  B2V2Y.valPoidsFaible,  moinsB1VY1.valPoidsFaible   )
+      moinsVY		est Entier256 = moinsVY512.valPoidsFaible // corps.négationModulo(VY)
       	
       // k - vx = K - (b2*v2.x - b1*v1.x)
       KmoinsVX	est Entier256 = corps.soustractionModulo( _k, VX)

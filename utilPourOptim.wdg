@@ -30,8 +30,6 @@ procedure_set :
       CrytoLib	est ECDSA_BTC
       corps		est CorpsModulaire dynamique	= CrytoLib.corpsOrdre
       N			est Entier256					= corps.P	
-      // 					0x100000000000000000000000000000000 00000000000000000000000000000000
-      //_Lambda		est Entier256("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
       _0_256		est Entier256
       nMax128Bit	est Entier256("0x100000000000000000000000000000000")
       
@@ -61,35 +59,12 @@ procedure_set :
       	//  R = - SA + TB 		
       	_Tmp = soustraction( _TB.valPoidsFaible , _SA.valPoidsFaible ) 
       FIN
-      Trace(_Tmp.VersChaineHexa())
+      dbgAssertion(_Tmp.estEgalA(r1))
       
-      
-      Trace("************Trouve :")
-      //trace("s:"+s.VersChaineHexa())
-      Trace("r1:"+r1.VersChaineHexa())
-      Trace("t1:"+t1.VersChaineHexa())
-      
-      
-      // R-1:
-      
-      soit (s0,t0,r0,i0) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i-1)
-      dbgAssertion((i0=i-1))
-      dbgAssertion(PAS s0.estEgalAZero())
       // R+2
       soit (s2,t2,r2,i2) = PGCD_Etendu_StopMax(N, _Lambda, _0_256,i+2)
       dbgAssertion((i2=i+2))
       dbgAssertion(PAS s2.estEgalAZero())
-      
-      Trace("************ -1  :")
-      //Trace("s0:"+s0.VersChaineHexa())
-      Trace("r0:"+r0.VersChaineHexa())
-      Trace("t0:"+t0.VersChaineHexa())
-      
-      Trace("************ +1  :")
-      //Trace(s2.VersChaineHexa())
-      Trace("r2:"+r2.VersChaineHexa())
-      Trace("t2:"+t2.VersChaineHexa())
-      
       
       	// renvoie x - L*y mod N
       	_Lambda_local est Entier256=_Lambda
@@ -110,29 +85,23 @@ procedure_set :
       _Tmp = _FMoins(V2_X, moinsV2_Y )
       dbgAssertion( _Tmp.estEgalAZero())
       //Trace("****** ")
-      Trace("X1 (v1.x) = " +V1_X.VersChaineHexa())
-      Trace("Y1 (v1.x) =-" +moinsV1_Y.VersChaineHexa())
-      Trace("X2 (v2.x) = " +V2_X.VersChaineHexa())
-      Trace("Y2 (v2.x) =-" +moinsV2_Y.VersChaineHexa())
+      Trace("X1     = " +V1_X.VersChaineHexa())
+      Trace("Y1     =-" +moinsV1_Y.VersChaineHexa())
+      Trace("X2     = " +V2_X.VersChaineHexa())
+      Trace("Y2     =-" +moinsV2_Y.VersChaineHexa())
       
       
       moinsX1Y2	est un entier512	= multiplication256x256_512(V1_X, moinsV2_Y) 
-      //dbgAssertion(moinsX1Y2.valPoidsFort.estEgalAZero())
       moinsX2Y1	est un entier512	= multiplication256x256_512(V2_X, moinsV1_Y)
-      //dbgAssertion(moinsX2Y1.valPoidsFort.estEgalAZero())
-      // Delta = x1y2 - x2y1
-      _Delta		est Entier256 
-      //si X1Y2.valPoidsFaible.estSupérieurOuEgalA(  X1Y2.valPoidsFaible ) alors
-      //	_Delta = addition( moinsX2Y1.valPoidsFaible, X1Y2.valPoidsFaible )  
-      //sinon
-      //_Delta = soustraction(  X1Y2.valPoidsFaible, X2Y1.valPoidsFaible )  
-      //_Delta = negation(addition( X2Y1.valPoidsFaible, moinsX1Y2.valPoidsFaible  ))
-      Trace(moinsX1Y2.valPoidsFaible.VersChaineHexa())	
-      Trace(moinsX2Y1.valPoidsFaible.VersChaineHexa())	
-      _Delta = soustraction( moinsX2Y1.valPoidsFaible , moinsX1Y2.valPoidsFaible )
       
-      _moinsDelta est Entier256  = negation(_Delta)
-      Trace("_Delta =-" + _moinsDelta.VersChaineHexa())
+      // Delta = x1y2 - x2y1
+      Trace(moinsX1Y2.VersChaineHexa())	
+      Trace(moinsX2Y1.VersChaineHexa())	
+      _moinsDelta512 est Entier512 = soustraction512( moinsX1Y2, moinsX2Y1  )
+      Trace(_moinsDelta512.VersChaineHexa())	
+      dbgAssertion(_moinsDelta512.valPoidsFort.estEgalAZero() )
+      _Delta est Entier256  = negation(_moinsDelta512.valPoidsFaible)
+      Trace("_Delta =-" + _Delta.VersChaineHexa())
      type : 458752
   procedure_templates : []
   property_templates : []

@@ -144,7 +144,29 @@ procedure_set :
       complement.val3 = -1-nombre.val3 
       
       renvoyer additionAvecUn( complement )
+     type : 458752
+   -
+     name : soustraction512
+     procedure_id : 2169399264097047936
+     type_code : 15
+     code : |1+
+      procédure soustraction512(  nombreA Entier512,  nombreB Entier512) : Entier512
       
+      Resultat est Entier512 
+      // poids faible
+      Resultat.valPoidsFaible = soustraction(nombreA.valPoidsFaible, nombreB.valPoidsFaible) 
+      // retenue sur le résultat est plus grand que A ou B
+      bRetenue est un booléen = Resultat.valPoidsFaible.estSupérieurStrictA( nombreA.valPoidsFaible  ) ...
+      					 _ou_ Resultat.valPoidsFaible.estSupérieurStrictA( nombreB.valPoidsFaible  )
+      // poids fort
+      nombreBpoidFort est un entier256 = nombreB.valPoidsFort
+      si bRetenue alors
+      	//nombreBpoidFort++
+      	nombreBpoidFort = additionAvecUn( nombreBpoidFort  ) 
+      FIN
+      Resultat.valPoidsFort = soustraction(nombreA.valPoidsFort, nombreBpoidFort  ) 
+      
+      renvoyer Resultat
      type : 458752
    -
      name : soustraction

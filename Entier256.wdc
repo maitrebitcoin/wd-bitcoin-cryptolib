@@ -292,6 +292,18 @@ class :
       		 val3 = 0
      type : 458752
    -
+     name : estEgalAmoins1
+     procedure_id : 2169407338639345226
+     type_code : 12
+     code : |1-
+      PROCÉDURE estEgalAmoins1() : booléen		 
+      
+      RENVOYER val0 = -1 _ET_
+      		 val1 = -1 _ET_
+      		 val2 = -1 _ET_
+      		 val3 = -1
+     type : 458752
+   -
      name : bit
      procedure_id : 1962048311293266141
      type_code : 12
