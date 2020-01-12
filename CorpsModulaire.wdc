@@ -405,9 +405,24 @@ class :
       procédure multiplicationPar2Modulo(  nombreA entier256) : Entier256
       
       
+      // OPTIM: version ASM
+      resultat2 est un entier256 = nombreA
+      API(arithmetique.addrprocAddition256p256_256c, &resultat2, &resultat2 )
+      //dépassement est un booléen = (nombreA.val3 & 0x8000000000000000) <> 0
+      SI (nombreA.val3 & 0x8000000000000000)  ALORS
+      	// ajout le résultat du modulo pour 2^256
+      	resultat2 = additionModulo( resultat2,DeuxPuissance256MoinsP)
+      FIN
+      SI resultat2.estSupérieurOuEgalA( P ) ALORS
+      	resultat2 = soustraction(resultat2, P )
+      FIN
+      renvoyer resultat2
+      
+      
+      resultat est Entier256 = nombreA
       
       // décalage de bits
-      resultat est un entier256 
+      //resultat est un entier256 
       resultat.val0 = nombreA.val0*2
       resultat.val1 = nombreA.val1*2 // + (bitDécaleDroite(nombreA.val0, 63) & 1)
       // récup bit de poids faible a partir de celui de poids fort du précédent
@@ -424,7 +439,7 @@ class :
       FIN
       // dépassement sir le bit de poids fort est a 1
       dépassement est un booléen = (nombreA.val3 & 0x8000000000000000) <> 0
-      											 
+      									 
       si dépassement  alors
       	// ajout le résultat du modulo pour 2^256
       	resultat = additionModulo( resultat,DeuxPuissance256MoinsP)
@@ -432,6 +447,8 @@ class :
       si resultat.estSupérieurOuEgalA( P ) ALORS
       	resultat = soustraction(resultat, P )
       FIN
+      
+      
       
       renvoyer resultat
      type : 458752
