@@ -1183,7 +1183,7 @@ window :
          	// vx     = b1*v1.x + b2*v2.x
          	VX	est Entier256		  = corps.soustractionModulo(  B1V1X.valPoidsFaible,   moinsB2V2X.valPoidsFaible )
          	Trace(" B1V1X= "  +  B1V1X   .VersChaineHexa())
-         	$
+         	
          	Trace(" B2V2X=-"  +  moinsB2V2X   .VersChaineHexa())
          	Trace(" VX ="  + VX	.VersChaineHexa())
          	
