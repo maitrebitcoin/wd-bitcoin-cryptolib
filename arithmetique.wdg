@@ -31,7 +31,7 @@ procedure_set :
       si EnMode64bits() ALORS
       	addrprocMult256x64_256_ASM = addrprocMult256x32_256_ASM
       	// 256x256 mod P :
-      	sCodeAssembleur est chaine = fChargeRessouceTexte("multiplicationModulo_sepc256k.asm")
+      	sCodeAssembleur est chaine = fChargeRessourceTexte("multiplicationModulo_sepc256k.asm")
       	addrprocMult256x256Modulo  =  compileAsmX86_API(sCodeAssembleur) 
       FIN
       

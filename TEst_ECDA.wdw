@@ -1598,7 +1598,7 @@ window :
          
          // TEST
          sCodeAssembleur est chaine
-         sCodeAssembleur = fChargeRessouceTexte("multiplicationModulo_sepc256k.asm")
+         sCodeAssembleur = fChargeRessourceTexte("multiplicationModulo_sepc256k.asm")
          // compiler le coder assembleur vers une procédure WL
          procMult256x256Modulo est  entier système = compileAsmX86_API(sCodeAssembleur) 
          SI ErreurDétectée ALORS

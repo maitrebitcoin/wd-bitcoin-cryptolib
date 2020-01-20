@@ -668,35 +668,15 @@ class :
       		fSauveTexte("S:\Mes Projets\ArithmetiqueModulaire\precalc_8x255.txt",sFic)
       	FIN//Procédure
       
-      // a décommenter pour GEN
+      // a décommenter pour génération de <precalc_8x255>
       si EnModeTest() alors
       	//_Calc__8x255()
       fin
       
-      	//@pour charger depuis la WDL ou le disque en mode test
-      	Procédure interne _fChargeRessourceTexte(sFic chaine )
-      		sResultat est chaine 
-      		si EnModeTest() alors
-      			// cas \exe
-      			sResultat = fChargeTexte( fRepExe()+"\..\" + sFic)
-      			si pas ErreurDétectée alors renvoyer sResultat
-      			// cas \exe\Composant
-      			sResultat  = fChargeTexte( fRepExe()+"\..\..\" + sFic)
-      			SI PAS ErreurDétectée ALORS RENVOYER sResultat		
-      		fin
-      		// dans le composant
-      		sNomCourt est chaine = fExtraitChemin(sFic,fFichier+fExtension)
-      		sResultat = fChargeTexte("WDL:"+sFic)
-      		SI PAS ErreurDétectée ALORS RENVOYER sResultat
-      		dbgAssertion(faux,"Echec de chargement de "+rc+sFic)
-      		RENVOYeR ""
-      	fin
-      
       // => résultat de ce code de calcul :
       // valeurs pré-calculées
-      //TabValeurPreCalculées est chaine = _fChargeRessourceTexte("S:\Mes Projets\ArithmetiqueModulaire\precalc_8x255.txt")
-      TabValeurPreCalculées est chaine = _fChargeRessourceTexte("precalc_8x255.txt")
-      
+      TabValeurPreCalculées est chaine = fChargeRessourceTexte("precalc_8x255.txt")
+      								   
       x est entier //puisaance de 2 : 2^(x*8)
       i est entier =1
       POUR TOUTE CHAÎNE sLigne DE TabValeurPreCalculées séparée par RC

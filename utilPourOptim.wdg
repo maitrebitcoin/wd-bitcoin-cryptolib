@@ -104,13 +104,13 @@ procedure_set :
       Trace("_Delta =-" + _Delta.VersChaineHexa())
      type : 458752
    -
-     name : fChargeRessouceTexte
+     name : fChargeRessourceTexte
      procedure_id : 2172233375582167756
      type_code : 15
      code : |1-
       // renvoyer le contenu d'un fichier texte qui fait partie des ressources du composant
       // pour fichier .ASM ou K*P pré-calculés
-      PROCEDURE fChargeRessouceTexte(sFic chaine) : chaine
+      PROCEDURE fChargeRessourceTexte(sFic chaine) : chaine
       
       sResultat est chaîne 
       SI EnModeTest() ALORS
