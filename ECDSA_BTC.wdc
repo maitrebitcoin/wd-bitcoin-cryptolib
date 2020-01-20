@@ -197,14 +197,20 @@ class :
       P1_Jacobi est Point256_3D  = courbeBtc.MultiplicationScalairePointGenérateurJacobi(               Coef1 )
       P2_Jacobi est Point256_3D  = courbeBtc.multiplicationScalairePoint_OptimiseJacobi(   CléPublique, Coef2 ) 
       // P = P1 + P2
-      P1plusP2_Jacobi est Point256_3D 
-      P1plusP2_Jacobi = courbeBtc.pointPlusPoint_Jacobi( P1_Jacobi ,  P2_Jacobi)
+      P_Jacobi est Point256_3D 
+      P_Jacobi = courbeBtc.pointPlusPoint_Jacobi( P1_Jacobi ,  P2_Jacobi)
       // conversion finale en coord weistrass
-      P1plusP2 est point256 = courbeBtc._JacobiVersPoint(P1plusP2_Jacobi)
-      PX est Entier256 = P1plusP2.x 
+      //  x = X/Z^2
+      //P1plusP2 est point256 = courbeBtc._JacobiVersPoint(P1plusP2_Jacobi)
+      //PX est Entier256 = P1plusP2.x 
+      //OPTIM : on doit vérifier  P.x          = signature.R
+      //        soit				PJ.X/PK.Z^2 =  signature.R
+      //        équivalent a      PJ.X		=  signature.R * PJ.Z^2
+      SRfoisPJZCarre est Entier256 = courbeBtc.corps.multiplicationModulo( signature.R, courbeBtc.corps.carréModulo(P_Jacobi.Z) ) 
       
       // signature OK ssi X == S.R
-      si PAS PX.estEgalA( signature.R ) alors
+      //si PAS PX.estEgalA( signature.R ) alors
+      si PAS P_Jacobi.X.estEgalA( SRfoisPJZCarre ) alors
       	// signature pas OK
       	erreurSiEchec_OUT = ChaîneConstruit( <§$0000§>, ...
       										  NombreSigné.VersChaineHexa(), CléPublique.x.VersChaineHexa(), CléPublique.y.VersChaineHexa() )
