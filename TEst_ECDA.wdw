@@ -1341,7 +1341,8 @@ window :
          
          ChronoDébut()
          
-         KfoisP_optim	est Point256	= CrytoLib.courbeBtc.multiplicationScalairePoint_Optimise(P,  K )  
+         KfoisP_optimJ	est Point256_3D	= CrytoLib.courbeBtc.multiplicationScalairePoint_OptimiseJacobi(P,  K )  
+         KfoisP_optim	est Point256	= CrytoLib.courbeBtc._JacobiVersPoint( KfoisP_optimJ )
          
          trace(chronofin())
          Trace("KfoisP_optim=")
@@ -1350,11 +1351,14 @@ window :
          
          // calcul standard de "KP"
          ChronoDébut()
-         KfoisP_defaut  est Point256 =  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( P, K )
+         PJ est Point256_3D
+         PJ.VersJacobi(P)
+         KfoisP_defaut  est Point256_3D =  CrytoLib.courbeBtc.multiplicationScalairePointJacobi( PJ, K )
          Trace(ChronoFin())
          Trace("KfoisP_defaut=")
          Trace(KfoisP_defaut.x.VersChaineHexa())
          Trace(KfoisP_defaut.y.VersChaineHexa())
+         Trace(KfoisP_defaut.z.VersChaineHexa())
          
          
         type : 18

@@ -972,19 +972,48 @@ class :
       POUR X = 0 À 31
       	// recup de 8 bits K 
       	I est entier = K._8Bits(X)
-      	SI i<>0 ALORS
+      	SI I<>0 ALORS
       		// récup de  G = I* (2^X) précalculé 
-      		valeurKPow2X   est Point256 = TabPointPow2PreCalculé_256[ i+X*256 ]
+      		valeurKPow2X   est Point256 = TabPointPow2PreCalculé_256[ I+X*256 ]
       		dbgAssertion( pointEstSurLaCourbe( valeurKPow2X ), "pointEstSurLaCourbe FAILED")
       		// Addition du point précalculé
-      		pointRésultat = pointPlusPoint( pointRésultat, valeurKPow2X )
+      		PointRésultat = pointPlusPoint( PointRésultat, valeurKPow2X )
       	FIN
       FIN
       
       // le point devrait être sur la courbe, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat ) _ou_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      dbgAssertion( pointEstSurLaCourbe( PointRésultat ) _ou_ PointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
       
-      RENVOYER pointRésultat
+      RENVOYER PointRésultat
+     type : 458752
+   -
+     name : MultiplicationScalairePointGenérateurJacobi
+     procedure_id : 2172238606859974765
+     type_code : 12
+     code : |1+
+      // renvoie K  * G 
+      // utilise la tables de points pré-calculés TabPointPow2PreCalculé_256 pour les 256 points des 32 puissances de 256
+      // renvoie en coordonées de Jacobi pour éviter les divisions modulaires
+      procédure MultiplicationScalairePointGenérateurJacobi(K est Entier256  ): Point256_3D
+      
+      // résultats
+      PointRésultatJ  est Point256_3D
+      // 	32 additions par blocs de valeurs K*P précalculées
+      POUR X = 0 À 31
+      	// recup de 8 bits K 
+      	I est entier = K._8Bits(X)
+      	SI I<>0 ALORS
+      		// récup de  G = I* (2^X) précalculé 
+      		valeurKPow2XJ  est Point256_3D
+      		valeurKPow2XJ.VersJacobi( TabPointPow2PreCalculé_256[ I+X*256 ] )
+      		// Addition du point précalculé
+      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ, valeurKPow2XJ )
+      	FIN
+      FIN
+      
+      
+      RENVOYER PointRésultatJ
+      
      type : 458752
    -
      name : multiplicationScalairePointJacobi
@@ -993,11 +1022,11 @@ class :
      code : |1+
       // renvoie K * P 
       // version utilisation les coordonnées de Jacobi pour minimiser les divisions modulaires
-      procédure multiplicationScalairePointJacobi(  point est Point256, K est Entier256 ) : Point256
+      procédure multiplicationScalairePointJacobi(  P est Point256_3D, K est Entier256 ) : Point256_3D
       
       // conversion en coordonnées de Jacobi
-      P est Point256_3D 
-      P.VersJacobi(point) // init à 1*P
+      //P est Point256_3D 
+      //P.VersJacobi(point) // init à 1*P
       // précalcul de 2*P,3*P, ..., 15*P
       _MultiplesDeP est un tableau de 15  Point256_3D
       _MultiplesDeP[1] = P
@@ -1029,7 +1058,7 @@ class :
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
       		si i=3  alors
       			// renvoie (0,0)
-      			_P0 est Point256 
+      			_P0 est Point256_3D 
       			RENVOYER _P0
       		fin
       		// sinon c'est qu'on a pas encore rencontré de 1
@@ -1048,12 +1077,12 @@ class :
       // conversion depuis jacobi:
       //  x=X/Z2
       //  y=Y/Z3
-      pointRésultat est Point256 = _JacobiVersPoint(PointRésultatJ  )
+      //pointRésultat est Point256 = _JacobiVersPoint(PointRésultatJ  )
       // le point devrait être sur la courbe ou null, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      //dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
       
       
-      RENVOYER pointRésultat
+      RENVOYER PointRésultatJ
      type : 458752
    -
      name : _JacobiVersPoint
@@ -1353,13 +1382,13 @@ class :
       RENVOYER pointRésultat
      type : 458752
    -
-     name : multiplicationScalairePoint_Optimise
+     name : multiplicationScalairePoint_OptimiseJacobi
      procedure_id : 2169274014262991166
      type_code : 12
      code : |1-
       // renvoie le point : K * point
       // version utilisation les coordonnées de Jacobi + optim de décomsition de K en 2 nombres de 128 bits
-      PROCÉDURE multiplicationScalairePoint_Optimise(  point est Point256, K est Entier256  ) : Point256
+      PROCÉDURE multiplicationScalairePoint_OptimiseJacobi(  point est Point256, K est Entier256  ) : Point256_3D
       
       // N = générateur du groupe des points  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
       // P = ordre de la courbe               = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
@@ -1407,14 +1436,15 @@ class :
       
       // renvoie k1*P + k2*Lamda*P
       K_PJ est Point256_3D =  _multiplicationScalaire2PointJacobi( PJ, k1, k2, bSigneOpose  )
+      RENVOYER K_PJ
       
-      // conversion depuis jacobi:
-      //  x=X/Z2
-      //  y=Y/Z3
-      pointRésultat est Point256 = _JacobiVersPoint( K_PJ  )
-      // le point devrait être sur la courbe ou null, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
-      renvoyer pointRésultat
+      //// conversion depuis jacobi:
+      ////  x=X/Z2
+      ////  y=Y/Z3
+      //pointRésultat est Point256 = _JacobiVersPoint( K_PJ  )
+      //// le point devrait être sur la courbe ou null, sinon erreur de calcul
+      //dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      //renvoyer pointRésultat
      type : 458752
   procedure_templates : []
   property_templates : []

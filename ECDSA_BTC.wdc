@@ -189,15 +189,18 @@ class :
       
       // calcul de Y^-1 : inversion modulaire
       inverseDeY est Entier256 = corpsOrdre.inverseModulo( signature.S )
-      P1plusP2 est Point256
       
       // calcul du point : c1*G + c2*Q
+      // OPTIM: en coordonnées de Jacobi, évite toute division modulaire (opération lente)
       Coef1 est Entier256 = corpsOrdre.multiplicationModulo(NombreSigné, inverseDeY)
       Coef2 est Entier256 = corpsOrdre.multiplicationModulo(signature.R, inverseDeY)
-      P1    est Point256  = courbeBtc.MultiplicationScalairePointGenérateur( 	            Coef1 )
-      P2    est Point256  = courbeBtc.multiplicationScalairePoint_Optimise(  CléPublique, Coef2 ) 
-      // PRes = P1 + P2
-      P1plusP2 = courbeBtc.pointPlusPoint( P1 ,  P2)
+      P1_Jacobi est Point256_3D  = courbeBtc.MultiplicationScalairePointGenérateurJacobi(               Coef1 )
+      P2_Jacobi est Point256_3D  = courbeBtc.multiplicationScalairePoint_OptimiseJacobi(   CléPublique, Coef2 ) 
+      // P = P1 + P2
+      P1plusP2_Jacobi est Point256_3D 
+      P1plusP2_Jacobi = courbeBtc.pointPlusPoint_Jacobi( P1_Jacobi ,  P2_Jacobi)
+      // conversion finale en coord weistrass
+      P1plusP2 est point256 = courbeBtc._JacobiVersPoint(P1plusP2_Jacobi)
       PX est Entier256 = P1plusP2.x 
       
       // signature OK ssi X == S.R
