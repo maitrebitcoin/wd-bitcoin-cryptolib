@@ -66,6 +66,14 @@ class :
       // version plus rapide de ma multiplication modulaire si le modulo est 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
       PROCÉDURE virtuelle multiplicationModulo(  nombreA Entier256, nombreB Entier256) : Entier256 
       
+      // résultat R
+      resultat est Entier256
+      //si on un routine asm dispo (64 bits)
+      si arithmetique.addrprocMult256x256Modulo<>0 ALORS
+      	API(arithmetique.addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
+      	renvoyer resultat
+      FIN
+      
       // algo :
       // on découpe en 4 multiplication 256*64 bits, puis on additionne chaque sous partie
       // + les débordement (=partie du résultat au delà de 256 bits sont est remis sous 256 bits par modulo P et soustrait
@@ -77,10 +85,6 @@ class :
       //  R2 = A*B[1] + R1*2^64
       //  R  = A*B[0] + R2*2^64
       
-      //renvoyer multiplicationModulo_OLD( nombreA,nombreB)
-      
-      // résultat R
-      resultat est Entier256
       // var de travail temp
       retenue  est un entier sur 8 sans signe
       depasseModP  est un Entier256

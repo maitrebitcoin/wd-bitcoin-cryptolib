@@ -27,8 +27,12 @@ procedure_set :
       addrprocMoyenne_256_ASM     	est entier système = pGetprocMoyenne256_ASM()
       // ok que en mode 64 bits
       addrprocMult256x64_256_ASM      est entier système
+      addrprocMult256x256Modulo       est entier système
       si EnMode64bits() ALORS
       	addrprocMult256x64_256_ASM = addrprocMult256x32_256_ASM
+      	// 256x256 mod P :
+      	sCodeAssembleur est chaine = fChargeRessouceTexte("multiplicationModulo_sepc256k.asm")
+      	addrprocMult256x256Modulo  =  compileAsmX86_API(sCodeAssembleur) 
       FIN
       
       

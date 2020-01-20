@@ -103,6 +103,32 @@ procedure_set :
       _Delta est Entier256  = negation(_moinsDelta512.valPoidsFaible)
       Trace("_Delta =-" + _Delta.VersChaineHexa())
      type : 458752
+   -
+     name : fChargeRessouceTexte
+     procedure_id : 2172233375582167756
+     type_code : 15
+     code : |1-
+      // renvoyer le contenu d'un fichier texte qui fait partie des ressources du composant
+      // pour fichier .ASM ou K*P pré-calculés
+      PROCEDURE fChargeRessouceTexte(sFic chaine) : chaine
+      
+      sResultat est chaîne 
+      SI EnModeTest() ALORS
+      	// cas \exe
+      	sResultat = fChargeTexte( fRepExe()+"\..\" + sFic)
+      	SI PAS ErreurDétectée ALORS RENVOYER sResultat
+      	// cas \exe\Composant
+      	sResultat  = fChargeTexte( fRepExe()+"\..\..\" + sFic)
+      	SI PAS ErreurDétectée ALORS RENVOYER sResultat		
+      FIN
+      // dans le composant
+      sNomCourt est chaîne = fExtraitChemin(sFic,fFichier+fExtension)
+      sResultat = fChargeTexte("WDL:"+sFic)
+      SI PAS ErreurDétectée ALORS RENVOYER sResultat
+      // Echec
+      dbgAssertion(Faux,"Echec de chargement de "+RC+sFic)
+      RENVOYER ""
+     type : 458752
   procedure_templates : []
   property_templates : []
  code_parameters :
