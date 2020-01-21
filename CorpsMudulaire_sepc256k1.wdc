@@ -222,11 +222,12 @@ class :
      code : |1+
       procédure multiplicationParUI32Modulo( nombre Entier256, UI32 est entier sans signe ) : Entier256
       
+      resultat est entier256
       // var de travail temp
       retenue  est un entier sur 8 sans signe
       depasseModP  est un Entier256
       
-      resultat est entier256
+      
       retenue  =	API(arithmetique.addrprocMult256x64_256_ASM, &nombre, &UI32, &resultat )
       
       // R = R mop P
@@ -243,7 +244,23 @@ class :
       FIN
       
       renvoyer resultat
+     type : 458752
+   -
+     name : multiplicationPar2Modulo
+     procedure_id : 2172596394824586378
+     type_code : 12
+     code : |1+
+      PROCÉDURE multiplicationPar2Modulo(  nombre Entier256) : Entier256
       
+      // si une procédure ASM existe (64 bits)
+      SI arithmetique.addrprocMult256x64Modulo<> Null ALORS
+      	resultat	est entier256
+      	API( arithmetique.addrprocMult256x64Modulo, &nombre, 2, &resultat  )
+      	RENVOYER resultat
+      FIN
+      
+      //@A optimiser
+      RENVOYER multiplicationParUI32Modulo( nombre, 3 )
      type : 458752
    -
      name : MultiplicationPar3Modulo
@@ -251,6 +268,13 @@ class :
      type_code : 12
      code : |1-
       Procédure MultiplicationPar3Modulo( nombre Entier256 ) : entier256
+      
+      // si une procédure ASM existe (64 bits)
+      SI arithmetique.addrprocMult256x64Modulo<> Null ALORS
+      	resultat est entier256
+      	API( arithmetique.addrprocMult256x64Modulo, &nombre, 3, &resultat  )
+      	renvoyer resultat
+      FIN
       
       //@A optimiser
       RENVOYER multiplicationParUI32Modulo( nombre, 3 )
@@ -261,6 +285,14 @@ class :
      type_code : 12
      code : |1-
       PROCÉDURE multiplicationPar4Modulo( nombre Entier256 ) : entier256  
+      
+      // si une procédure ASM existe (64 bits)
+      SI arithmetique.addrprocMult256x64Modulo<> Null ALORS
+      	resultat	est entier256
+      	API( arithmetique.addrprocMult256x64Modulo, &nombre, 4, &resultat  )
+      	RENVOYER resultat
+      FIN
+      
       //@A optimiser
       RENVOYER multiplicationParUI32Modulo( nombre, 4 )
      type : 458752
@@ -270,6 +302,13 @@ class :
      type_code : 12
      code : |1-
       PROCÉDURE multiplicationPar8Modulo( nombre Entier256 ) : Entier256  
+      
+      // si une procédure ASM existe (64 bits)
+      SI arithmetique.addrprocMult256x64Modulo<> Null ALORS
+      	resultat	est entier256
+      	API( arithmetique.addrprocMult256x64Modulo, &nombre, 8, &resultat  )
+      	RENVOYER resultat
+      FIN
       
       //@A optimiser
       RENVOYER multiplicationParUI32Modulo( nombre, 8 )
