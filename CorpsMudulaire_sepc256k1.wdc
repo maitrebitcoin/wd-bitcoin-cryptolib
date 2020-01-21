@@ -252,7 +252,7 @@ class :
      name : multiplicationPar8Modulo
      procedure_id : 2166339383401437923
      type_code : 12
-     code : |1-
+     code : |1+
       PROCÉDURE multiplicationPar8Modulo( nombre Entier256 ) : Entier256  
       
       // si une procédure ASM existe (64 bits)
@@ -264,6 +264,31 @@ class :
       
       //@A optimiser
       RENVOYER multiplicationParUI32Modulo( nombre, 8 )
+      
+     type : 458752
+   -
+     name : soustractionModulo
+     procedure_id : 2172615683535657671
+     type_code : 12
+     code : |1-
+      // renvoie A - B ( mod P )
+      PROCÉDURE soustractionModulo( nombreA Entier256, nombreB Entier256) : Entier256
+      
+      // si une procédure ASM existe (64 bits)
+      SI arithmetique.addrprocSoustractionModulo<> Null ALORS
+      	resultat	est entier256
+      	API( arithmetique.addrprocSoustractionModulo, &nombreA, &nombreB, &resultat  )
+      	RENVOYER resultat
+      FIN
+      
+      
+      
+      SI nombreA.estSupérieurOuEgalA( nombreB ) ALORS
+      	RENVOYER soustraction(nombreA,nombreB)
+      SINON
+      	moinsR est Entier256 = soustraction ( nombreB, nombreA  )
+      	RENVOYER négationModulo( moinsR )
+      FIN
      type : 458752
   procedure_templates : []
   property_templates : []
