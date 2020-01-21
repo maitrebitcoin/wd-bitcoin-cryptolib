@@ -522,7 +522,7 @@ window :
          //y est Entier256("1222") 
          xy est entier256
          xy2 est entier256
-         xy_TEST est entier256
+         //xy_TEST est entier256
          
          // TEST
          //sDLL est chaine = "C:\Users\Paul Albert\Source\myRepo\LibInt256\x64\DebugDLL\LibInt256.dll"
@@ -561,17 +561,17 @@ window :
          soit dureeAlgo1 = ChronoFin()
          
          // ancien
-         ChronoDébut()
-         POUR i = 1 À 1000
-         	xy_TEST <- gCorps.multiplicationModulo_OLD(x, y)
-         fin
-         soit dureeAlgo2 = ChronoFin()
+         //ChronoDébut()
+         //POUR i = 1 À 1000
+         //	xy_TEST <- gCorps.multiplicationModulo_OLD(x, y)
+         //fin
+         //soit dureeAlgo2 = ChronoFin()
          
          
          //trace(x.VersChaineHexa())
          //trace(y.VersChaineHexa())
          trace(xy2.VersChaineHexa()+";"+dureeAlgo1..EnMillisecondes+"ms")
-         trace(xy_TEST.VersChaineHexa()+";"+dureeAlgo2..EnMillisecondes+"ms")
+         //trace(xy_TEST.VersChaineHexa()+";"+dureeAlgo2..EnMillisecondes+"ms")
         type : 18
       -
         type : 161

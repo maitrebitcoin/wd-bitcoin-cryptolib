@@ -168,54 +168,6 @@ class :
       renvoyer resultat
      type : 458752
    -
-     name : multiplicationModulo_OLD
-     procedure_id : 1997957801955089261
-     type_code : 12
-     group : 1
-     code : |1+
-      // renvoie A * B ( mod P )
-      //@Version optimisée pour P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-      procédure multiplicationModulo_OLD(  nombreA entier256, nombreB entier256) : Entier256
-      
-      // cas particulier de la multiplication par 1 (fractions)
-      si nombreA.EstEgalA1() ALORS
-      	renvoyer nombreB
-      FIN 
-      SI nombreB.estEgalA1() ALORS
-      	RENVOYER nombreA
-      FIN 
-      
-      //si P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-       // OPTIM  avec = 0x1000003d1 
-       
-      // calcul de A*B sur 512
-      AB512 est Entier512 = multiplication256x256_512( nombreA, nombreB)
-      
-      // calcul de reste modulaire poids fort de AB
-      AB512_PFort est Entier512 = multiplication256x256_512(AB512.valPoidsFort, _2P256_MoinsP)
-      
-      restePF est un entier256 =  multiplication256x64_256(AB512_PFort.valPoidsFort, _2P256_MoinsP.val0  )
-      bretenue est un booléen
-      restePF = addition( restePF,AB512_PFort.valPoidsFaible,bretenue)
-      si bretenue ALORS
-      	restePF = addition( restePF, _2P256_MoinsP )
-      FIN
-      	
-      resultat256 est un entier256 = addition(AB512.valPoidsFaible, restePF,bretenue)
-      SI bretenue ALORS
-      	resultat256 = addition( resultat256, _2P256_MoinsP )
-      FIN	
-      
-      si resultat256.estSupérieurouEgalA( :p ) ALORS
-      	// OPTIM de : resultat256 = soustraction( resultat256, :P )
-      	resultat256 = addition( resultat256, _2P256_MoinsP )
-      FIN
-      
-      	
-      renvoyer resultat256
-      
-     type : 458752
-   -
      name : multiplicationParUI32Modulo
      procedure_id : 2166339207307541054
      type_code : 12

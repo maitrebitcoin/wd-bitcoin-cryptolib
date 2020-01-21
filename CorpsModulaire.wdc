@@ -43,7 +43,6 @@ class :
       	
       	
       	// tableau de 2^N (mod P)
-      	TabPow2 	   est un tableau de entier256
       	TabPow2_MoinsP est un tableau de entier256
       	
       	TabCacheA est un tableau de entier256
@@ -83,13 +82,7 @@ class :
       
       invPmod2P64 = puissance256_256( _moins1moduloP, phi_moins1_64 )
       
-      // pow2
-      n est Entier256( 1 )
-      pour i = 1 à 256
-      	TabPow2.Ajoute( n)
-      	n = multiplicationPar2Modulo(n)
-      	//Trace(n.VersChaineHexa())
-      FIN
+      
       // Multiples de (2^N-P) mod P
       k2N_P est Entier256 = DeuxPuissance256MoinsP
       POUR i = 1 à 256
