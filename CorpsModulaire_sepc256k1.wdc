@@ -73,7 +73,20 @@ class :
       API(arithmetique.addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
       API(arithmetique.addrprocMult256x64Modulo, &resultat,  nombreC, &resultat )
       RENVOYER resultat
+     type : 458752
+   -
+     name : carré_255x255x8_Modulo
+     procedure_id : 2172963812114079915
+     type_code : 12
+     code : |1-
+      // renvoie A*A*C modulo P
+      // <c> doit être entre 1 et 8
+      procédure carré_255x255x8_Modulo( nombreA Entier256, nombreC entier sur 8)  : Entier256 
       
+      resultat est Entier256
+      API(arithmetique.addrprocMult256x256Modulo, &nombreA, &nombreA, &resultat )
+      API(arithmetique.addrprocMult256x64Modulo, &resultat,  nombreC, &resultat )
+      RENVOYER resultat
      type : 458752
    -
      name : multiplicationModulo

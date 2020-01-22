@@ -1169,16 +1169,16 @@ class :
       pointRésultat est Point256_3D
       //XX	= X1^2
       //YY	= Y1^2
-      yy est Entier256 = corps.carréModulo( point.y)
-      //S	    = 4*X1*YY
-      S  est Entier256 = corps_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
-      //M	    = 3*XX
-      M  est Entier256 = corps_secp256k1.multiplication_255x255x8_Modulo( point.x, point.x, 3 )
-      // X'	= M2-2*S
-      pointRésultat.X  = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
+      yy est Entier256     = corps.carréModulo( point.y)
+      //S	    = 4*X1*Y        
+      S  est Entier256     = corps_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
+      //M	    = 3*XX          
+      M  est Entier256     = corps_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
+      // X'	= M2-2*S    
+      pointRésultat.X      = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
       //Y'	= M*(S-X')-8*YY^2
       _M_SX est Entier256  = corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
-      _8YY2 est Entier256  = corps_secp256k1.multiplication_255x255x8_Modulo( yy, yy, 8 )
+      _8YY2 est Entier256  = corps_secp256k1.carré_255x255x8_Modulo( yy, 8 )
       pointRésultat.y      = corps.soustractionModulo(_M_SX, _8YY2 )
       //Z'	= 2*Y*Z
       pointRésultat.z      =  corps_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
