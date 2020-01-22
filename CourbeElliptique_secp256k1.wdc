@@ -1116,8 +1116,6 @@ class :
       // gestion cas particulier P+0 / 0+P
       si point1.estZéro() ALORS	renvoyer point2
       si point2.estZéro() ALORS	renvoyer point1
-      dbgAssertion( pas point1.z.estEgalAZero())
-      dbgAssertion( pas point2.z.estEgalAZero())
       
       
       // Z1Z1	= Z1^2
@@ -1260,7 +1258,8 @@ class :
       			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
       	FIN
       	// Récup 16 bits P2
-      	n  = K2.bit(i)*8 + K2.bit(i-1)*4 + K2.bit(i-2)*2 + K2.bit(i-3)
+      	//n  = K2.bit(i)*8 + K2.bit(i-1)*4 + K2.bit(i-2)*2 + K2.bit(i-3)
+      	n  = K2._4bit(i)
       	SELON n
       		CAS 0:
       		// rien
@@ -1283,7 +1282,7 @@ class :
       		sortir
       	FIN
       	
-      	// r = r*16
+      	// r = r^16 (8 multiplications par 2)
       	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	
