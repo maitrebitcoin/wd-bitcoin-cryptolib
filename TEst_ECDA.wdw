@@ -509,7 +509,7 @@ window :
      p_codes :
       -
         code : |1+
-         gCorps est CorpsMudulaire_sepc256k1 //( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
+         gCorps est CorpsModulaire_sepc256k1 //( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
          
          
          x est Entier256("0xea92bdc008249e599c2570ab25deff4b35b971c0a059add76a64ce20724128d0") 
@@ -1505,7 +1505,7 @@ window :
      p_codes :
       -
         code : |1+
-         gCorps est CorpsMudulaire_sepc256k1 //( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
+         gCorps est CorpsModulaire_sepc256k1 //( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
          
          
          x est Entier256("0xea92bdc008249e599c2570ab25deff4b35b971c0a059add76a64ce20724128d0") 
@@ -1592,7 +1592,7 @@ window :
      p_codes :
       -
         code : |1+
-         gCorps est CorpsMudulaire_sepc256k1 //( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
+         gCorps est CorpsModulaire_sepc256k1 //( "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" )
          
          
          x est Entier256("0xea92bdc008249e599c2570ab25deff4b35b971c0a059add76a64ce20724128d0") 
