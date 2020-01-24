@@ -22,6 +22,8 @@ class :
       	// constante pour accélére les calcul
       	//  2^256 mod P  = 2^256-P
       	_2P256_MoinsP est Entier256
+      	// (P+1)/4 : pour racine carrée
+      	_Pplus1Sur4 est Entier256 // ="0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff0c"
       
       	pAddrMultModulo est un entier système 
       FIN
@@ -35,6 +37,7 @@ class :
      code : |1+
       PROCEDURE Constructeur()
       	Constructeur CorpsModulaire("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F")
+      	Constructeur _Pplus1Sur4("0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff0c")
       	
       _2P256_MoinsP.val0 = 0x1000003d1
       
@@ -300,7 +303,7 @@ class :
      name : soustractionModulo
      procedure_id : 2172961011795079322
      type_code : 12
-     code : |1-
+     code : |1+
       // renvoie A - B ( mod P )
       PROCÉDURE soustractionModulo( nombreA Entier256, nombreB Entier256) : Entier256
       
@@ -319,6 +322,22 @@ class :
       	moinsR est Entier256 = soustraction ( nombreB, nombreA  )
       	RENVOYER négationModulo( moinsR )
       FIN
+      
+     type : 458752
+   -
+     name : racineCarréeModulo
+     procedure_id : 2173715710582382973
+     type_code : 12
+     code : |1-
+      // renvoie une racine carré modulaire de <nombre>. si <nombre> est bien un carré.
+      // (il en existe 2, on en renvoie une des 2)
+      procédure racineCarréeModulo( nombre est Entier256 ) : Entier256
+      
+      // comme P = 3 (mod 4) : 
+      // racine(x)  = x^((P+1)/4)
+      racineCarrée est un Entier256 = puissanceModulo(nombre, :_Pplus1Sur4)
+      
+      renvoyer racineCarrée
      type : 458752
   procedure_templates : []
   property_templates : []

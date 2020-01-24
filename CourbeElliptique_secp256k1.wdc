@@ -40,7 +40,7 @@ class :
       	// point générateur pour secp256k1
       	pointGen 		 est Point256
       	pointFractionGen est PointFraction256
-      	// corps spécialisé pour calcul plus rapide
+      	// corps spécialisé pour calcul plus rapide des points de la courbe
       	corps_secp256k1 est CorpsModulaire_sepc256k1
       
       prive
@@ -1142,7 +1142,6 @@ class :
       V est entier256    = corps.multiplicationModulo(U1, HH)
       
       pointRésultat est Point256_3D
-      // X' = r^2-HHH-2*V
       // X' = r^2-(HHH+2*V)
       HHH_plus2V est Entier256 =  corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
       pointRésultat.x    =  corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
@@ -1227,7 +1226,7 @@ class :
       PROCÉDURE INTERNE _pointNégationJocobi( _p est Point256_3D ) : Point256_3D
       	pointRésultat est Point256_3D 
       	pointRésultat.x	= _p.x
-      	pointRésultat.y	=  corps.négationModulo(_p.y)
+      	pointRésultat.y	= corps.négationModulo(_p.y)
       	pointRésultat.z	= _p.z
       	RENVOYER pointRésultat
       FIN
@@ -1246,26 +1245,20 @@ class :
       
       PointRésultatJ	est Point256_3D		// 0
       // parcourt en partant du bit de poids fort par bloc de 4 bits
-      POUR i = iMax À 3 pas -4
+      i est un entier = iMax
+      boucle // POUR i = iMax À 3 pas -4
       	// Récup 16 bits P1
       	//n est un entier = K1.bit(i)*8 + K1.bit(i-1)*4 + K1.bit(i-2)*2 + K1.bit(i-3)
       	n est un entier = K1._4bit(i)
-      	selon n
-      		cas 0:
-      			// rien
-      		autres cas:
-      			// r = r + 2^k
-      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
+      	si n<>0 alors
+      		// r = r + 2^k
+      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
       	FIN
       	// Récup 16 bits P2
       	//n  = K2.bit(i)*8 + K2.bit(i-1)*4 + K2.bit(i-2)*2 + K2.bit(i-3)
       	n  = K2._4bit(i)
-      	SELON n
-      		CAS 0:
-      		// rien
-      		AUTRES CAS:
-      			// r = r + 2^k
-      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n]   )
+      	si n<>0
+      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n]   )
       	FIN	
       
       	SI PointRésultatJ.estZéro() ALORS
@@ -1285,7 +1278,7 @@ class :
       	// r = r^16 (8 multiplications par 2)
       	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
-      	
+      	i-=4
       FIN
       
       
@@ -1385,7 +1378,7 @@ class :
      name : multiplicationScalairePoint_OptimiseJacobi
      procedure_id : 2169274014262991166
      type_code : 12
-     code : |1-
+     code : |1+
       // renvoie le point : K * point
       // version utilisation les coordonnées de Jacobi + optim de décomsition de K en 2 nombres de 128 bits
       PROCÉDURE multiplicationScalairePoint_OptimiseJacobi(  point est Point256, K est Entier256  ) : Point256_3D
@@ -1437,14 +1430,42 @@ class :
       // renvoie k1*P + k2*Lamda*P
       K_PJ est Point256_3D =  _multiplicationScalaire2PointJacobi( PJ, k1, k2, bSigneOpose  )
       RENVOYER K_PJ
+     type : 458752
+   -
+     name : xVersCléPublique
+     procedure_id : 2173352992000852630
+     type_code : 12
+     code : |1-
+      // calcule une clé complète a partir de juste la coordonnée Y et le signe voulu pour Y
+      PROCÉDURE xVersCléPublique( X entier256, bYPositif est un booléen ) : Point256
       
-      //// conversion depuis jacobi:
-      ////  x=X/Z2
-      ////  y=Y/Z3
-      //pointRésultat est Point256 = _JacobiVersPoint( K_PJ  )
-      //// le point devrait être sur la courbe ou null, sinon erreur de calcul
-      //dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
-      //renvoyer pointRésultat
+      // on a    Y^2 = X^3 + 7
+      _7 est Entier256(7)
+      X3Plus7 est Entier256 = corps_secp256k1.additionModulo( corps.cubeModulo(X), _7)
+      // en débug on vérifie que X^3 + 7 est un résidu quadratique. 
+      SI dbgActiveAssertion() ALORS
+      	_Pmoins1Sur2	est Entier256("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffff7ffffe17")
+      	_DBG			est Entier256	= corps_secp256k1.puissanceModulo(X3Plus7, _Pmoins1Sur2)
+      	dbgAssertion(_DBG.estEgalA1(), "X3Plus7 n'est pas un carré. ie X n'est pas un point de la courbe.")
+      FIN
+      
+      // Y = racine(  X^3 + 7 )
+      Y est un Entier256 = corps_secp256k1.racineCarréeModulo(X3Plus7)
+      // selon le "signe" voulu on inverse (envoie -P au lieu de P)
+      bSigneCourant est un booléen = Y.val3 >= 0x8000000000000000
+      si bYPositif<>bSigneCourant ALORS
+      	// Y = -Y
+      	Y = corps_secp256k1.négationModulo(Y)
+      FIN
+      
+      
+      // mise dans le point résultat
+      Résultat est Point256
+      Résultat.x = X
+      Résultat.y = Y
+      
+      dbgAssertion( pointEstSurLaCourbe(Résultat))
+      renvoyer Résultat
      type : 458752
   procedure_templates : []
   property_templates : []
