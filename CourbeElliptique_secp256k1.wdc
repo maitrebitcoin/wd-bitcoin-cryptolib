@@ -41,7 +41,7 @@ class :
       	pointGen 		 est Point256
       	pointFractionGen est PointFraction256
       	// corps spécialisé pour calcul plus rapide des points de la courbe
-      	corps_secp256k1 est CorpsModulaire_sepc256k1
+      	corps_secp256k1 est CorpsModulaire_pointSepc256k1
       
       prive
       	// un nombre d'ordre 3 sur <corps>

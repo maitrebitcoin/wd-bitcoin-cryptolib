@@ -1,14 +1,14 @@
 #To edit and compare internal_properties, use WINDEV integrated tools.
 #Internal properties refer to the properties of controls in windows, reports, etc.
 info :
- name : CorpsModulaire_sepc256k1
+ name : CorpsModulaire_pointSepc256k1
  major_version : 25
  minor_version : 0
  type : 4
  description : ""
  subtype : 0
 class :
- identifier : 0x1e27e88702c7b09a
+ identifier : 0x1e37073f0090859a
  internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
  code_elements :
   type_code : 10
@@ -16,7 +16,7 @@ class :
    -
      code : |1+
       // coprs avec comme modulo le nombre de mersenne utilisé la courbre elliptique sepc256k1 
-      CorpsModulaire_sepc256k1 est une Classe
+      CorpsModulaire_pointSepc256k1 est une Classe
       	hérite de CorpsModulaire
       	
       	// constante pour accélére les calcul
@@ -32,7 +32,7 @@ class :
   procedures :
    -
      name : Constructeur
-     procedure_id : 2172961011794489498
+     procedure_id : 2177216912030795162
      type_code : 27
      code : |1+
       PROCEDURE Constructeur()
@@ -55,14 +55,14 @@ class :
      type : 589824
    -
      name : Destructeur
-     procedure_id : 2172961011794555034
+     procedure_id : 2177216912030860698
      type_code : 28
      code : |1+
       PROCEDURE Destructeur()
      type : 655360
    -
      name : multiplication_255x255x8_Modulo
-     procedure_id : 2172961011794620570
+     procedure_id : 2177216912030926234
      type_code : 12
      code : |1+
       // renvoie A*B*C modulo P
@@ -79,7 +79,7 @@ class :
      type : 458752
    -
      name : carré_255x255x8_Modulo
-     procedure_id : 2172963812114079915
+     procedure_id : 2177216912030991770
      type_code : 12
      code : |1-
       // renvoie A*A*C modulo P
@@ -93,7 +93,7 @@ class :
      type : 458752
    -
      name : multiplicationModulo
-     procedure_id : 2172961011794686106
+     procedure_id : 2177216912031057306
      type_code : 12
      code : |1-
       // version plus rapide de ma multiplication modulaire si le modulo est 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
@@ -202,7 +202,7 @@ class :
      type : 458752
    -
      name : multiplicationParUI32Modulo
-     procedure_id : 2172961011794751642
+     procedure_id : 2177216912031122842
      type_code : 12
      code : |1+
       procédure multiplicationParUI32Modulo( nombre Entier256, UI32 est entier sans signe ) : Entier256
@@ -232,7 +232,7 @@ class :
      type : 458752
    -
      name : multiplicationPar2Modulo
-     procedure_id : 2172961011794817178
+     procedure_id : 2177216912031188378
      type_code : 12
      code : |1+
       PROCÉDURE multiplicationPar2Modulo(  nombre Entier256) : Entier256
@@ -249,7 +249,7 @@ class :
      type : 458752
    -
      name : MultiplicationPar3Modulo
-     procedure_id : 2172961011794882714
+     procedure_id : 2177216912031253914
      type_code : 12
      code : |1-
       Procédure MultiplicationPar3Modulo( nombre Entier256 ) : entier256
@@ -266,7 +266,7 @@ class :
      type : 458752
    -
      name : multiplicationPar4Modulo
-     procedure_id : 2172961011794948250
+     procedure_id : 2177216912031319450
      type_code : 12
      code : |1-
       PROCÉDURE multiplicationPar4Modulo( nombre Entier256 ) : entier256  
@@ -283,7 +283,7 @@ class :
      type : 458752
    -
      name : multiplicationPar8Modulo
-     procedure_id : 2172961011795013786
+     procedure_id : 2177216912031384986
      type_code : 12
      code : |1+
       PROCÉDURE multiplicationPar8Modulo( nombre Entier256 ) : Entier256  
@@ -301,7 +301,7 @@ class :
      type : 458752
    -
      name : soustractionModulo
-     procedure_id : 2172961011795079322
+     procedure_id : 2177216912031450522
      type_code : 12
      code : |1+
       // renvoie A - B ( mod P )
@@ -326,7 +326,7 @@ class :
      type : 458752
    -
      name : racineCarréeModulo
-     procedure_id : 2173715710582382973
+     procedure_id : 2177216912031516058
      type_code : 12
      code : |1-
       // renvoie une racine carré modulaire de <nombre>. si <nombre> est bien un carré.
