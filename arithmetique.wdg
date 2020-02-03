@@ -25,20 +25,7 @@ procedure_set :
       addrprocMult256x32_256_ASM      est entier système = pGetprocMult256x32_256_ASM()
       addrprocDivPar2_256_ASM     	est entier système = pGetprocDivisePar2_256()
       addrprocMoyenne_256_ASM     	est entier système = pGetprocMoyenne256_ASM()
-      // ok que en mode 64 bits + spécialisé modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-      addrprocMult256x64_256_ASM      est entier système
-      addrprocMult256x256Modulo       est entier système
-      addrprocMult256x64Modulo        est entier système
-      addrprocSoustractionModulo      est entier système
-      si EnMode64bits() ALORS
-      	addrprocMult256x64_256_ASM = addrprocMult256x32_256_ASM
-      	// 256x256 mod P :
-      	addrprocMult256x256Modulo  =  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo_sepc256k.asm")) 
-      	// 256x64  mod P :
-      	addrprocMult256x64Modulo   =  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo256x64_sepc256k.asm")) 
-      	// 256-256  mod P :
-      	addrprocSoustractionModulo =  compileAsmX86_API( fChargeRessourceTexte("soustractionModulo_sepc256k.asm")) 
-      FIN
+      
       
       
       _2_Puissance64 est un numérique  (38,0)  = 0x100000000
