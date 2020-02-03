@@ -357,7 +357,8 @@ window :
          N.affecteAvecChaineHexa("f49c9d1c8a96157ce04d5651ce201778aba934c3ff245f9c64727ecb2f6fe0ad")
          
          sERR est chaine
-         bOK est un booléen =  ECDSA_Bitcoin.VerifieSignature( N, CléPublique, Signature, sERR )
+         bOK est un booléen 
+         (bOK, sERR ) =  ECDSA_Bitcoin.VerifieSignature( N, CléPublique, Signature )
          trace(bOK)
          trace(sERR)
         type : 18
@@ -1301,7 +1302,7 @@ window :
          sERR est chaine
          Trace("Calcul...")
          ChronoDébut()
-         bOK est un booléen =  VerifieSignature( N, CléPublique, signature, sERR )
+         bOK est un booléen =  VerifieSignature( N, CléPublique, signature )
          Trace( "Temps (ms) : " + ChronoFin())
          trace("Vérif signature :" )
          Trace(bOK)

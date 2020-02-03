@@ -59,7 +59,7 @@ procedure_set :
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond
-      RENVOYER m_gpclEDCSA.SigneNombre(nombreASigner, cléPrivée)
+      RENVOYER m_gpclEDCSA.SigneNombre(NombreASigner, cléPrivée)
       
      type : 458752
    -
@@ -68,12 +68,14 @@ procedure_set :
      type_code : 15
      code : |1+
       // vérifie que <signature> est bien la signature de <Nombre> avec un clé correspondant a <CléPublique>
-      procédure VerifieSignature( NombreASigner Entier256, CléPublique Point256, signature SignatureEcdsa, erreurSiEchec_OUT est chaîne ) : booléen
+      // renvoie (OK, détailErreurSiEchec)
+      procédure VerifieSignature( NombreASigner Entier256, CléPublique Point256, signature SignatureEcdsa ) : (booléen, chaine)
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond
-      renvoyer  m_gpclEDCSA.VerifieSignature( NombreASigner , CléPublique , signature , erreurSiEchec_OUT  ) 
-      
+      détailErreurSiEchec_OUT est chaîne
+      signatureOK est un booléen =  m_gpclEDCSA.VerifieSignature( NombreASigner , CléPublique , signature , détailErreurSiEchec_OUT  ) 
+      renvoyer (signatureOK, détailErreurSiEchec_OUT)
      type : 458752
    -
      name : clépubliqueEstValide
