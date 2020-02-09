@@ -44,9 +44,10 @@ class :
       SI EnMode64bits() ALORS
       
       	// 256x256 mod P :
-      	:addrprocMult256x256Modulo	=  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo_OrdreCourbeSepc256k.asm") ) 
-       
+      	:addrprocMult256x256Modulo	=  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo_OrdreCourbeSepc256k.asm"), "multiplicationModulo_Ordre_sepc256k_ASM" ) 
+       	dbgAssertion(addrprocMult256x256Modulo <> 0)
       FIN
+      
      type : 589824
    -
      name : Destructeur
@@ -56,6 +57,20 @@ class :
       PROCEDURE Destructeur()
       
      type : 655360
+   -
+     name : multiplicationModulo
+     procedure_id : 2179890958674001854
+     type_code : 12
+     code : |1+
+      // version plus rapide de ma multiplication modulaire si le modulo est 00xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+      PROCÉDURE virtuelle multiplicationModulo(  nombreA Entier256, nombreB Entier256) : Entier256 
+      
+      // résultat R
+      resultat est Entier256
+      //si on une routine asm dispo (64 bits)
+      API(addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
+      RENVOYER resultat
+     type : 458752
   procedure_templates : []
   property_templates : []
  code_parameters :

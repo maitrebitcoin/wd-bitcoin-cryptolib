@@ -46,11 +46,12 @@ class :
      type_code : 27
      code : |1-
       // constructeur avec un crops en paramètre, pour dériver...
-      PROCÉDURE Constructeur( corps_, ordreHexa chaine ) 
+      PROCÉDURE Constructeur( corps_, corpsOrdre_ ) 
       corps = corps_
+      corpsOrdre = corpsOrdre_
       
-      Ordre.affecteAvecChaineHexa(ordreHexa)
-      corpsOrdre = allouer un CorpsModulaire( ordreHexa )
+      //Ordre.affecteAvecChaineHexa(ordreHexa)
+      //corpsOrdre = allouer un CorpsModulaire( ordreHexa )
      type : 589825
    -
      name : Destructeur

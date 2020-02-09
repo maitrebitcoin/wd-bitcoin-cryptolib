@@ -40,8 +40,10 @@ class :
       	// point générateur pour secp256k1
       	pointGen 		 est Point256
       	pointFractionGen est PointFraction256
-      	// corps spécialisé pour calcul plus rapide des points de la courbe
-      	corps_secp256k1 est CorpsModulaire_pointSepc256k1
+      	// corps spécialisé pour calcul plus rapide de addictions de points de la courbe
+      	corps_point_secp256k1 est CorpsModulaire_pointSepc256k1 
+      	// corps spécialisé pour calcul des signatures
+      	corps_ordre_secp256k1 est CorpsModulaire_ordreCourbeSepc256k1
       
       prive
       	// un nombre d'ordre 3 sur <corps>
@@ -63,7 +65,7 @@ class :
       PROCEDURE Constructeur()
       // P =0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F : nombre utilisé pour le modulo des coord. des points
       // N =0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 : ordre de la courbe
-      Constructeur CourbeElliptique( :corps_secp256k1 ,"0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
+      Constructeur CourbeElliptique( :corps_point_secp256k1 , :corps_ordre_secp256k1 )
       Constructeur _N_Ordre3(         "7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")
       Constructeur _RacineQuiMuliplie("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
       coefB.affecteAvecEntierPositif(7)
@@ -1076,14 +1078,6 @@ class :
       	
       FIN
       
-      // conversion depuis jacobi:
-      //  x=X/Z2
-      //  y=Y/Z3
-      //pointRésultat est Point256 = _JacobiVersPoint(PointRésultatJ  )
-      // le point devrait être sur la courbe ou null, sinon erreur de calcul
-      //dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
-      
-      
       RENVOYER PointRésultatJ
      type : 458752
    -
@@ -1168,17 +1162,17 @@ class :
       //YY	= Y1^2
       yy est Entier256     = corps.carréModulo( point.y)
       //S	    = 4*X1*Y        
-      S  est Entier256     = corps_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
+      S  est Entier256     = corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
       //M	    = 3*XX          
-      M  est Entier256     = corps_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
+      M  est Entier256     = corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
       // X'	= M2-2*S    
       pointRésultat.X      = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
       //Y'	= M*(S-X')-8*YY^2
       _M_SX est Entier256  = corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
-      _8YY2 est Entier256  = corps_secp256k1.carré_255x255x8_Modulo( yy, 8 )
+      _8YY2 est Entier256  = corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
       pointRésultat.y      = corps.soustractionModulo(_M_SX, _8YY2 )
       //Z'	= 2*Y*Z
-      pointRésultat.z      =  corps_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
+      pointRésultat.z      =  corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
       
       renvoyer pointRésultat
       
@@ -1387,8 +1381,8 @@ class :
       // P = ordre de la courbe               = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
       
       	// renvoie x + _RacineQuiMuliplie*y mod N
-      	PROCÉDURE INTERNE _F( x Entier256, y Entier256 ) : Entier256
-      		res est Entier256 =corpsOrdre.additionModulo( x, corpsOrdre.multiplicationModulo( y, _RacineQuiMuliplie ) )
+      	PROCÉDURE INTERNE _F( X Entier256, Y Entier256 ) : Entier256
+      		res est Entier256 =corpsOrdre.additionModulo( X, corpsOrdre.multiplicationModulo( Y, _RacineQuiMuliplie ) )
       		RENVOYER res
       	FIN
       	
@@ -1441,21 +1435,21 @@ class :
       
       // on a    Y^2 = X^3 + 7
       _7 est Entier256(7)
-      X3Plus7 est Entier256 = corps_secp256k1.additionModulo( corps.cubeModulo(X), _7)
+      X3Plus7 est Entier256 = corps_point_secp256k1.additionModulo( corps.cubeModulo(X), _7)
       // en débug on vérifie que X^3 + 7 est un résidu quadratique. 
       SI dbgActiveAssertion() ALORS
       	_Pmoins1Sur2	est Entier256("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffff7ffffe17")
-      	_DBG			est Entier256	= corps_secp256k1.puissanceModulo(X3Plus7, _Pmoins1Sur2)
+      	_DBG			est Entier256	= corps_point_secp256k1.puissanceModulo(X3Plus7, _Pmoins1Sur2)
       	dbgAssertion(_DBG.estEgalA1(), "X3Plus7 n'est pas un carré. ie X n'est pas un point de la courbe.")
       FIN
       
       // Y = racine(  X^3 + 7 )
-      Y est un Entier256 = corps_secp256k1.racineCarréeModulo(X3Plus7)
+      Y est un Entier256 = corps_point_secp256k1.racineCarréeModulo(X3Plus7)
       // selon le "signe" voulu on inverse (envoie -P au lieu de P)
       bSigneCourant est un booléen = Y.val3 >= 0x8000000000000000
       si bYPositif<>bSigneCourant ALORS
       	// Y = -Y
-      	Y = corps_secp256k1.négationModulo(Y)
+      	Y = corps_point_secp256k1.négationModulo(Y)
       FIN
       
       
