@@ -17,6 +17,9 @@ multiplication_256x256_512_ASM PROC
  push        rbp  
  push        rsi  
  push        rdi
+; pas de push r8,r9, utilisé par la convention d'appel.
+ push        r10  
+ push        r11  
  push        r12  
  push        r13  
  push        r14  
@@ -127,10 +130,10 @@ multiplication_256x256_512_ASM PROC
 
 
 ; affectation du resultat dans 
- mov         rax,qword ptr [rsp+68h] ;  rax = [pResultat]
+ mov         rax,qword ptr [rsp+78h] ;  rax = [pResultat]
  mov         qword ptr [rax    ],r8  ;  C0  = r8  
  mov         qword ptr [rax+8  ],r9  ;  C1  = r9
- mov         qword ptr [rax+10h],r10 ;  C2  = r11, puis r10
+ mov         qword ptr [rax+10h],r10 ;  C2  = r10
  mov         qword ptr [rax+18h],r12 ;  C3  = r12
  mov         qword ptr [rax+20h],r15 ;  C4  = r15
  mov         qword ptr [rax+28h],rbx ;  C5  = rbx
@@ -142,6 +145,8 @@ multiplication_256x256_512_ASM PROC
  pop         r14  
  pop         r13 
  pop         r12
+ pop         r11
+ pop         r10
  pop         rdi  
  pop         rsi  
  pop         rbp  
