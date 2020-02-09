@@ -49,17 +49,17 @@ multiplication_256x256_512_ASM PROC
 ;  r13    rsi   rbp   r14
 ;  B0
 ;  rdx
-;  C0     C1    C2    C3   C4
-;  r8    r9    r10   r11  r15
+;  C0     C1    C2    C3    C4
+;  r8    r9    r10   r11   r12
  mov         rdx,qword ptr [rdi]  ; rdx = B0
  mulx        r10,rax,rsi          ; (r10,rax) = rsi * rdx   (C2,L_)	= A1*B0 
  mulx        r9,r8,r13            ; (r9, r8)  = r13 * rdx   (C1,C0)	= A0*B0
  add         r9,rax               ;                         (c ,C1) = C1 + L_ + c
  mulx        r11,rax,rbp          ; (r11,rax) = rbp * rdx   (C3,L_) = A2*B0
  adc         r10,rax              ;                         (c ,C2) = C2 + L_ + c
- mulx        r15,rax,r14          ; (r15,rax) = r14 * rdx   (C4,L_) = A3*B0
+ mulx        r12,rax,r14          ; (r12,rax) = r14 * rdx   (C4,L_) = A3*B0
  adc         r11,rax              ;                         (c ,C3) = C3 + L_ + c
- adc         r15,0                ;                              C4 = C4 + c
+ adc         r12,0                ;                              C4 = C4 + c
 
 ;//*B1
 ;	//-----------------------------------------------------
@@ -86,8 +86,8 @@ multiplication_256x256_512_ASM PROC
  mulx        rcx,rax,rbp             ; (rcx,rax) = rbp * rdx   (H_,L_) = A2*B1
  adcx        r11,rax                 ;                         (c, C3) = C3 + L_ 
  mulx        rbx,rax,r14             ; (rbx,rax) = r14 * rdx   (C5,L_) = A3*B1
- adox        r15,rcx                 ;                         (of,C4) = C4 + H_ + of
- adcx        r15,rax                 ;                         (c, C4) = C4 + L_ 
+ adox        r12,rcx                 ;                         (of,C4) = C4 + H_ + of
+ adcx        r12,rax                 ;                         (c, C4) = C4 + L_ 
  mov         rdx,0                   ; pas xor pour conserver c et of
  adox        rbx,rdx                 ; rdx=0                       C5 += of
  adcx        rbx,rdx                 ; rdx=0                       C5 += c
@@ -100,30 +100,30 @@ multiplication_256x256_512_ASM PROC
  adox        r11,rcx                 ;                         (of,C3) = C2 + H_ + of
  mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B2     
  adcx        r11,rax                 ;                         (c, C3) = C3 + L_ 
- adox        r15,rcx                 ;                         (of,C4) = C4 + H_ + of
+ adox        r12,rcx                 ;                         (of,C4) = C4 + H_ + of
  mulx        rcx,rax,rbp             ; (rcx,rax) = rbp * rdx   (H_,L_) = A2*B2
- adcx        r15,rax                 ;                         (c, C4) = C4 + L_ 
- mulx        r12,rax,r14             ; (rbx,rax) = r14 * rdx   (C6,L_) = A3*B2
+ adcx        r12,rax                 ;                         (c, C4) = C4 + L_ 
+ mulx        r15,rax,r14             ; (rbx,rax) = r14 * rdx   (C6,L_) = A3*B2
  adox        rbx,rcx                 ;                         (of,C5) = C5 + H_ + of
  adcx        rbx,rax                 ;                         (c, C5) = C5 + L_ 
  mov         rdx,0                   ; pas xor pour conserver c et of
- adox        r12,rdx                 ; rdx=0                        C6 += of
- adcx        r12,rdx                 ; rdx=0                        C6 += c
+ adox        r15,rdx                 ; rdx=0                        C6 += of
+ adcx        r15,rdx                 ; rdx=0                        C6 += c
  
   ;//*B3
  xor         rdx,rdx                 ; RAZ c et of
  mov         rdx,qword ptr [rdi+18h] ; rdx = B3
  mulx        rcx,rax,r13             ; (rcx,rax) = r13 * rdx   (H_,L_) = A0*B3
  adox        r11,rax                 ;                         (of,C3) = C3 + L_
- adox        r15,rcx                 ;                         (of,C4) = C4 + H_ + of
+ adox        r12,rcx                 ;                         (of,C4) = C4 + H_ + of
  mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B3
- adcx        r15,rax                 ;                         (c, C4) = C4 + L_ 
+ adcx        r12,rax                 ;                         (c, C4) = C4 + L_ 
  adox        rbx,rcx                 ;                         (of,C5) = C5 + H_ + of
  mulx        rcx,rax,rbp             ; (rcx,rax) = rbp * rdx   (H_,L_) = A2*B3
  adcx        rbx,rax                 ;                         (c, C5) = C5 + L_ 
- adox        r12,rcx                 ;                         (of,C6) = C6 + H  + of
+ adox        r15,rcx                 ;                         (of,C6) = C6 + H  + of
  mulx        r13,rax,r14             ; (r13,rax) = r14 * rdx   (C7,L_) = A3*B3
- adcx        r12,rax                 ;                         (c, C6) = C6 + L_
+ adcx        r15,rax                 ;                         (c, C6) = C6 + L_
  mov         rdx,0                   ; pas xor pour conserver c et of
  adox        r13,rdx                 ; rdx=0                        C7 += of
  adcx        r13,rdx                 ; rdx=0                        C7 += c
@@ -135,9 +135,9 @@ multiplication_256x256_512_ASM PROC
  mov         qword ptr [rax+8  ],r9  ;  C1  = r9
  mov         qword ptr [rax+10h],r10 ;  C2  = r10
  mov         qword ptr [rax+18h],r11 ;  C3  = r11
- mov         qword ptr [rax+20h],r15 ;  C4  = r15
+ mov         qword ptr [rax+20h],r12 ;  C4  = r12
  mov         qword ptr [rax+28h],rbx ;  C5  = rbx
- mov         qword ptr [rax+30h],r12 ;  C6  = r12
+ mov         qword ptr [rax+30h],r15 ;  C6  = r15
  mov         qword ptr [rax+38h],r13 ;  C7  = r13
 
 ;Epilogue
