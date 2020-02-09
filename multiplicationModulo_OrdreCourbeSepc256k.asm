@@ -76,7 +76,6 @@ multiplication_256x256_512_ASM PROC
  mov         rdx,qword ptr [rdi+8]   ; rdx = B1  
  mulx        rcx,rax,r13             ; (rcx,rax) = r13 * rdx   (H_,L_) = A0*B1
  adox        r9,rax                  ;                         (of,C1) = C1 + L_
- mov         qword ptr [rsp+58h],r9  ;                            [C1] = r9   
  adox        r10,rcx                 ;                         (of,C2) = C2 + H_ + of
  mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B1                         
  adcx        r10,rax                 ;                         (c, C2) = C2 + L_ 
@@ -117,7 +116,6 @@ multiplication_256x256_512_ASM PROC
  mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B3
  adcx        r15,rax                 ;                         (c, C4) = C4 + L_ 
  adox        rbx,rcx                 ;                         (of,C5) = C5 + H_ + of
- mov         rdi,qword ptr [rsp+58h] ; ---????-- rdi = C1
  mulx        rcx,rax,rbp             ; (rcx,rax) = rbp * rdx   (H_,L_) = A2*B3
  adcx        rbx,rax                 ;                         (c, C5) = C5 + L_ 
  adox        r11,rcx                 ;                         (of,C6) = C6 + H  + of
@@ -130,8 +128,8 @@ multiplication_256x256_512_ASM PROC
 
 ; affectation du resultat dans 
  mov         rax,qword ptr [rsp+68h] ;  rax = [pResultat]
- mov         qword ptr [rax    ],r8 ;   C0  = r8  
- mov         qword ptr [rax+8  ],rdi ;  C1  = r9
+ mov         qword ptr [rax    ],r8  ;  C0  = r8  
+ mov         qword ptr [rax+8  ],r9  ;  C1  = r9
  mov         qword ptr [rax+10h],r10 ;  C2  = r11, puis r10
  mov         qword ptr [rax+18h],r12 ;  C3  = r12
  mov         qword ptr [rax+20h],r15 ;  C4  = r15
