@@ -53,13 +53,13 @@ multiplication_256x256_512_ASM PROC
 ;  r8    r9    r10   r11   r12
  mov         rdx,qword ptr [rdi]  ; rdx = B0
  mulx        r10,rax,rsi          ; (r10,rax) = rsi * rdx   (C2,L_)	= A1*B0 
- mulx        r9,r8,r13            ; (r9, r8)  = r13 * rdx   (C1,C0)	= A0*B0
- add         r9,rax               ;                         (c ,C1) = C1 + L_ + c
+ mulx        r9, r8, r13          ; (r9, r8)  = r13 * rdx   (C1,C0)	= A0*B0
+ add         r9, rax              ;                         (c ,C1) = C1 + L_ + c
  mulx        r11,rax,rbp          ; (r11,rax) = rbp * rdx   (C3,L_) = A2*B0
  adc         r10,rax              ;                         (c ,C2) = C2 + L_ + c
  mulx        r12,rax,r14          ; (r12,rax) = r14 * rdx   (C4,L_) = A3*B0
  adc         r11,rax              ;                         (c ,C3) = C3 + L_ + c
- adc         r12,0                ;                              C4 = C4 + c
+ adc         r12,0                ;                          C4 = C4 + c
 
 ;//*B1
 ;	//-----------------------------------------------------
@@ -78,7 +78,7 @@ multiplication_256x256_512_ASM PROC
  xor         rdx,rdx                 ; RAZ c et of
  mov         rdx,qword ptr [rdi+8]   ; rdx = B1  
  mulx        rcx,rax,r13             ; (rcx,rax) = r13 * rdx   (H_,L_) = A0*B1
- adox        r9,rax                  ;                         (of,C1) = C1 + L_
+ adox        r9 ,rax                 ;                         (of,C1) = C1 + L_
  adox        r10,rcx                 ;                         (of,C2) = C2 + H_ + of
  mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B1                         
  adcx        r10,rax                 ;                         (c, C2) = C2 + L_ 
@@ -89,8 +89,8 @@ multiplication_256x256_512_ASM PROC
  adox        r12,rcx                 ;                         (of,C4) = C4 + H_ + of
  adcx        r12,rax                 ;                         (c, C4) = C4 + L_ 
  mov         rdx,0                   ; pas xor pour conserver c et of
- adox        rbx,rdx                 ; rdx=0                       C5 += of
- adcx        rbx,rdx                 ; rdx=0                       C5 += c
+ adox        rbx,rdx                 ; rdx=0                   C5 += of
+ adcx        rbx,rdx                 ; rdx=0                   C5 += c
                                      
  ;//*B2
  xor         rdx,rdx                 ; RAZ c et of
@@ -107,8 +107,8 @@ multiplication_256x256_512_ASM PROC
  adox        rbx,rcx                 ;                         (of,C5) = C5 + H_ + of
  adcx        rbx,rax                 ;                         (c, C5) = C5 + L_ 
  mov         rdx,0                   ; pas xor pour conserver c et of
- adox        r15,rdx                 ; rdx=0                        C6 += of
- adcx        r15,rdx                 ; rdx=0                        C6 += c
+ adox        r15,rdx                 ; rdx=0                   C6 += of
+ adcx        r15,rdx                 ; rdx=0                   C6 += c
  
   ;//*B3
  xor         rdx,rdx                 ; RAZ c et of
@@ -125,8 +125,8 @@ multiplication_256x256_512_ASM PROC
  mulx        r13,rax,r14             ; (r13,rax) = r14 * rdx   (C7,L_) = A3*B3
  adcx        r15,rax                 ;                         (c, C6) = C6 + L_
  mov         rdx,0                   ; pas xor pour conserver c et of
- adox        r13,rdx                 ; rdx=0                        C7 += of
- adcx        r13,rdx                 ; rdx=0                        C7 += c
+ adox        r13,rdx                 ; rdx=0                   C7 += of
+ adcx        r13,rdx                 ; rdx=0                   C7 += c
 
 
 ; affectation du resultat dans 
