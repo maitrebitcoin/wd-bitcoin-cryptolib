@@ -30,7 +30,6 @@ class :
      type_code : 27
      code : |1+
       PROCEDURE Constructeur()
-      
      type : 589824
    -
      name : Destructeur

@@ -528,16 +528,16 @@ class :
       
       pointRésultat est PointFraction256 ;
       //X = (L*L - 2*p.x ) 
-      PointRésultat.x =  corps.soustractionFractionModulo( corps.carréFractionModulo(L),  corps.additionFractionModulo( point.x, point.x ) ) 
+      pointRésultat.x =  corps.soustractionFractionModulo( corps.carréFractionModulo(L),  corps.additionFractionModulo( point.x, point.x ) ) 
       // Y = - (L * ( X  - p.x ) + p.y )
-      RX est Fraction256 = PointRésultat.x
+      RX est Fraction256 = pointRésultat.x
       RY est Fraction256 = corps.soustractionFractionModulo( RX, point.X )
       RY  =  corps.multiplicationFractionModulo( L, RY)
       RY =  corps.additionFractionModulo( RY, point.y )
       
-      PointRésultat.y = corps.négationFractionModulo( RY )
+      pointRésultat.y = corps.négationFractionModulo( RY )
       
-      renvoyer PointRésultat;
+      renvoyer pointRésultat;
      type : 458752
   procedure_templates : []
   property_templates : []

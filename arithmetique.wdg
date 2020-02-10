@@ -1049,10 +1049,10 @@ procedure_set :
       
       
       // récup  A * BLow32bits
-      API(addrprocMult256x32_256_ASM, &nombreA, &nombreB, &Resultat )
+      API(addrprocMult256x32_256_ASM, &nombreA, &nombreB, &Résultat )
       // si que 32 bits ou en mode 64 bits, optim
       SI nombreB<0x100000000 _ou_ EnMode64bits() ALORS
-      	RENVOYER Resultat
+      	RENVOYER Résultat
       FIN
       // récup  A * BHihg32bits
       ABHigh32 est Entier256	

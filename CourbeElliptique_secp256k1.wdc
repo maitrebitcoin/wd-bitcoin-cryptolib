@@ -822,7 +822,7 @@ class :
       	si i=0 alors
       		Tab32Point.Ajoute( Point0  )
       	sinon
-      		Tab32Point.Ajoute( TabPointPow2PreCalculé_256[ I+X*256 ]  )
+      		Tab32Point.Ajoute( TabPointPow2PreCalculé_256[ i+X*256 ]  )
       	fin
       FIN
       
@@ -981,14 +981,14 @@ class :
       		valeurKPow2X   est Point256 = TabPointPow2PreCalculé_256[ I+X*256 ]
       		dbgAssertion( pointEstSurLaCourbe( valeurKPow2X ), "pointEstSurLaCourbe FAILED")
       		// Addition du point précalculé
-      		pointRésultat = pointPlusPoint( pointRésultat, valeurKPow2X )
+      		PointRésultat = pointPlusPoint( PointRésultat, valeurKPow2X )
       	FIN
       FIN
       
       // le point devrait être sur la courbe, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat ) _ou_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      dbgAssertion( pointEstSurLaCourbe( PointRésultat ) _ou_ PointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
       
-      RENVOYER pointRésultat
+      RENVOYER PointRésultat
      type : 458752
    -
      name : MultiplicationScalairePointGenérateurJacobi
@@ -1175,7 +1175,49 @@ class :
       pointRésultat.z      =  corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
       
       renvoyer pointRésultat
+     type : 458752
+   -
+     name : pointQuadruple_Jacobi
+     procedure_id : 2180017114751480498
+     type_code : 12
+     code : |1+
+      // renvoie 4*point en coordonées de Jacobi
+      // équilalent a pointDouble_Jacobi(pointDouble_Jacobi( point ))
+      // pour optim
+      //  source : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2
+      procédure pointQuadruple_Jacobi( point est Point256_3D ) : Point256_3D
       
+      pointdouble      	est Point256_3D // 2 * point
+      pointRésultat	est Point256_3D
+      
+      //XX	= X1^2
+      //YY	= Y1^2
+      yy				est Entier256		= corps.carréModulo( point.y)
+      //S	    = 4*X1*Y        
+      S				est Entier256		= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
+      //M	    = 3*XX          
+      M				est Entier256		= corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
+      // X'	= M2-2*S    
+      pointdouble.x      = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
+      //Y'	= M*(S-X')-8*YY^2
+      _M_SX	est Entier256	= corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
+      _8YY2	est Entier256	= corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
+      pointdouble.y			= corps.soustractionModulo(_M_SX, _8YY2 )
+      //Z'	= 2*Y*Z
+      pointdouble.z			=  corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
+      
+      // === on refait l'opération
+      
+      yy						= corps.carréModulo( pointdouble.y)
+      S						= corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble.x, yy , 4 )
+      M						= corps_point_secp256k1.carré_255x255x8_Modulo( pointdouble.x,  3 )
+      pointRésultat.x   	    = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
+      _M_SX					= corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
+      _8YY2					= corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
+      pointRésultat.y			= corps.soustractionModulo(_M_SX, _8YY2 )
+      pointRésultat.z			= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
+      
+      RENVOYER pointRésultat
      type : 458752
    -
      name : _multiplicationScalaire2PointJacobi
@@ -1197,8 +1239,8 @@ class :
       // précalcul de 2*P,3*P, 15*P
       _MultiplesDeP1 est un tableau de 15  Point256_3D
       _MultiplesDeP1[1] = P1
-      _MultiplesDeP1[2] = pointDouble_Jacobi(P1)
-      pour i = 3 a  15
+      //_MultiplesDeP1[2] = pointDouble_Jacobi(P1)
+      pour i = 2 a  15
       	si EstPair(i) ALORS
       		// P = P[I/2] * 2
       		_MultiplesDeP1[i] = pointDouble_Jacobi(   _MultiplesDeP1[i/2]   ) 
@@ -1231,35 +1273,41 @@ class :
       
       FIN
       
+      // insère "0"
+       _P0 est Point256_3D
+       _MultiplesDeP1.Insère(1,_P0)
+       _MultiplesDeP2.Insère(1,_P0)
+      
       
       iMax est un entier = 255
       // OPTIM pour ca K "petit"
       si K1.val3=0  _et_ K2.val3=0  alors  iMax-=64
       si K1.val2<16 _et_ K2.val2<16 alors  iMax-=60
-      
+      n,n2 sont entier
       PointRésultatJ	est Point256_3D		// 0
       // parcourt en partant du bit de poids fort par bloc de 4 bits
       i est un entier = iMax
       boucle // POUR i = iMax À 3 pas -4
       	// Récup 16 bits P1
       	//n est un entier = K1.bit(i)*8 + K1.bit(i-1)*4 + K1.bit(i-2)*2 + K1.bit(i-3)
-      	n est un entier = K1._4bit(i)
-      	si n<>0 alors
+      	n  = K1._4bit(i) + 1
+      	n2 = K2._4bit(i) + 1
+      //	si n<>0 alors
       		// r = r + 2^k
       		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
-      	FIN
+      //	FIN
       	// Récup 16 bits P2
       	//n  = K2.bit(i)*8 + K2.bit(i-1)*4 + K2.bit(i-2)*2 + K2.bit(i-3)
-      	n  = K2._4bit(i)
-      	si n<>0
-      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n]   )
-      	FIN	
+      
+      //	si n<>0
+      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n2]   )
+      //	FIN	
       
       	SI PointRésultatJ.estZéro() ALORS
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
       		si i=3  alors
       			// renvoie (0,0)
-      			_P0 est Point256_3D 
+      			//_P0 est Point256_3D 
       			RENVOYER _P0
       		fin
       		// sinon c'est qu'on a pas encore rencontré de 1
@@ -1270,8 +1318,8 @@ class :
       	FIN
       	
       	// r = r^16 (8 multiplications par 2)
-      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
-      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
+      	PointRésultatJ = pointQuadruple_Jacobi( pointQuadruple_Jacobi(PointRésultatJ) )
+      	//PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	i-=4
       FIN
       

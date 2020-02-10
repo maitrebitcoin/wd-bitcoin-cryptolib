@@ -148,7 +148,7 @@ class :
       // C = (A*Y + B*X) / X*Y
       resultat.numérateur   = additionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
       										multiplicationModulo( nombreB.numérateur , nombreA.dénominateur ))
-      résultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
+      resultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
       RENVOYER resultat
       
      type : 458752

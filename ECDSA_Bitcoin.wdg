@@ -59,7 +59,7 @@ procedure_set :
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond
-      RENVOYER m_gpclEDCSA.SigneNombre(NombreASigner, cléPrivée)
+      RENVOYER m_gpclEDCSA.SigneNombre(nombreASigner, cléPrivée)
       
      type : 458752
    -
