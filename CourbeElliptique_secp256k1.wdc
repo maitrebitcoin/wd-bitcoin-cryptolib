@@ -1102,7 +1102,7 @@ class :
      name : pointPlusPoint_Jacobi
      procedure_id : 2165931902639027483
      type_code : 12
-     code : |1-
+     code : |1+
       // Addition de 2 points en coordonnées de Jacobi
       // source des formules : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl , "add-1998-cmo-2"
       procédure pointPlusPoint_Jacobi( point1 est Point256_3D, point2 est Point256_3D ) : Point256_3D
@@ -1148,6 +1148,63 @@ class :
       renvoyer pointRésultat
      type : 458752
    -
+     name : pointPlusPointPluspoint_Jacobi
+     procedure_id : 2180024119853618431
+     type_code : 12
+     code : |1+
+      // Addition de 3 points en coordonnées de Jacobi
+      // source des formules : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl , "add-1998-cmo-2"
+      // equivalent a pointPlusPoint_Jacobi(point1, pointPlusPoint_Jacobi(point2,point3 ))
+      procédure pointPlusPointPluspoint_Jacobi(  point1 est Point256_3D, point2 est Point256_3D, point3 est Point256_3D ) : Point256_3D
+      
+      // gestion cas particulier P+0 / 0+P
+      SI point1.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point2,point3)
+      SI point2.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point1,point3)
+      SI point3.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point1,point2)
+      
+      // P1 + P2
+      Z1Z1			est Entier256		= corps.carréModulo( point1.z )
+      Z2Z2			est Entier256		= corps.carréModulo( point2.z )
+      U1				est Entier256		= corps.multiplicationModulo( point1.x, Z2Z2 )
+      U2				est Entier256		= corps.multiplicationModulo( point2.x, Z1Z1 )
+      S1				est Entier256		= corps.multiplicationModulo( point1.y, corps.multiplicationModulo( point2.z, Z2Z2  ) )
+      S2				est Entier256		= corps.multiplicationModulo( point2.y, corps.multiplicationModulo( point1.z, Z1Z1  ) )
+      H				est Entier256		= corps.soustractionModulo( U2, U1)
+      HH				est Entier256		= corps.carréModulo( H )
+      HHH				est Entier256		= corps.multiplicationModulo( HH, H )
+      r				est entier256		= corps.soustractionModulo( S2, S1)
+      V				est entier256		= corps.multiplicationModulo(U1, HH)
+      point1plus2		est Point256_3D
+      HHH_plus2V		est Entier256		=  corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
+      point1plus2.x     =  corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
+      _r_V_Xresultat  est Entier256       = corps.multiplicationModulo( r, corps.soustractionModulo( V, point1plus2.x  ))
+      point1plus2.y		=  corps.soustractionModulo( _r_V_Xresultat, corps.multiplicationModulo( S1, HHH ) )
+      point1plus2.z		= corps.multiplicationModulo( point1.z,  corps.multiplicationModulo( point2.z, H  ) )
+      
+      // (P1 + P2) + P3
+      pointRésultat	est Point256_3D
+      
+      Z1Z1				= corps.carréModulo( point1plus2.z )
+      Z2Z2				= corps.carréModulo( point3.z )
+      U1					= corps.multiplicationModulo( point1plus2.x, Z2Z2 )
+      U2					= corps.multiplicationModulo( point3.x,      Z1Z1 )
+      S1					= corps.multiplicationModulo( point1plus2.y, corps.multiplicationModulo( point3.z,      Z2Z2  ) )
+      S2					= corps.multiplicationModulo( point3.y,      corps.multiplicationModulo( point1plus2.z, Z1Z1  ) )
+      H					= corps.soustractionModulo( U2, U1)
+      HH					= corps.carréModulo( H )
+      HHH					= corps.multiplicationModulo( HH, H )
+      r					= corps.soustractionModulo( S2, S1)
+      V					= corps.multiplicationModulo(U1, HH)
+      HHH_plus2V			= corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
+      pointRésultat.x     = corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
+      _r_V_Xresultat 	    = corps.multiplicationModulo( r, corps.soustractionModulo( V, pointRésultat.x  ))
+      pointRésultat.y		= corps.soustractionModulo( _r_V_Xresultat, corps.multiplicationModulo( S1, HHH ) )
+      pointRésultat.z		= corps.multiplicationModulo( point1plus2.z,  corps.multiplicationModulo( point3.z, H  ) )
+      
+      
+      RENVOYER pointRésultat
+     type : 458752
+   -
      name : pointDouble_Jacobi
      procedure_id : 2165924145924843928
      type_code : 12
@@ -1191,34 +1248,27 @@ class :
       pointdouble_X      	est Entier256 
       pointdouble_Y      	est Entier256 
       pointdouble_Z      	est Entier256 
-      //_c est CorpsModulaire_pointSepc256k1 dynamique <- corp
       
-      //XX	= X1^2
-      //YY	= Y1^2
-      yy		est Entier256	= corps_point_secp256k1.carréModulo( point.y )
-      //S	    = 4*X1*Y        
-      S		est Entier256	= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
-      //M	    = 3*XX          
-      M		est Entier256	= corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
-      // X'	= M2-2*S    
-      pointdouble_X      		= corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
-      //Y'	= M*(S-X')-8*YY^2
-      _M_SX	est Entier256	= corps_point_secp256k1.multiplicationModulo( M, corps.soustractionModulo( S, pointdouble_X ) )
-      _8YY2	est Entier256	= corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointdouble_Y			= corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
-      //Z'	= 2*Y*Z
-      pointdouble_Z			= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
+      // calcul 2*point = point + point
+      yy		est Entier256	= :corps_point_secp256k1.carréModulo( point.y )
+      S		est Entier256	= :corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
+      M		est Entier256	= :corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
+      pointdouble_X      		= :corps_point_secp256k1.soustractionModulo( corps_point_secp256k1.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
+      _M_SX	est Entier256	= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointdouble_X ) )
+      _8YY2	est Entier256	= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
+      pointdouble_Y			= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
+      pointdouble_Z			= :corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
       
       // === on refait l'opération
       pointRésultat	est Point256_3D
-      yy						= corps_point_secp256k1.carréModulo( pointdouble_Y )
-      S						= corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_X, yy , 4 )
-      M						= corps_point_secp256k1.carré_255x255x8_Modulo( pointdouble_X,  3 )
-      pointRésultat.x   	    = corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
-      _M_SX					= corps_point_secp256k1.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
-      _8YY2					= corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointRésultat.y			= corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
-      pointRésultat.z			= corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_Y, pointdouble_Z, 2 )
+      yy						= :corps_point_secp256k1.carréModulo( pointdouble_Y )
+      S						= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_X, yy , 4 )
+      M						= :corps_point_secp256k1.carré_255x255x8_Modulo( pointdouble_X,  3 )
+      pointRésultat.x   	    = :corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
+      _M_SX					= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointRésultat.x ) )
+      _8YY2					= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
+      pointRésultat.y			= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
+      pointRésultat.z			= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_Y, pointdouble_Z, 2 )
       
       RENVOYER pointRésultat
      type : 458752
@@ -1297,14 +1347,15 @@ class :
       	n2 = K2._4bit(i) + 1
       //	si n<>0 alors
       		// r = r + 2^k
-      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
+      //		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
       //	FIN
       	// Récup 16 bits P2
       	//n  = K2.bit(i)*8 + K2.bit(i-1)*4 + K2.bit(i-2)*2 + K2.bit(i-3)
       
       //	si n<>0
-      		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n2]   )
+      //		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n2]   )
       //	FIN	
+      PointRésultatJ = pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n] ,  _MultiplesDeP2[n2]  )
       
       	SI PointRésultatJ.estZéro() ALORS
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
