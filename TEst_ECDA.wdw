@@ -1305,6 +1305,11 @@ window :
          bOK est un booléen =  VerifieSignature( N, CléPublique, signature )
          Trace( "Temps (ms) : " + ChronoFin())
          trace("Vérif signature :" )
+         si bOK ALORS
+         	trace("OK")
+         	retour
+         FIN
+         Trace("***************** FAILED ****************")
          Trace(bOK)
          Trace(sERR)
          

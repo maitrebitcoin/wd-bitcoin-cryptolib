@@ -1187,35 +1187,38 @@ class :
       //  source : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2
       procédure pointQuadruple_Jacobi( point est Point256_3D ) : Point256_3D
       
-      pointdouble      	est Point256_3D // 2 * point
-      pointRésultat	est Point256_3D
+      // 2 * point
+      pointdouble_X      	est Entier256 
+      pointdouble_Y      	est Entier256 
+      pointdouble_Z      	est Entier256 
+      //_c est CorpsModulaire_pointSepc256k1 dynamique <- corp
       
       //XX	= X1^2
       //YY	= Y1^2
-      yy				est Entier256		= corps.carréModulo( point.y)
+      yy		est Entier256	= corps_point_secp256k1.carréModulo( point.y )
       //S	    = 4*X1*Y        
-      S				est Entier256		= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
+      S		est Entier256	= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
       //M	    = 3*XX          
-      M				est Entier256		= corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
+      M		est Entier256	= corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
       // X'	= M2-2*S    
-      pointdouble.x      = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
+      pointdouble_X      		= corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
       //Y'	= M*(S-X')-8*YY^2
-      _M_SX	est Entier256	= corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
+      _M_SX	est Entier256	= corps_point_secp256k1.multiplicationModulo( M, corps.soustractionModulo( S, pointdouble_X ) )
       _8YY2	est Entier256	= corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointdouble.y			= corps.soustractionModulo(_M_SX, _8YY2 )
+      pointdouble_Y			= corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
       //Z'	= 2*Y*Z
-      pointdouble.z			=  corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
+      pointdouble_Z			= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
       
       // === on refait l'opération
-      
-      yy						= corps.carréModulo( pointdouble.y)
-      S						= corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble.x, yy , 4 )
-      M						= corps_point_secp256k1.carré_255x255x8_Modulo( pointdouble.x,  3 )
-      pointRésultat.x   	    = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
-      _M_SX					= corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
+      pointRésultat	est Point256_3D
+      yy						= corps_point_secp256k1.carréModulo( pointdouble_Y )
+      S						= corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_X, yy , 4 )
+      M						= corps_point_secp256k1.carré_255x255x8_Modulo( pointdouble_X,  3 )
+      pointRésultat.x   	    = corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
+      _M_SX					= corps_point_secp256k1.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
       _8YY2					= corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointRésultat.y			= corps.soustractionModulo(_M_SX, _8YY2 )
-      pointRésultat.z			= corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
+      pointRésultat.y			= corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
+      pointRésultat.z			= corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_Y, pointdouble_Z, 2 )
       
       RENVOYER pointRésultat
      type : 458752
@@ -1319,6 +1322,7 @@ class :
       	
       	// r = r^16 (8 multiplications par 2)
       	PointRésultatJ = pointQuadruple_Jacobi( pointQuadruple_Jacobi(PointRésultatJ) )
+      	//PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	//PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	i-=4
       FIN
