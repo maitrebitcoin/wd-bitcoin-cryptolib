@@ -1234,15 +1234,15 @@ class :
       renvoyer pointRésultat
      type : 458752
    -
-     name : pointQuadruple_Jacobi
+     name : pointMutlipliePar16_Jacobi
      procedure_id : 2180017114751480498
      type_code : 12
      code : |1+
-      // renvoie 4*point en coordonées de Jacobi
-      // équilalent a pointDouble_Jacobi(pointDouble_Jacobi( point ))
+      // renvoie 16*point en coordonnées de Jacobi
+      // équilalent a pointDouble_Jacobi(pointDouble_Jacobi(pointDouble_Jacobi(pointDouble_Jacobi( point ))))
       // pour optim
       //  source : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2
-      procédure pointQuadruple_Jacobi( point est Point256_3D ) : Point256_3D
+      procédure pointMutlipliePar16_Jacobi( point est Point256_3D ) : Point256_3D
       
       // 2 * point
       pointdouble_X      	est Entier256 
@@ -1259,16 +1259,42 @@ class :
       pointdouble_Y			= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
       pointdouble_Z			= :corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
       
-      // === on refait l'opération
-      pointRésultat	est Point256_3D
+      // === on refait l'opération => *4
+      pointquadruple_X est Entier256 
+      pointquadruple_Y est Entier256 
+      pointquadruple_Z est Entier256 
       yy						= :corps_point_secp256k1.carréModulo( pointdouble_Y )
       S						= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_X, yy , 4 )
       M						= :corps_point_secp256k1.carré_255x255x8_Modulo( pointdouble_X,  3 )
+      pointquadruple_X		= :corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
+      _M_SX					= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointquadruple_X ) )
+      _8YY2					= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
+      pointquadruple_Y		= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
+      pointquadruple_Z		= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_Y, pointdouble_Z, 2 )
+      
+      // === on refait l'opération => *8
+      pointX8_X	est Entier256 
+      pointX8_Y	est Entier256 
+      pointX8_Z	est Entier256 
+      yy						= :corps_point_secp256k1.carréModulo( pointquadruple_Y )
+      S						= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointquadruple_X, yy , 4 )
+      M						= :corps_point_secp256k1.carré_255x255x8_Modulo( pointquadruple_X,  3 )
+      pointX8_X				= :corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
+      _M_SX					= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointX8_X ) )
+      _8YY2					= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
+      pointX8_Y				= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
+      pointX8_Z				= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointquadruple_Y, pointquadruple_Z, 2 )
+      
+      // === on refait l'opération => 16
+      pointRésultat	est Point256_3D
+      yy						= :corps_point_secp256k1.carréModulo( pointX8_Y )
+      S						= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointX8_X, yy , 4 )
+      M						= :corps_point_secp256k1.carré_255x255x8_Modulo( pointX8_X,  3 )
       pointRésultat.x   	    = :corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
       _M_SX					= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointRésultat.x ) )
       _8YY2					= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
       pointRésultat.y			= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
-      pointRésultat.z			= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_Y, pointdouble_Z, 2 )
+      pointRésultat.z			= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointX8_Y, pointX8_Z, 2 )
       
       RENVOYER pointRésultat
      type : 458752
@@ -1341,21 +1367,11 @@ class :
       // parcourt en partant du bit de poids fort par bloc de 4 bits
       i est un entier = iMax
       boucle // POUR i = iMax À 3 pas -4
-      	// Récup 16 bits P1
-      	//n est un entier = K1.bit(i)*8 + K1.bit(i-1)*4 + K1.bit(i-2)*2 + K1.bit(i-3)
+      	// Récup 16 bits P1 et 16 bits de P2
       	n  = K1._4bit(i) + 1
       	n2 = K2._4bit(i) + 1
-      //	si n<>0 alors
-      		// r = r + 2^k
-      //		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP1[n]   )
-      //	FIN
-      	// Récup 16 bits P2
-      	//n  = K2.bit(i)*8 + K2.bit(i-1)*4 + K2.bit(i-2)*2 + K2.bit(i-3)
-      
-      //	si n<>0
-      //		PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP2[n2]   )
-      //	FIN	
-      PointRésultatJ = pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n] ,  _MultiplesDeP2[n2]  )
+      	// Calcul de P = k1*P1 + k2*P2
+      	PointRésultatJ = pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n] ,  _MultiplesDeP2[n2]  )
       
       	SI PointRésultatJ.estZéro() ALORS
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
@@ -1371,8 +1387,8 @@ class :
       		sortir
       	FIN
       	
-      	// r = r^16 (8 multiplications par 2)
-      	PointRésultatJ = pointQuadruple_Jacobi( pointQuadruple_Jacobi(PointRésultatJ) )
+      	// P = P *  16 
+      	PointRésultatJ = pointMutlipliePar16_Jacobi( PointRésultatJ )
       	//PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	//PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
       	i-=4
