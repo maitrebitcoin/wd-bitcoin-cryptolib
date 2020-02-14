@@ -1,0 +1,484 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : compilateurDeFormule
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1e42616f00e6a6ee
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1-
+      // compile des formules simple vers un code ASM x86 qui les calcule
+      // Ex:
+      // A = B*B
+      // C = A+B
+      // D = A+C+B
+      compilateurDeFormule est une Classe
+      
+      	// variable de la formule
+      	tabVariables est un tableau associatif de STVariable
+      	// fonctions utilisables dans la formule
+      	tabFunction est un tableau associatif de STFonction
+      	
+      	nbParametre est entier
+      	nbVarLocale est entier
+      	
+      	// options
+      	bAvecCommentaire est un booléen // mets des commentaire dans l'ASM généré
+      FIN
+      ETypeVar est une énumération
+      	PUI256 // pointeur sur un entier 256 bits
+      fin
+      EPortée est une énumération
+      	paramètre
+      	variableLocale
+      FIN
+      // 1 variables
+      STVariable est une structure
+      	nom    est chaine	  // nom de la variable
+      	type   est ETypeVar   // type de la variable
+      	portée est EPortée    // porte de la variable
+      	indice est entier      // n° de la variable dans sa portée, commence a 0
+      fin 
+      // 1 fonction
+      STFonction est un structure
+      	nom      est chaine	  //  ex "*" ou "+"
+      	addresse est entier système // adresse a appelle par "call"
+      	tabTypeParamètre est un tableau de ETypeVar // ex : [PUI256,PUI256,PUI256]
+      fin
+      
+      // 1 formule parsée
+      STFormuleParsee est une structure
+      	// source
+      	numLigne    est entier
+      	ligneSource est chaine
+      	// résultat du parsing
+      	nomVarDest		est chaîne 
+      	operateur		est chaîne // ex : "*" ou "-"
+      	var1 			est chaine
+      	var2 			est chaine
+      fin
+      
+      
+      // taille en octet des type gérés
+      constant nTaille_INT256 = 32 
+      
+      // taille prise pas un registre
+      CONSTANT nTaille_REG = 8
+      
+      // Erreur levée si pb
+      constant ERR_COMPILATION_FORMULE = 55
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 2180412298985187054
+     type_code : 27
+     code : |1+
+      PROCEDURE Constructeur()
+      
+      :bAvecCommentaire = EnModeTest()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 2180412298985252590
+     type_code : 28
+     code : |1+
+      PROCEDURE Destructeur()
+     type : 655360
+   -
+     name : déclareParamètre
+     procedure_id : 2180413497281210159
+     type_code : 12
+     code : |1+
+      procédure déclareParamètre( nom chaine, type ETypeVar = PUI256 )
+      dbgAssertion(nom<>"")
+      dbgAssertion(pas tabVariables[nom]..existe)
+      
+      // déclare un paramètre
+      newVar est un STVariable
+      newVar.nom  = nom
+      newVar.type = type
+      newVar.portée = paramètre
+      newVar.indice = :nbParametre 
+      nbParametre++;
+      // ajoute la variable
+      tabVariables[nom] = newVar
+     type : 458752
+   -
+     name : déclareOpérateurBinaire
+     procedure_id : 2180631273598065125
+     type_code : 12
+     code : |1+
+      // déclare un opérateur comme "*" ou "+"
+      procédure déclareOpérateurBinaire( nom chaine, adresseProcédure entier système, type ETypeVar = PUI256 )
+      dbgActiveAssertion(nom<>"")
+      dbgActiveAssertion(adresseProcédure<>0)
+      
+      newFonc est STFonction
+      newFonc.nom = nom
+      newFonc.addresse = adresseProcédure
+      pour i = 1 a 3
+      	// P0 et P1 : IN
+      	// P2      : OUT
+      	newFonc.tabTypeParamètre.Ajoute( type )
+      FIN
+      // ajoute la fonction qui gère l'opérateur
+      tabFunction[nom] = newFonc
+     type : 458752
+   -
+     name : _bParse
+     procedure_id : 2181489094526545596
+     type_code : 12
+     code : |1-
+      // analyse syntaxique de <sCode>
+      procédure privee _bParse( sCode chaine, resultat tableau de STFormuleParsee ) : booléen
+      
+      // parsing ligne a ligne
+      // Ex de code attendu :
+      // A = B*B
+      // C = A+B
+      // D = A-C
+      nLigne			est un entier	= 1
+      POUR TOUTE CHAÎNE sCodeLigneI DE sCode séparée par RC
+      	stLigneI est STFormuleParsee
+      	stLigneI.numLigne		= nLigne
+      	stLigneI.ligneSource	= sCodeLigneI
+      	// découpe "A=B+C" en ses parties
+      	ligneSansEspace	est chaine	= SansEspace( sCodeLigneI,sscTout )
+      	nomVarDest		est chaine	= ExtraitChaîne( ligneSansEspace, 1, "=" )
+      	codeOpération	est chaîne	= ExtraitChaîne( ligneSansEspace, 2, "=" )
+      	SI nomVarDest="" _OU_ codeOpération="" ALORS
+      		ErreurDéclenche(ERR_COMPILATION_FORMULE,"erreur de syntaxe : "  +  sCodeLigneI )
+      		RENVOYER 0 // Erreur
+      	FIN	
+      	// extrait opérateur et opérande
+      	var1		est chaine
+      	var2		est chaine
+      	operateur	est chaine	// ex : "*"
+      	SI PAS _bParseOpération( codeOpération,var1,var2, operateur ) ALORS
+      		ErreurDéclenche(ERR_COMPILATION_FORMULE,"erreur de syntaxe : "  +  sCodeLigneI  )
+      		RENVOYER faux // erreur
+      	FIN
+      	// récup fonction 
+      	SI PAS :tabFunction[operateur]..Existe ALORS
+      		ErreurDéclenche(ERR_COMPILATION_FORMULE,"opérateur inconnu : "  +  operateur )
+      		RENVOYER faux
+      	FIN	
+      	// OK affectation
+      	stLigneI.operateur		= operateur
+      	stLigneI.nomVarDest		= nomVarDest
+      	stLigneI.var1			= var1
+      	stLigneI.var2			= var2
+      	resultat.Ajoute(stLigneI)
+      	
+      	// ligne suivante
+      	nLigne++
+      FIN
+      // OK
+      renvoyer vrai
+     type : 458752
+   -
+     name : compileFormule
+     procedure_id : 2180632166951339637
+     type_code : 12
+     code : |1+
+      // compile une formule.
+      // renvoie l'adresse pour l'exécuter par API ou 0 (erreur)
+      procédure compileFormule( sCode est chaine ) : entier système
+      
+      
+      // parsing
+      résultatParsing est un tableau de STFormuleParsee
+      si pas _bParse( sCode, résultatParsing) ALORS
+      	renvoyer  0 // erreur
+      FIN
+      
+      // 1er passe pour déclarer les variable et vérifier qu'elle ne sont pas utilisée avant l'affectation
+      // parcourt des lignes a compiler 
+      stLigneI est STFormuleParsee
+      POUR TOUT stLigneI de résultatParsing
+      	// si un var source est utilisé non déclarée
+      	SI PAS :tabVariables[stLigneI.var1]..Existe ALORS
+      		ErreurDéclenche(ERR_COMPILATION_FORMULE,"variable inconnue : "  + stLigneI.var1  )
+      	FIN
+      	SI PAS :tabVariables[stLigneI.var2]..Existe ALORS
+      		ErreurDéclenche(ERR_COMPILATION_FORMULE,"variable inconnue : "  + stLigneI.var2  )
+      	FIN	
+      	// si une var est inconnue on la déclare
+      	SI PAS :tabVariables[stLigneI.nomVarDest]..Existe ALORS
+      		_déclareVariableLocale( stLigneI.nomVarDest )
+      	FIN
+      fin
+      
+      // 2eme passe : génération du code
+      sCodeAsm est chaine
+      POUR TOUT stLigneI DE résultatParsing
+      
+      	soit func <-	:tabFunction[stLigneI.operateur]
+      	
+      	// génération du code pour l'opération
+      	// ex : 
+      	//	; X=B*B
+      	//	mov rdx,rcx
+      	//	lea r8,[rbp]
+      	//	call 0x000178EE780198
+      	si :bAvecCommentaire sCodeAsm += [RC] + "; "  + stLigneI.ligneSource 
+      	sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var1 )
+      	sCodeAsm += [RC] + _genCodeAsmInitParam( 1, stLigneI.var2 )
+      	sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT
+      	sCodeAsm += [RC] + "call 0x" + EntierVersHexa(  func.addresse )
+      	
+      FIN
+      
+      // on génère le prologue et l'épilogue
+      sCodeFinal est chaine
+      sCodeFinal  =        _genCodeAsm_Prologue()
+      SI :bAvecCommentaire  sCodeFinal += [RC] + "; Code principal " + RC
+      sCodeFinal += [RC] + sCodeAsm
+      sCodeFinal += [RC] + _genCodeAsm_Epilogue()
+      
+      // on compile le code ASM => code machine
+      pResultat est un entier système
+      sErr est chaine
+      (pResultat,sErr) = compileAsmX86_API(sCodeFinal)
+      dbgAssertion(pResultat<>0,sErr)
+      
+      renvoyer pResultat
+     type : 458752
+   -
+     name : _déclareVariableLocale
+     procedure_id : 2180636491983431122
+     type_code : 12
+     code : |1+
+      // déclare une variable locale de nom <nom>
+      procédure privée _déclareVariableLocale( nom chaine )
+      dbgAssertion(pas :tabVariables[nom]..Existe)
+      
+      newVar est un STVariable
+      newVar.nom		= nom
+      newVar.type		= PUI256
+      newVar.portée	= variableLocale
+      newVar.indice	= :nbVarLocale
+      nbVarLocale++;
+      // ajoute la variable
+      tabVariables[nom] = newVar
+      
+     type : 458752
+   -
+     name : _bParseOpération
+     procedure_id : 2180637033149370367
+     type_code : 12
+     code : |1+
+      	// extrait opérateur et opérande
+      procédure PRIVÉE  _bParseOpération( expression chaine, var1_out chaine, var2_out chaine, operation_out chaine ): booléen
+      
+      // A*B
+      si Position(expression, "*")>0 ALORS
+      	var1_out = ExtraitChaîne(expression,1,"*")
+      	var2_out = ExtraitChaîne(expression,2,"*")
+      	operation_out = "*"
+      	renvoyer vrai
+      FIN
+      // A+B
+      SI Position(expression, "+")>0 ALORS
+      	var1_out		= ExtraitChaîne(expression,1,"+")
+      	var2_out		= ExtraitChaîne(expression,2,"+")
+      	operation_out	= "+"
+      	RENVOYER Vrai
+      FIN
+      // A-B
+      SI Position(expression, "-")>0 ALORS
+      	var1_out		= ExtraitChaîne(expression,1,"-")
+      	var2_out		= ExtraitChaîne(expression,2,"-")
+      	operation_out	= "-"
+      	RENVOYER Vrai
+      FIN
+      
+      // erreur de syntaxe
+      renvoyer faux
+     type : 458752
+   -
+     name : _genCodeAsmInitParam
+     procedure_id : 2180638502028265783
+     type_code : 12
+     code : |1+
+      // générèe le code ASM pour init d'un paramètre avant appel de procédure
+      // <numParam> : commence à 0
+      procédure privée _genCodeAsmInitParam( numParam entier, nom chaine) : chaine
+      
+      // récup var
+      varI est STVariable dynamique <- :tabVariables[nom]
+      // SOURCE : ou récupérer la valeur de varI
+      varI_location est chaine
+      bScrRegistre  est un booléen = faux
+      bScrParamètre est un booléen = varI.portée = paramètre
+      si bScrParamètre ALORS
+      	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
+      	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
+      	nOffset est un entier =  8 // prologue
+      	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
+      	nOffset              += (varI.indice)*nTaille_REG 
+      	varI_location = "[rsp+" + nOffset +"]"
+      	
+      	// optim si c'est un registre déjà initialisé
+      	// pour ne pas générer "mox rcx,rcx"
+      //	si numParam = varI.indice _et_ numParam<=4 ALORS
+      //		renvoyer ""
+      //	FIN
+      //	SELON varI.indice 
+      //		cas 0 :     varI_location = "rcx"; bScrRegistre = Vrai;
+      //		cas 1 :     varI_location = "rdx"; bScrRegistre = Vrai;
+      //		cas 2 :     varI_location = "r8"; bScrRegistre = Vrai;
+      //		cas 3 :     varI_location = "r9"; bScrRegistre = Vrai;
+      //		AUTRE CAS: 
+      //			dbgAssertion(faux,"TODO")
+      //			//	varI_location = "[rsp+" + (varI.indice)*8 +"]"
+      //	FIN
+      sinon 
+      	// variable locale : stoquée a partir de rbp
+      	// ex : lea r8, [rbp+8]
+      	//@TODO : additionner les offsets
+      	nOffset est un entier = (varI.indice)*nTaille_INT256
+      	si nOffset= 0 alors
+      		varI_location = "[rbp]"
+      	sinon
+      		varI_location = "[rbp+" + nOffset +"]"
+      	fin
+      FIN
+      
+      sCodeASM est chaine
+      
+      // DEST.
+      // ex: lea rcx,[rbp+8]
+      // recup du nom du registre a effecter
+      sNomRegDest est chaine = _sGetNomRegPourParamNum64(numParam + 1)
+      // si la source est un registre
+      si bScrRegistre ALORS
+      	// ex : "mov rcx, r9"
+      	sCodeASM ="mov " + sNomRegDest +"," + varI_location  
+      // si la source est une indirection	
+      sinon
+      	si bScrParamètre ALORS
+      		// ex : mov r8,[rsp+88] ; R
+      		sCodeASM ="mov " + sNomRegDest +"," + varI_location  
+      	sinon
+      		// ex : "lea rcx, [rbp+8]"
+      		sCodeASM ="lea " + sNomRegDest +"," + varI_location  
+      	fin
+      FIN
+      
+      SI :bAvecCommentaire
+      	sCodeASM += " ; " + nom
+      fin
+      
+      renvoyer sCodeASM
+     type : 458752
+   -
+     name : _sGetNomRegPourParamNum64
+     procedure_id : 2181478614805738911
+     type_code : 12
+     code : |1+
+      // renvoie le nom du registre utilisé pour mettre un paramètre 
+      // convention d'appel des procédure 64 bits  Microsoft : RCX, RDX, R8, R9 
+      // <nNumParam>: de 1 a 5
+      procédure _sGetNomRegPourParamNum64( nNumParam )
+      
+      selon nNumParam
+      	cas 0: dbgAssertion(faux)
+      	cas 1: renvoyer "rcx"
+      	cas 2: renvoyer "rdx"
+      	cas 3: renvoyer "r8"
+      	cas 4: renvoyer "r9"
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      FIN
+      renvoyer "***ERR***" // ne compilera pas.
+      
+     type : 458752
+   -
+     name : _genCodeAsm_Prologue
+     procedure_id : 2180642874305073169
+     type_code : 12
+     code : |1+
+      procédure _genCodeAsm_Prologue() : chaine
+      
+      sCodeASM_Prologue est chaine = [
+      ; Prologue
+      	mov    [rsp+08h],rcx  ; P1 mis dans l'emplacement réservé par l'appelant
+      	mov    [rsp+10h],rdx  ; idem P2 
+      	mov    [rsp+18h],r8   ; idem P3 
+      	mov    [rsp+20h],r9   ; idem P4 
+      	push   rbp
+      	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variable locale + appel des procédures
+      	lea    rbp,[rsp+20h]  ; rbp pointe sur le debut des variables locales
+      ]
+      // calcul taille pile
+      nTailleVarLoc est un entier = _nGetTailleAllocaVarLoc()
+      sCodeASM est chaine = remplace(sCodeASM_Prologue,"TAILLE_VAR_LOC", ""+nTailleVarLoc )
+      
+      RENVOYER sCodeASM 
+     type : 458752
+   -
+     name : _genCodeAsm_Epilogue
+     procedure_id : 2180643608744586234
+     type_code : 12
+     code : |1+
+      procédure _genCodeAsm_Epilogue() : chaine
+      
+      sCodeASM_Epilogue est chaine = [
+      ; Epilogue
+          add    rsp, TAILLE_VAR_LOC
+          pop    rbp
+      	ret  
+      ]
+      // calcul taille pile
+      nTailleVarLoc	est un entier	= _nGetTailleAllocaVarLoc()
+      sCodeASM		est chaine		= remplace(sCodeASM_Epilogue,"TAILLE_VAR_LOC", ""+nTailleVarLoc )
+      
+      RENVOYER sCodeASM 
+     type : 458752
+   -
+     name : _nGetTailleAllocaVarLoc
+     procedure_id : 2181471802987135410
+     type_code : 12
+     code : |1-
+      // renvoie la taille a allouer pour les variable locale dans la pile
+      procédure _nGetTailleAllocaVarLoc()
+      
+      si EnMode64bits() ALORS
+      	// +32 : convention d'appel de procédure, on doit leur laisse 4 emplacement de 64 bits (toujours).
+      	nTaille est un entier  = 32
+      	POUR TOUT var DE :tabVariables
+      		si var.portée = variableLocale ALORS
+      			selon var.type
+      				CAS PUI256
+      					nTaille +=nTaille_INT256
+      				autre cas
+      					dbgAssertion(faux)
+      			FIN
+      		FIN
+      	FIN
+      	renvoyer nTaille
+      fin
+      dbgAssertion(faux,"TODO")
+      renvoyer 0
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1e42616000e36e0b
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
