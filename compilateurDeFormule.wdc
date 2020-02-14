@@ -21,17 +21,20 @@ class :
       // C = A+B
       // D = A+C+B
       compilateurDeFormule est une Classe
-      
+      	
       	// variable de la formule
-      	tabVariables est un tableau associatif de STVariable
+      	tabVariables			est un tableau associatif de STVariable
       	// fonctions utilisables dans la formule
-      	tabFunction est un tableau associatif de STFonction
-      	
-      	nbParametre est entier
-      	nbVarLocale est entier
-      	
+      	tabFunction				est un tableau associatif de STFonction
+      	//@A voir
+      	nbParametre				est entier
+      	nbVarLocale				est entier
       	// options
-      	bAvecCommentaire est un booléen // mets des commentaire dans l'ASM généré
+      	bAvecCommentaire		est un booléen	// mets des commentaire dans l'ASM généré
+      	
+      	// indique sur quelle adresse les registres pointent apres chaque ligne de code générée
+      	tabRegVersVar	est un tableau associatif de chaine
+      	tabVarVersReg	est un tableau associatif de chaine
       FIN
       ETypeVar est une énumération
       	PUI256 // pointeur sur un entier 256 bits
@@ -42,28 +45,28 @@ class :
       FIN
       // 1 variables
       STVariable est une structure
-      	nom    est chaine	  // nom de la variable
-      	type   est ETypeVar   // type de la variable
-      	portée est EPortée    // porte de la variable
-      	indice est entier      // n° de la variable dans sa portée, commence a 0
+      	nom		est chaine		// nom de la variable
+      	type	est ETypeVar	// type de la variable
+      	portée	est EPortée		// porte de la variable
+      	indice	est entier		// n° de la variable dans sa portée, commence a 0
       fin 
       // 1 fonction
       STFonction est un structure
-      	nom      est chaine	  //  ex "*" ou "+"
-      	addresse est entier système // adresse a appelle par "call"
-      	tabTypeParamètre est un tableau de ETypeVar // ex : [PUI256,PUI256,PUI256]
+      	nom					est chaine					//  ex "*" ou "+"
+      	addresse			est entier système			// adresse a appelle par "call"
+      	tabTypeParamètre	est un tableau de ETypeVar	// ex : [PUI256,PUI256,PUI256]
       fin
       
       // 1 formule parsée
       STFormuleParsee est une structure
       	// source
-      	numLigne    est entier
-      	ligneSource est chaine
+      	numLigne		est entier
+      	ligneSource		est chaine
       	// résultat du parsing
       	nomVarDest		est chaîne 
-      	operateur		est chaîne // ex : "*" ou "-"
-      	var1 			est chaine
-      	var2 			est chaine
+      	operateur		est chaîne	// ex : "*" ou "-"
+      	var1			est chaine
+      	var2			est chaine
       fin
       
       
@@ -218,10 +221,21 @@ class :
       	FIN
       fin
       
+      // Affection initiale des registre  (pour OPTIM)
+      // en entrée les 4 paramètres d'entrés au max sont dans des registres
+      pour tout stVar de :tabVariables
+      	si stVar.portée = paramètre _et_ stVar.indice<=4 ALORS
+      		// ex: T["param2"] = "rdx"
+      		sReg est chaine =  _sGetNomRegPourParamNum64(stVar.indice+1)
+      		_VarUtiliseRegistre( stVar.nom, sReg )
+      	FIN
+      FIN
+      
+      
       // 2eme passe : génération du code
       sCodeAsm est chaine
       POUR TOUT stLigneI DE résultatParsing
-      
+      	// récup fonction qui effectue le calcul
       	soit func <-	:tabFunction[stLigneI.operateur]
       	
       	// génération du code pour l'opération
@@ -235,7 +249,8 @@ class :
       	sCodeAsm += [RC] + _genCodeAsmInitParam( 1, stLigneI.var2 )
       	sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT
       	sCodeAsm += [RC] + "call 0x" + EntierVersHexa(  func.addresse )
-      	
+      	// apres un call certains registre peuvent être modifié:
+      	_VarDissocieApresCall()
       FIN
       
       // on génère le prologue et l'épilogue
@@ -320,6 +335,7 @@ class :
       varI_location est chaine
       bScrRegistre  est un booléen = faux
       bScrParamètre est un booléen = varI.portée = paramètre
+      
       si bScrParamètre ALORS
       	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
       	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
@@ -353,6 +369,12 @@ class :
       		varI_location = "[rbp+" + nOffset +"]"
       	fin
       FIN
+      // OPTIM : si on a sa valeur dans un registre
+      SI :tabVarVersReg[nom]..Existe ALORS
+      	varI_location	= tabVarVersReg[nom]
+      	bScrRegistre	= Vrai
+      FIN
+      
       
       sCodeASM est chaine
       
@@ -362,6 +384,12 @@ class :
       sNomRegDest est chaine = _sGetNomRegPourParamNum64(numParam + 1)
       // si la source est un registre
       si bScrRegistre ALORS
+      	// OPTIM si c'est un registre déjà initialisé
+      	// pour ne pas générer "mox rcx,rcx"
+      	si sNomRegDest = varI_location ALORS
+      		renvoyer ""
+      	fin
+      	
       	// ex : "mov rcx, r9"
       	sCodeASM ="mov " + sNomRegDest +"," + varI_location  
       // si la source est une indirection	
@@ -374,10 +402,14 @@ class :
       		sCodeASM ="lea " + sNomRegDest +"," + varI_location  
       	fin
       FIN
-      
       SI :bAvecCommentaire
       	sCodeASM += " ; " + nom
-      fin
+      FIN
+      
+      // MAJ utilisation des registres
+      _VarUtiliseRegistre( varI.nom , sNomRegDest)
+      
+      
       
       renvoyer sCodeASM
      type : 458752
@@ -449,7 +481,7 @@ class :
      name : _nGetTailleAllocaVarLoc
      procedure_id : 2181471802987135410
      type_code : 12
-     code : |1-
+     code : |1+
       // renvoie la taille a allouer pour les variable locale dans la pile
       procédure _nGetTailleAllocaVarLoc()
       
@@ -470,6 +502,57 @@ class :
       fin
       dbgAssertion(faux,"TODO")
       renvoyer 0
+     type : 458752
+   -
+     name : _VarUtiliseRegistre
+     procedure_id : 2181503035991799654
+     type_code : 12
+     code : |1+
+      // indique sur quelle adresse les registres pointent apres chaque ligne de code générée
+      procédure privée _VarUtiliseRegistre( sVariable chaine, sRegistre chaine )
+      
+      // si le registre était utilisé
+      _VarDissocieRegiste( sRegistre )
+      
+      // note l'utilisation 
+      :tabRegVersVar[	sRegistre ] = sVariable
+      :tabVarVersReg[ sVariable ] = sRegistre
+     type : 458752
+   -
+     name : _VarDissocieRegiste
+     procedure_id : 2181515822110581931
+     type_code : 12
+     code : |1+
+      // indique qu'un registe a été changé et ne contient plus de variable 
+      // supprime l'association si il y en avait une
+      procédure privée _VarDissocieRegiste( sRegistre )
+      
+      // si le registre était utilisé
+      SI :tabRegVersVar[ sRegistre ]..Existe ALORS
+      	// on supprime l'ancienne entrée
+      	sAncienneVariable est chaine = tabRegVersVar[sRegistre]
+      	dbgAssertion(sAncienneVariable<>"")
+      	TableauSupprime( :tabRegVersVar,	sRegistre	      )   
+      	TableauSupprime( :tabVarVersReg,	sAncienneVariable )   
+      FIN
+     type : 458752
+   -
+     name : _VarDissocieApresCall
+     procedure_id : 2181516346096648367
+     type_code : 12
+     code : |1-
+      // apres un CALL certains registre peuvent être modifié.
+      // => on les note comme ne pointant plus sur une var connue
+      procédure privée _VarDissocieApresCall()
+      
+      // https://en.wikipedia.org/wiki/X86_calling_conventions#Register_preservation: 
+      // The registers RAX, RCX, RDX, R8, R9, R10, R11 are considered volatile (caller-saved).[20]
+      _VarDissocieRegiste("rax")
+      _VarDissocieRegiste("rcx")
+      _VarDissocieRegiste("r8")
+      _VarDissocieRegiste("r9")
+      _VarDissocieRegiste("r10")
+      _VarDissocieRegiste("r11")
      type : 458752
   procedure_templates : []
   property_templates : []
