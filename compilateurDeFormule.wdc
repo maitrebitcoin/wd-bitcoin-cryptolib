@@ -38,6 +38,7 @@ class :
       FIN
       ETypeVar est une énumération
       	PUI256 // pointeur sur un entier 256 bits
+      	UI8    // entier sur 8
       fin
       EPortée est une énumération
       	paramètre
@@ -65,8 +66,9 @@ class :
       	// résultat du parsing
       	nomVarDest		est chaîne 
       	operateur		est chaîne	// ex : "*" ou "-"
-      	var1			est chaine
+      	var1			est chaine  // ex "X" ou "3"
       	var2			est chaine
+      	bvar1EstLiteral est booléen // vrai si var1 représente un litéral
       fin
       
       
@@ -121,7 +123,7 @@ class :
      type_code : 12
      code : |1+
       // déclare un opérateur comme "*" ou "+"
-      procédure déclareOpérateurBinaire( nom chaine, adresseProcédure entier système, type ETypeVar = PUI256 )
+      procédure déclareOpérateurBinaire( nom chaine, adresseProcédure entier système, typeParam2 ETypeVar = PUI256 )
       dbgActiveAssertion(nom<>"")
       dbgActiveAssertion(adresseProcédure<>0)
       
@@ -130,8 +132,12 @@ class :
       newFonc.addresse = adresseProcédure
       pour i = 1 a 3
       	// P0 et P1 : IN
-      	// P2      : OUT
-      	newFonc.tabTypeParamètre.Ajoute( type )
+      	// P2       : OUT
+      	eTypeParam_I est ETypeVar = PUI256
+      	si i=2 ALORS
+      		eTypeParam_I = typeParam2
+      	FIN
+      	newFonc.tabTypeParamètre.Ajoute( eTypeParam_I )
       FIN
       // ajoute la fonction qui gère l'opérateur
       tabFunction[nom] = newFonc
@@ -156,6 +162,7 @@ class :
       	stLigneI.ligneSource	= sCodeLigneI
       	// découpe "A=B+C" en ses parties
       	ligneSansEspace	est chaine	= SansEspace( sCodeLigneI,sscTout )
+      	ligneSansEspace = Remplace(ligneSansEspace, TAB,"") 
       	nomVarDest		est chaine	= ExtraitChaîne( ligneSansEspace, 1, "=" )
       	codeOpération	est chaîne	= ExtraitChaîne( ligneSansEspace, 2, "=" )
       	SI nomVarDest="" _OU_ codeOpération="" ALORS
@@ -180,6 +187,11 @@ class :
       	stLigneI.nomVarDest		= nomVarDest
       	stLigneI.var1			= var1
       	stLigneI.var2			= var2
+      	// gestion des litéraux (ex "4")
+      	si VérifieExpressionRégulière(var1,"[0-9]*") ALORS
+      		stLigneI.bvar1EstLiteral = vrai
+      	FIN
+      	
       	resultat.Ajoute(stLigneI)
       	
       	// ligne suivante
@@ -209,11 +221,15 @@ class :
       stLigneI est STFormuleParsee
       POUR TOUT stLigneI de résultatParsing
       	// si un var source est utilisé non déclarée
-      	SI PAS :tabVariables[stLigneI.var1]..Existe ALORS
-      		ErreurDéclenche(ERR_COMPILATION_FORMULE,"variable inconnue : "  + stLigneI.var1  )
-      	FIN
+      	si pas stLigneI.bvar1EstLiteral alors // ignorer les littéraux
+      		SI PAS :tabVariables[stLigneI.var1]..Existe ALORS
+      			ErreurDéclenche(ERR_COMPILATION_FORMULE,"variable inconnue : "  + stLigneI.var1  )
+      			RENVOYER  0 // erreur
+      		FIN
+      		fin
       	SI PAS :tabVariables[stLigneI.var2]..Existe ALORS
       		ErreurDéclenche(ERR_COMPILATION_FORMULE,"variable inconnue : "  + stLigneI.var2  )
+      		RENVOYER  0 // erreur
       	FIN	
       	// si une var est inconnue on la déclare
       	SI PAS :tabVariables[stLigneI.nomVarDest]..Existe ALORS
@@ -235,19 +251,34 @@ class :
       // 2eme passe : génération du code
       sCodeAsm est chaine
       POUR TOUT stLigneI DE résultatParsing
+      	// génération du code ASM pour la ligne
+      	SI :bAvecCommentaire alors 
+      		sCodeAsm += [RC] + "; "  + Complète( stLigneI.ligneSource,32 ) + ":" + stLigneI.numLigne
+      	FIN
       	// récup fonction qui effectue le calcul
       	soit func <-	:tabFunction[stLigneI.operateur]
       	
       	// génération du code pour l'opération
       	// ex : 
       	//	; X=B*B
+      	//	mov rcx,[rsp-8]
       	//	mov rdx,rcx
       	//	lea r8,[rbp]
-      	//	call 0x000178EE780198
-      	si :bAvecCommentaire sCodeAsm += [RC] + "; "  + stLigneI.ligneSource 
-      	sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var1 )
-      	sCodeAsm += [RC] + _genCodeAsmInitParam( 1, stLigneI.var2 )
-      	sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT
+      	//	call 0x000178EE780198	
+      	
+      	//@Cas particulier "3.X"
+      	si stLigneI.bvar1EstLiteral ALORS
+      		dbgAssertion(func.nom=".")
+      		//@@On inverse P1/P2
+      		sCodeAsm += [RC] + "mov " + _sGetNomRegPourParamNum64(2) + "," +  stLigneI.var1
+      		_VarDissocieRegiste(_sGetNomRegPourParamNum64(2))
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var2 )
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT
+      	sinon
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var1 )
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 1, stLigneI.var2 )
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT
+      	fin
       	sCodeAsm += [RC] + "call 0x" + EntierVersHexa(  func.addresse )
       	// apres un call certains registre peuvent être modifié:
       	_VarDissocieApresCall()
@@ -295,27 +326,35 @@ class :
       	// extrait opérateur et opérande
       procédure PRIVÉE  _bParseOpération( expression chaine, var1_out chaine, var2_out chaine, operation_out chaine ): booléen
       
+      // vérification pour 1 opérateur
+      procédure interne _bParseUnOpérateur( _expression est chaine,  _opérateurATester chaine, _var1_out chaine, _var2_out chaine, _operation_out chaine )
+      	SI Position(_expression, _opérateurATester)>0 ALORS
+      		_var1_out		= ExtraitChaîne(_expression,1, _opérateurATester)
+      		_var2_out		= ExtraitChaîne(_expression,2, _opérateurATester)
+      		_operation_out  = _opérateurATester 
+      		RENVOYER Vrai
+      	FIN
+      	// pas OK 
+      	renvoyer faux
+      fin
+      
       // A*B
-      si Position(expression, "*")>0 ALORS
-      	var1_out = ExtraitChaîne(expression,1,"*")
-      	var2_out = ExtraitChaîne(expression,2,"*")
-      	operation_out = "*"
-      	renvoyer vrai
+      si _bParseUnOpérateur(expression,"*", var1_out,var2_out,operation_out ) ALORS
+      	renvoyer Vrai	
+      FIN
+      // 3*B
+      SI _bParseUnOpérateur(expression,".", var1_out,var2_out,operation_out ) ALORS
+      	RENVOYER Vrai	
       FIN
       // A+B
-      SI Position(expression, "+")>0 ALORS
-      	var1_out		= ExtraitChaîne(expression,1,"+")
-      	var2_out		= ExtraitChaîne(expression,2,"+")
-      	operation_out	= "+"
-      	RENVOYER Vrai
+      SI _bParseUnOpérateur(expression,"+", var1_out,var2_out,operation_out ) ALORS
+      	RENVOYER Vrai	
       FIN
       // A-B
-      SI Position(expression, "-")>0 ALORS
-      	var1_out		= ExtraitChaîne(expression,1,"-")
-      	var2_out		= ExtraitChaîne(expression,2,"-")
-      	operation_out	= "-"
-      	RENVOYER Vrai
+      SI _bParseUnOpérateur(expression,"-", var1_out,var2_out,operation_out ) ALORS
+      	RENVOYER Vrai	
       FIN
+      
       
       // erreur de syntaxe
       renvoyer faux
