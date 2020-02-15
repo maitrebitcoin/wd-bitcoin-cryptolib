@@ -1315,14 +1315,20 @@ class :
       
       point1 est Point256_3D dynamique
       point2 est Point256_3D dynamique
+      X est Entier256 = PointRésultatJ.x
+      Y est Entier256 = PointRésultatJ.y
+      Z est Entier256 = PointRésultatJ.z
       // parcourt en partant du bit de poids fort par bloc de 4 bits
       boucle // POUR i = iMax À 3 pas -4
       	// P = P *  16 
       	//PointRésultatJ = pointMutlipliePar16_Jacobi( PointRésultatJ )
-      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )	
+      	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
+      	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
+      	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
+      	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
+      //	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
+      //	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
+      //	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )	
       	
       	// Récup 16 bits P1 et 16 bits de P2
       	n1 = K1._4bit(i) 
@@ -1331,11 +1337,11 @@ class :
       //	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1]  )
       	si n1<>0 alors
       		point1  <- _MultiplesDeP1[n1]
-      		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point1.x, &point1.y, &point1.z  )
+      		API( pfPointAddition_Jacobi_ASM, &X, &Y, &Z, &point1.x, &point1.y, &point1.z  )
       	fin
       	si n2<>0 alors
       		point2  <- _MultiplesDeP2[n2]
-      		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point2.x, &point2.y, &point2.z  )
+      		API( pfPointAddition_Jacobi_ASM, &X, &Y, &Z, &point2.x, &point2.y, &point2.z  )
       	fin
       
       	// 4 bits plus faibles suivant
@@ -1344,7 +1350,9 @@ class :
       	FIN
       	i-=4
       FIN
-      
+      PointRésultatJ.x = X
+      PointRésultatJ.y = y
+      PointRésultatJ.z = z
       
       RENVOYER PointRésultatJ
       
