@@ -25,6 +25,7 @@ procedure_set :
       addrprocMult256x32_256_ASM      est entier système = pGetprocMult256x32_256_ASM()
       addrprocDivPar2_256_ASM     	est entier système = pGetprocDivisePar2_256()
       addrprocMoyenne_256_ASM     	est entier système = pGetprocMoyenne256_ASM()
+      addrprocMult256v256_512_ASM    	est entier système = compileAsmX86_API( fChargeRessourceTexte("multiplication_256x256_512.asm")) 
       
       
       
@@ -523,90 +524,14 @@ procedure_set :
       // multiplication de 2 nombre de 256 bits => 1 nombre de  512 bits
       procédure multiplication256x256_512(   nombreA Entier256, nombreB Entier256) : Entier512
       
+      // OPTIM, appel version ASM
       Résultat   est Entier512 
+      bufRes est un buffer sur 64 // via un buffer car les 2 membres 256 bits ne sont pas contigus en mémoire
+      API(addrprocMult256v256_512_ASM,&nombreA,&nombreB,&bufRes)
+      Transfert(&Résultat.valPoidsFaible, &bufRes,    32)
+      Transfert(&Résultat.valPoidsFort  , &bufRes+32, 32)
+      renvoyer Résultat
       
-      // extrait les poids faibles (A0,B0) et fort (A1,B1) de A et B ( 2x128 bits ).
-      A0  est Entier256
-      A0.val0 = nombreA.val0
-      A0.val1 = nombreA.val1
-      A1  est Entier256
-      A1.val0 = nombreA.val2
-      A1.val1 = nombreA.val3
-      B0  est Entier256
-      B0.val0 = nombreB.val0
-      B0.val1 = nombreB.val1
-      B1  est Entier256
-      B1.val0 = nombreB.val2
-      B1.val1 = nombreB.val3
-      
-      // calcul des mots de 128/256 bits résultat
-      R0  est entier256
-      // OPTIM , inline de R0   = multiplication128x128_256(  A0, B0 )
-      API( addrprocMult128x128_256_ASM,&A0,&B0,&R0 )
-      retenue0 est Entier256
-      retenue0.val0 = R0.val2
-      retenue0.val1 = R0.val3
-      R2  est entier256 // = multiplication128x128_256(  A1, B1 )
-      // OPTIM , inline de R2   = multiplication128x128_256(  A1, B1 )
-      API( addrprocMult128x128_256_ASM,&A1,&B1,&R2 )
-      //R1  est entier sans signe SUR 8 octet  = (A1*B1 + (A1-A0)*(B0-B1) + B0*A0)  + c0
-      R1 est Entier256
-      R1_a1a0b0b1 est Entier256 
-      a1_a0 est Entier256
-      
-      b0_b1 est Entier256
-      
-      // gestion du signe
-      bNegatif est un booléen 
-      SI  A1.estSupérieurOuEgalA(A0) ALORS 
-      	a1_a0 = soustraction(A1,A0)
-      SINON
-      	a1_a0 = soustraction(A0,A1)
-      	bNegatif = Vrai
-      FIN
-      SI  B0.estSupérieurOuEgalA(B1) ALORS
-      	b0_b1 = soustraction(B0,B1)
-      SINON
-      	b0_b1 = soustraction(B1,B0)
-      	bNegatif = PAS bNegatif
-      FIN
-      
-      // OPTIM, inline de R1_a1a0b0b1 =  multiplication128x128_256(  a1_a0,  b0_b1 )
-      API( addrprocMult128x128_256_ASM,&a1_a0,&b0_b1,&R1_a1a0b0b1 )
-      bretenue est un booléen //entier sur 8 octets sans signe
-      retenueR1 est entier sur 8 octets sans signe
-      R1 = addition( R0,		   R2, bretenue)
-      //R1 = R0
-      //bretenue = procAddition256p256_256c( &R1, &R2)  // R1 = R1 + R2
-      si bretenue alors retenueR1++
-      si bNegatif alors
-      	SI R1_a1a0b0b1.estSupérieurStrictA( R1 ) ALORS
-      		retenueR1--
-      	fin
-      	R1 = soustraction( R1, R1_a1a0b0b1)
-      sinon
-      	R1 = addition( R1, 	   R1_a1a0b0b1, bretenue)
-      	SI bretenue ALORS retenueR1++
-      fin
-      //bR est un booléen
-      //R1 = addition( R1, 		retenue0, bretenue)
-      bretenue = API( addrprocAddition256p256_256c, &R1, 		&retenue0) // (R1, c ) = R1 + retenue0
-      SI bretenue ALORS retenueR1++
-      
-      retenue1 est un entier256 // + 128 bit de retenue
-      retenue1.val0   = R1.val2
-      retenue1.val1   = R1.val3
-      retenue1.val2   = retenueR1
-      R2 = addition(R2,   retenue1)
-      
-      // construire le résultat 2x128 bits + 1x256bits
-      Résultat.valPoidsFaible.val0 = R0.val0
-      Résultat.valPoidsFaible.val1 = R0.val1  
-      Résultat.valPoidsFaible.val2 = R1.val0
-      Résultat.valPoidsFaible.val3 = R1.val1
-      Résultat.valPoidsFort		 = R2
-      
-      renvoyer Résultat 
      type : 458752
    -
      name : multiplication256x256_256
@@ -617,65 +542,12 @@ procedure_set :
       procédure multiplication256x256_256(  nombreA Entier256, nombreB Entier256) : Entier256
       
       Résultat   est Entier256
-      
-      // extrait les poids faibles (A0,B0) et fort (A1,B1) de A et B ( 2x128 bits ).
-      A0  est Entier256
-      A0.val0 = nombreA.val0
-      A0.val1 = nombreA.val1
-      A1  est Entier256
-      A1.val0 = nombreA.val2
-      A1.val1 = nombreA.val3
-      B0  est Entier256
-      B0.val0 = nombreB.val0
-      B0.val1 = nombreB.val1
-      B1  est Entier256
-      B1.val0 = nombreB.val2
-      B1.val1 = nombreB.val3
-      
-      // calcul des mots de 128/256 bits résultat
-      R0  est entier256  = multiplication128x128_256(  A0, B0 )
-      retenue0 est Entier256
-      retenue0.val0 = R0.val2
-      retenue0.val1 = R0.val3
-      R2  est entier256  = multiplication128x128_256(  A1, B1 )
-      //R1  est entier sans signe SUR 8 octet  = (A1*B1 + (A1-A0)*(B0-B1) + B0*A0)  + c0
-      R1 est Entier256
-      R1_a1a0b0b1 est Entier256 
-      a1_a0 est Entier256
-      b0_b1 est Entier256
-      
-      // gestion du signe
-      bNegatif est un booléen = A0.estSupérieurStrictA( A1 )
-      si bNegatif ALORS
-      	a1_a0 = soustraction(A0,A1)
-      sinon
-      	a1_a0 = soustraction(A1,A0)
-      FIN
-      SI  B0.estSupérieurOuEgalA(B1) ALORS
-      	b0_b1 = soustraction(B0,B1)
-      SINON
-      	b0_b1 = soustraction(B1,B0)
-      	bNegatif = PAS bNegatif
-      FIN
-      
-      R1_a1a0b0b1 =  multiplication128x128_256(  a1_a0,  b0_b1 )
-      R1 = addition( R0,		   R2)
-      
-      SI bNegatif ALORS
-      	R1 = soustraction( R1, R1_a1a0b0b1)
-      SINON
-      	R1 = addition(     R1, R1_a1a0b0b1)
-      FIN
-      // R1 = R1 + retenue0
-      API(addrprocAddition256p256_256c,  &R1, &retenue0) 
-      
-      // construire le résultat 2x128 bits
-      Résultat.val0 = R0.val0
-      Résultat.val1 = R0.val1  
-      Résultat.val2 = R1.val0
-      Résultat.val3 = R1.val1
-      
-      RENVOYER Résultat 
+      // OPTIM, appel version ASM
+      bufRes		est un buffer sur 64	// via un buffer car les 2 membres 256 bits ne sont pas contigus en mémoire
+      API(addrprocMult256v256_512_ASM,&nombreA,&nombreB,&bufRes)
+      Transfert(&Résultat, &bufRes,    32)
+      //Transfert(&Résultat.valPoidsFort  , &bufRes+32, 32)  // ignorer le poids fort
+      RENVOYER Résultat
      type : 458752
    -
      name : multiplication256x32_512

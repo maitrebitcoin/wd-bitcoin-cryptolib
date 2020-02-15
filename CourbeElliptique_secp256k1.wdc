@@ -1471,7 +1471,9 @@ class :
       _Tmp = _F(k1AvecSigne, k2AvecSigne )
       dbgAssertion( _Tmp.estEgalA(K) ,"nombre pas OK")
       // k1 et k2 doivent êtres "petits"
-      dbgAssertion( k1.val3 = 0)
+      si k1.val3>=0 alors
+      	dbgAssertion( k1.val3 = 0, "point="+point.x.VersChaineHexa()+","+point.y.VersChaineHexa()+rc+"K= "+K.VersChaineHexa())
+      fin
       dbgAssertion( k1.val2 < 0x1000)
       dbgAssertion( k2.val3 = 0)
       dbgAssertion( k2.val2 < 0x1000)
