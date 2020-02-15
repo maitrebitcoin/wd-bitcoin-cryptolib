@@ -39,16 +39,15 @@ class :
       
       	// point générateur pour secp256k1
       	pointGen 		 est Point256
-      	// corps spécialisé pour calcul plus rapide de addictions de points de la courbe
+      	// corps spécialisé pour calcul plus rapide de coordonnées de points de la courbe (addition/doublement)
       	corps_point_secp256k1 est CorpsModulaire_pointSepc256k1 
       	// corps spécialisé pour calcul des signatures
       	corps_ordre_secp256k1 est CorpsModulaire_ordreCourbeSepc256k1
       	
-      	// routines ASM pour accéler le calcul
-      	pfPointDouble_Jacobi_ASM est un entier système
+      	// routines ASM pour accélérer le calcul
+      	pfPointDouble_Jacobi_ASM   est un entier système
       	pfPointAddition_Jacobi_ASM est un entier système
-      
-      prive
+      PRIVÉ
       	// un nombre d'ordre 3 sur <corps>
       	// ie tel que :_N_Ordre3^3 = 1 modulo P
       	// NB : tout nombre d'ordre 3 est OK.
@@ -1471,7 +1470,7 @@ class :
       _Tmp = _F(k1AvecSigne, k2AvecSigne )
       dbgAssertion( _Tmp.estEgalA(K) ,"nombre pas OK")
       // k1 et k2 doivent êtres "petits"
-      si k1.val3>=0 alors
+      si k1.val3<>0 alors
       	dbgAssertion( k1.val3 = 0, "point="+point.x.VersChaineHexa()+","+point.y.VersChaineHexa()+rc+"K= "+K.VersChaineHexa())
       fin
       dbgAssertion( k1.val2 < 0x1000)
