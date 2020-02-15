@@ -1236,7 +1236,12 @@ class :
       procédure pointDouble_Jacobi( point est Point256_3D ) : Point256_3D
       dbgAssertion( PAS point.z.estEgalAZero())
       
-      pointRésultat est Point256_3D
+      // OPTIM
+      pointRésultat est Point256_3D = point
+      API(:pfPointDouble_Jacobi_ASM,&pointRésultat.x,&pointRésultat.y,&pointRésultat.z)
+      renvoyer pointRésultat
+      
+      
       //XX	= X1^2
       //YY	= Y1^2
       yy est Entier256     = corps.carréModulo( point.y)
