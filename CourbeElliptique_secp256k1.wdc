@@ -1539,29 +1539,30 @@ class :
       // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-2007-bl
       //  The "dbl-1998-cmo-2" doubling formulas
       sCodePoint_Doubling_Jacobi	est chaine	= [
-      	XX		= X*X<§cs:2§>
-      	YY		= Y*Y<§cs:2§>
-      	ZZ		= Z*Z<§cs:2§>
-      	XYY		= X*YY<§cs:2§>
-      	S		= 4.XYY<§cs:2§>
-      	2S	  = 2.S<§cs:2§>
-      	M		= 3.XX <§cs:2§>
-      	MM		= M*M<§cs:2§>
-      	X		= MM-2S<§cs:2§>
-      	S_X		= S-X<§cs:2§>
-      	YYYY	= YY*YY<§cs:2§>
-      	8YYYY = 8.YYYY<§cs:2§>
-      	MS_X	= M*S_X<§cs:2§>
-      	YZ		= Y*Z	<§cs:2§>
-      	Y		= MS_X-8YYYY<§cs:2§>
-      	Z		= 2.YZ<§cs:2§>
+      PointDouble(X, Y, Z)
+      	XX		= X*X
+      	YY		= Y*Y
+      	ZZ		= Z*Z
+      	XYY		= X*YY
+      	S		= 4.XYY
+      	2S	  = 2.S
+      	M		= 3.XX 
+      	MM		= M*M
+      	X		= MM-2S
+      	S_X		= S-X
+      	YYYY	= YY*YY
+      	8YYYY = 8.YYYY
+      	MS_X	= M*S_X
+      	YZ		= Y*Z	
+      	Y		= MS_X-8YYYY
+      	Z		= 2.YZ
       ]
       
       CPL est un compilateurDeFormule
       // déclaration des variables utilisée en entres
-      CPL.déclareParamètre("X" )
-      CPL.déclareParamètre("Y" )
-      CPL.déclareParamètre("Z" )
+      //CPL.déclareParamètre("X" )
+      //CPL.déclareParamètre("Y" )
+      //CPL.déclareParamètre("Z" )
       // déclaration des routines a utiliser pour implémenter les opérateur
       CPL.déclareOpérateurBinaire("*", corps_point_secp256k1.addrprocMult256x256Modulo  )
       CPL.déclareOpérateurBinaire(".", corps_point_secp256k1.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
@@ -1587,6 +1588,7 @@ class :
       // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl
       //  "add-1998-cmo-2"
       sCodePoint_Addition_Jacobi est chaine = [
+      PointPlusPoint(X1,Y1,Z1, X2,Y2,Z2)<§cs:2§>
       	Z1Z1	= Z1*Z1<§cs:2§>
       	Z2Z2	= Z2*Z2<§cs:2§>
       	U1		= X1*Z2Z2<§cs:2§>
@@ -1619,12 +1621,12 @@ class :
       
       CPL est un compilateurDeFormule
       // déclaration des variables utilisée en entres
-      CPL.déclareParamètre("X1" )  //IN/OUT
-      CPL.déclareParamètre("Y1" )  //IN/OUT
-      CPL.déclareParamètre("Z1" )  //IN/OUT
-      CPL.déclareParamètre("X2" )  //IN
-      CPL.déclareParamètre("Y2" )  //IN
-      CPL.déclareParamètre("Z2" )  //IN
+      //CPL.déclareParamètre("X1" )  //IN/OUT
+      //CPL.déclareParamètre("Y1" )  //IN/OUT
+      //CPL.déclareParamètre("Z1" )  //IN/OUT
+      //CPL.déclareParamètre("X2" )  //IN
+      //CPL.déclareParamètre("Y2" )  //IN
+      //CPL.déclareParamètre("Z2" )  //IN
       // déclaration des routines a utiliser pour implémenter les opérateur
       CPL.déclareOpérateurBinaire("*", corps_point_secp256k1.addrprocMult256x256Modulo  )
       CPL.déclareOpérateurBinaire(".", corps_point_secp256k1.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 

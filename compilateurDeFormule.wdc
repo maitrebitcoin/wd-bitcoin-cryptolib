@@ -15,18 +15,20 @@ class :
   p_codes :
    -
      code : |1-
-      // compile des formules simple vers un code ASM x86 qui les calcule
+      // compile des formules simple vers un code ASM x86 qui exécute le calcul
+      //=>pour calcul rapide K*P sur courbe elliptique.
       // Ex:
       // A = B*B
       // C = A+B
       // D = A+C+B
       compilateurDeFormule est une Classe
-      	
+      	// proto tel que déclaré dans le code. ex  "PointDouble(X, Y, Z)"
+      	sPrototypeSource		est chaine 
       	// variable de la formule
       	tabVariables			est un tableau associatif de STVariable
       	// fonctions utilisables dans la formule
       	tabFunction				est un tableau associatif de STFonction
-      	//@A voir
+      	// Nb de paramètre et var locale
       	nbParametre				est entier
       	nbVarLocale				est entier
       	// options
@@ -36,8 +38,10 @@ class :
       	tabRegVersVar	est un tableau associatif de chaine
       	tabVarVersReg	est un tableau associatif de chaine
       FIN
+      // types de variables gérées
       ETypeVar est une énumération
-      	PUI256 // pointeur sur un entier 256 bits
+      	PUI256 // pointeur sur un entier 256 bits (paramètres uniquement)
+      	UI256  // entier 256 bits (var locale uniquement )
       	UI8    // entier sur 8
       fin
       EPortée est une énumération
@@ -99,11 +103,46 @@ class :
       PROCEDURE Destructeur()
      type : 655360
    -
-     name : déclareParamètre
+     name : declarePrototype
+     procedure_id : 2181992559179551443
+     type_code : 12
+     code : |1+
+      // déclare le prototype (ie les paramètres de la fonction a générér)
+      // ex: PointDouble(X,Y,Z)
+      procédure declarePrototype( sProto est chaine )
+      
+      
+      //
+      nPosDebut est entier = position(sProto,"(")
+      si nPosDebut<=0 ALORS
+      	ErreurDéclenche(ERR_COMPILATION_FORMULE,"Erreur de syntaxe dans le proto : " + sProto)
+      	retour
+      FIN
+      nPosFin est entier = position(sProto,")", nPosDebut+1)
+      SI nPosDebut<=0 ALORS
+      	ErreurDéclenche(ERR_COMPILATION_FORMULE,"Erreur de syntaxe dans le proto : " + sProto)
+      	RETOUR
+      FIN
+      // garder le proto
+      :sPrototypeSource = sProto
+      
+      // extraire les paramètres
+      sListeParam est chaine = milieu(sProto, nPosDebut+1, nPosFin-nPosDebut-1 )
+      sListeParam = SansEspace(sListeParam,sscTout)
+      pour TOUTE CHAÎNE sParmaI DE sListeParam SÉPARÉE PAR ","
+      	// on déclare le paramètre
+      	_déclareParamètre(sParmaI)
+      FIN
+      	
+      
+      
+     type : 458752
+   -
+     name : _déclareParamètre
      procedure_id : 2180413497281210159
      type_code : 12
      code : |1+
-      procédure déclareParamètre( nom chaine, type ETypeVar = PUI256 )
+      procédure _déclareParamètre( nom chaine, type ETypeVar = PUI256 )
       dbgAssertion(nom<>"")
       dbgAssertion(pas tabVariables[nom]..existe)
       
@@ -158,7 +197,7 @@ class :
      type_code : 12
      code : |1-
       // analyse syntaxique de <sCode>
-      procédure privee _bParse( sCode chaine, resultat tableau de STFormuleParsee ) : booléen
+      procédure privee _bParse( sCode chaine, resultat tableau de STFormuleParsee, sProto_OUT chaine ) : booléen
       
       // parsing ligne a ligne
       // Ex de code attendu :
@@ -167,6 +206,13 @@ class :
       // D = A-C
       nLigne			est un entier	= 1
       POUR TOUTE CHAÎNE sCodeLigneI DE sCode séparée par RC
+      	// la 1er ligne est le prototype
+      	si nLigne=1 ALORS
+      		sProto_OUT = sCodeLigneI
+      		nLigne++
+      		continuer
+      	FIN
+      	// la suite est le code
       	stLigneI est STFormuleParsee
       	stLigneI.numLigne		= nLigne
       	stLigneI.ligneSource	= sCodeLigneI
@@ -230,10 +276,18 @@ class :
       
       
       // parsing
+      sProto est chaine
       résultatParsing est un tableau de STFormuleParsee
-      si pas _bParse( sCode, résultatParsing) ALORS
+      si pas _bParse( sCode, résultatParsing, sProto) ALORS
       	renvoyer  0 // erreur
       FIN
+      // Init proto
+      declarePrototype(sProto)
+      si ErreurDétectée ALORS
+      	RENVOYER  0 // erreur
+      FIN
+      
+      
       
       // 1er passe pour déclarer les variable et vérifier qu'elle ne sont pas utilisée avant l'affectation
       // parcourt des lignes a compiler 
@@ -272,7 +326,7 @@ class :
       POUR TOUT stLigneI DE résultatParsing
       	// génération du code ASM pour la ligne
       	SI :bAvecCommentaire alors 
-      		sCodeAsm += [RC] + "; "  + Complète( stLigneI.ligneSource,32 ) + ":" + stLigneI.numLigne
+      		sCodeAsm += [RC] + "; ("  + Complète( stLigneI.numLigne, 4 ) + ")    " +  stLigneI.ligneSource
       	FIN
       	// récup fonction qui effectue le calcul
       	soit func <-	:tabFunction[stLigneI.operateur]
@@ -305,8 +359,9 @@ class :
       
       // on génère le prologue et l'épilogue
       sCodeFinal est chaine
-      sCodeFinal  =        _genCodeAsm_Prologue()
-      SI :bAvecCommentaire  sCodeFinal += [RC] + "; Code principal " + RC
+      SI :bAvecCommentaire sCodeFinal += [RC] + "; " + :sPrototypeSource
+      sCodeFinal += [RC] + _genCodeAsm_Prologue()
+      SI :bAvecCommentaire sCodeFinal += [RC] + "; Code principal" + rc
       sCodeFinal += [RC] + sCodeAsm
       sCodeFinal += [RC] + _genCodeAsm_Epilogue()
       
@@ -329,7 +384,7 @@ class :
       
       newVar est un STVariable
       newVar.nom		= nom
-      newVar.type		= PUI256
+      newVar.type		= UI256
       newVar.portée	= variableLocale
       newVar.indice	= :nbVarLocale
       nbVarLocale++;
@@ -467,7 +522,7 @@ class :
       // renvoie le nom du registre utilisé pour mettre un paramètre 
       // convention d'appel des procédure 64 bits  Microsoft : RCX, RDX, R8, R9 
       // <nNumParam>: de 1 a 5
-      procédure _sGetNomRegPourParamNum64( nNumParam )
+      procédure privée _sGetNomRegPourParamNum64( nNumParam )
       
       selon nNumParam
       	cas 0: dbgAssertion(faux)
@@ -486,7 +541,7 @@ class :
      procedure_id : 2180642874305073169
      type_code : 12
      code : |1+
-      procédure _genCodeAsm_Prologue() : chaine
+      procédure privée _genCodeAsm_Prologue() : chaine
       
       sCodeASM_Prologue est chaine = [
       ; Prologue
@@ -495,8 +550,8 @@ class :
       	mov    [rsp+18h],r8   ; idem P3 
       	mov    [rsp+20h],r9   ; idem P4 
       	push   rbp
-      	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variable locale + appel des procédures
-      	lea    rbp,[rsp+20h]  ; rbp pointe sur le debut des variables locales
+      	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variables locale + appel des procédures
+      	lea    rbp,[rsp+20h]        ; rbp pointe sur le debut des variables locales
       ]
       // calcul taille pile
       nTailleVarLoc est un entier = _nGetTailleAllocaVarLoc()
@@ -509,12 +564,12 @@ class :
      procedure_id : 2180643608744586234
      type_code : 12
      code : |1+
-      procédure _genCodeAsm_Epilogue() : chaine
+      procédure privée _genCodeAsm_Epilogue() : chaine
       
       sCodeASM_Epilogue est chaine = [
       ; Epilogue
-          add    rsp, TAILLE_VAR_LOC
-          pop    rbp
+      	add    rsp, TAILLE_VAR_LOC
+      	pop    rbp
       	ret  
       ]
       // calcul taille pile
@@ -534,10 +589,11 @@ class :
       si EnMode64bits() ALORS
       	// +32 : convention d'appel de procédure, on doit leur laisse 4 emplacement de 64 bits (toujours).
       	nTaille est un entier  = 32
+      	// ajout de la taille de variables locales
       	POUR TOUT var DE :tabVariables
       		si var.portée = variableLocale ALORS
       			selon var.type
-      				CAS PUI256
+      				CAS UI256
       					nTaille +=nTaille_INT256
       				autre cas
       					dbgAssertion(faux)

@@ -106,7 +106,7 @@ window :
   -
     name : Image1
     identifier : 0x2e10ace804c9b359
-    internal_properties : BQAAAAUAAACaqpeajdRhkzXrVIFn7L7mAT4w2Tq9z8l6qcwRcWMPxsUPMl4dR2Kyf9BaYJYoOzjvS2P7nQ1v79yRSDqyzAP2fgMkvz/y6qE6J51+QnWi1cckS9FIU5zhFr6u47NhzegLXNFQpBi/siI11StfBQ/KzsH7TXyEazGrBncQMEqqr99LhGaCo5NAEw2AfIOcqRChBeCnWisjuyneoiziWLU9Lo/7fGZuw+IWU/aaxS0NEipr6gUA11T6SbndEZV9QRskI+vF/evQFUPcCE55ZJW1gXhyTl+aM4GrdIin5hj56EoqU8ZUjepCuFJvePiMSf9AzwgNoDUnTmmL5oj2At9dO0Km3cll0wVjcJAbBpUNk0LOkY4ymLdveMHwdaldam/EezxAmk0NDayW/xoZnPE5NRnRCJUwPglZBm7Hf8J17+s8mTSl0QMugEYnP+ZERw3+QScsrJo3rP7drb6C0FzCxlN4FQhXJPJPJSNyN4lEdqqG8bSVPiCqoY39K17uv3MiOlmU8GKmkPSgyajWcuLoca188MrJJaP8zvFdPJ3SuRFUA4yNfgfQnFLUTv+lzSgKiCN20dkdMX1lV/5jJT9KzevS/54mCi3blbVMICLnUoOZGIoRcWefdr6AKf11JP9NLzUmWw8JsIQ0gaiF+ZT/zIMbjbx0icm4WnRP/k/Chxc4lpBHiQELDMAvvPAwjKuch2lMiiuWK4AVoV77OtVyXgpciEKYeY3KoqQ2mC1O4u7Krq//Jg7MJZ8E8ilXCF9UEE9OIVjsHREZdq2NPdgjWvwFxARCEIbOB3uihK5W0PbueiRYNG6WVzSAJdin13FrRoZ5eTmI35DB+9YCrKIqdusrkOdlqi0b2UOKspqCGd2nUMW4+LTYsg==
+    internal_properties : BQAAAAUAAABakyojFl9Ls1wbnzPwBmnXTlX3XNCqeZ89eiTYdT07v3PTp3usGEoOx6UmIZHrz8nCeipvuXoLfXAmQwDvu8iRc55yAjCBrU+AAxVUnvj6GgdXVMEChaadGrAq01cNUhKMaUY17AugwbnbgN46uzSAmENYIyr2B4/2Mkd9Fa5QolFWpcHY5O8hbWZHOGsB9a00CBVD36wh5vgz0+3x/OlJr4EBRok8rhhQbU9/hhJEzeYfmzIoKVfeU11qZTg/E49Tyfexn5uUeP4GlhZuP2/3TdVFIjrpmMzYcu+IMgTcaPRSVIHupId5EPq90K3TzobfzH5/3TndxiKjci/JO7kLkHrFPlKS+fKZzVBIr9H7uIwWQbNHpmn/P5gaNiBY9E3lCz6a4+nhwpBHQ1Ka/zBdPebFB2u0uVMAA6tt4c9xnycxaUeJzD4j1hZMysAn7Mis+M+wK1o+f3x834kG5xnuqc6OycuhtzvSZl1qgcr7sDloqB7biTjiuK5IFnPc671rokyDUhCmB9JE2MLLAgpxA3T30ZbofA15XcY28vJXuFj9BxIlKbiuOxc0bGiMmMwwAbW4hp+aX9ZgZcOIdqHdPmXLPE50KwYEakfYK/B9sFwaaHz8gX373Rch8SRSfGgwvUPwYrhAMTU68h3pCNDsAtCuWLEoTKE2w/Uw6BKegLWOuaJO9IxrmL7CBTdtFcvgaQyRAOHU39lGEv6BEV9bnbl1boD/pm0IdBBRbl8YFelETMKRqqS1UoaAlwvlMNkgSHWy+0TLmr1vXFuj4pQcXJJ0J3+ijqURzRYkgPoRsFF/FFlB2Ru5FQVVnR+nHi1UjfJix7uOEzqAam+U2KgPtXW5
     type : 8
     code_elements :
      type_code : 8
@@ -265,15 +265,16 @@ window :
          
          //addrB est un entier système = &_B
          
-         CPL.déclareParamètre("X" )
-         CPL.déclareParamètre("Y" )
-         CPL.déclareParamètre("Z" )
+         //CPL.déclareParamètre("X" )
+         //CPL.déclareParamètre("Y" )
+         //CPL.déclareParamètre("Z" )
          CPL.déclareOpérateurBinaire("*", corps.addrprocMult256x256Modulo  )
          CPL.déclareOpérateurBinaire(".", corps.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) // 64bits x 258 bits
          CPL.déclareOpérateurBinaire("-", corps.addrprocSoustractionModulo )
          _pf est un entier système
          //The "dbl-1998-cmo-2" doubling formulas
          sCodePoint_Doubling_Jacobi est chaine = [
+         double(X,Y,Z)
          	XX	  = X*X
          	YY	  = Y*Y
          	ZZ    = Z*Z
@@ -338,12 +339,12 @@ window :
          
          //addrB est un entier système = &_B
          
-         CPL.déclareParamètre("X1" )
-         CPL.déclareParamètre("Y1" )
-         CPL.déclareParamètre("Z1" )
-         CPL.déclareParamètre("X2" )
-         CPL.déclareParamètre("Y2" )
-         CPL.déclareParamètre("Z2" )
+         //CPL.déclareParamètre("X1" )
+         //CPL.déclareParamètre("Y1" )
+         //CPL.déclareParamètre("Z1" )
+         //CPL.déclareParamètre("X2" )
+         //CPL.déclareParamètre("Y2" )
+         //CPL.déclareParamètre("Z2" )
          CPL.déclareOpérateurBinaire("*", corps.addrprocMult256x256Modulo  )
          CPL.déclareOpérateurBinaire(".", corps.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) // 64bits x 258 bits
          CPL.déclareOpérateurBinaire("-", corps.addrprocSoustractionModulo )
@@ -351,6 +352,7 @@ window :
          _pf est un entier système
          //The "dbl-1998-cmo-2" doubling formulas
          sCodePoint_Doubling_Jacobi est chaine = [
+         F(X1,Y1,Z1, X2,Y2,Z2)<§cs:2§>
          	Z1Z1  = Z1*Z1<§cs:2§>
          	Z2Z2  = Z2*Z2<§cs:2§>
          	U1    = X1*Z2Z2<§cs:2§>
