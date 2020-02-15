@@ -129,46 +129,6 @@ class :
       renvoyer resultat
      type : 458752
    -
-     name : additionFractionModulo
-     procedure_id : 1979352772337396860
-     type_code : 12
-     code : |1+
-      // addtion de A/X + B/Y = C/Z (mod N)
-      PROCÉDURE additionFractionModulo( nombreA Fraction256, nombreB Fraction256) : Fraction256
-      
-      resultat est Fraction256 
-      // si meme dénominateur (y compris 1)
-      si nombreA.dénominateur.EstEgalA( nombreB.dénominateur ) ALORS
-      	// C = (A +B ) / X
-      	resultat.numérateur   = additionModulo(nombreA.numérateur, nombreB.numérateur )
-      	resultat.dénominateur = nombreA.dénominateur
-      	renvoyer resultat
-      FIN
-      
-      // C = (A*Y + B*X) / X*Y
-      resultat.numérateur   = additionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
-      										multiplicationModulo( nombreB.numérateur , nombreA.dénominateur ))
-      resultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
-      RENVOYER resultat
-      
-     type : 458752
-   -
-     name : additionFractionModulo
-     procedure_id : 1979352772337396860
-     type_code : 12
-     code : |1+
-      // addtion de A/X + B = C/Z (mod N)
-      PROCÉDURE additionFractionModulo( FractionA Fraction256, nombreB entier256) : Fraction256
-      
-      resultat est Fraction256 
-      // C = (A + B*X) / X
-      resultat.numérateur   = additionModulo( FractionA.numérateur, ...
-      										multiplicationModulo( nombreB , FractionA.dénominateur ))
-      resultat.dénominateur = FractionA.dénominateur 
-      RENVOYER resultat
-      
-     type : 458753
-   -
      name : négationModulo
      procedure_id : 1962039966171440705
      type_code : 12
@@ -178,30 +138,6 @@ class :
       dbgAssertion(P.estSupérieurOuEgalA(nombre))
       RENVOYER soustraction ( P, nombre )
       //RENVOYER additionModulo ( P, negation(nombre))
-     type : 458752
-   -
-     name : négationFractionModulo
-     procedure_id : 1979374139808077144
-     type_code : 12
-     code : |1+
-      Procédure  négationFractionModulo( X Fraction256 ) : Fraction256
-      
-      resultat est Fraction256
-      resultat.numérateur   = négationModulo( X.numérateur )
-      resultat.dénominateur =  X.dénominateur
-      renvoyer resultat
-     type : 458752
-   -
-     name : négationFractionModulo_mon
-     procedure_id : 1984578420410862917
-     type_code : 12
-     code : |1-
-      procédure négationFractionModulo_mon( X Fraction256 ) : Fraction256
-      
-      resultat est Fraction256
-      resultat.numérateur   = négationModulo( X.numérateur )
-      resultat.dénominateur =  X.dénominateur
-      RENVOYER resultat
      type : 458752
    -
      name : soustractionModulo
@@ -217,31 +153,6 @@ class :
       	moinsR est Entier256 = soustraction ( nombreB, nombreA  )
       	renvoyer négationModulo( moinsR )
       fin
-     type : 458752
-   -
-     name : soustractionFractionModulo
-     procedure_id : 1979373302287424776
-     type_code : 12
-     code : |1+
-      // renvoie A/X - B/Y ( mod P )
-      procédure soustractionFractionModulo( nombreA Fraction256, nombreB Fraction256) : Fraction256
-      
-      
-      resultat est Fraction256 
-      // si meme dénominateur (y compris 1)
-      SI nombreA.dénominateur.estEgalA( nombreB.dénominateur ) ALORS
-      	// C = (A - B ) / X
-      	resultat.numérateur   = soustractionModulo(nombreA.numérateur, nombreB.numérateur )
-      	resultat.dénominateur = nombreA.dénominateur
-      	RENVOYER resultat
-      FIN
-      
-      // C = (A*Y - B*X) / X*Y
-      resultat.numérateur   = soustractionModulo( multiplicationModulo( nombreA.numérateur , nombreB.dénominateur ), ...
-      											multiplicationModulo( nombreB.numérateur , nombreA.dénominateur ))
-      resultat.dénominateur = multiplicationModulo( nombreA.dénominateur , nombreB.dénominateur )
-      RENVOYER resultat
-      
      type : 458752
    -
      name : multiplicationModulo_DEBUG
@@ -268,7 +179,6 @@ class :
       	sinon
       		resultat = additionModulo(resultat, zero )
       	FIN
-      	
       
       
       FIN
@@ -323,26 +233,8 @@ class :
       
       FIN
       
-      //resultatDBG est Entier256 =  MultiplicationModulo_Montgomery( nombreA, nombreB)
-      //si pas resultatDBG.estEgalA( resultat) alors
-      //	dbgAssertion(faux, resultatDBG.VersChaineHexa() + RC + resultat.VersChaineHexa() )
-      //fin
       
-      renvoyer resultat
-     type : 458752
-   -
-     name : multiplicationFractionModulo
-     procedure_id : 1979358450288630103
-     type_code : 12
-     code : |1+
-      // calcul de A/X* B/Y
-      procédure multiplicationFractionModulo( fractionA Fraction256, fractionB Fraction256) : Fraction256
-      
-      // = A*B/X*Y
-      résultat est Fraction256
-      résultat.numérateur   = multiplicationModulo(fractionA.numérateur,   fractionB.numérateur) 
-      résultat.dénominateur = multiplicationModulo(fractionA.dénominateur, fractionB.dénominateur)
-      renvoyer  résultat
+      renvoyer résultat
      type : 458752
    -
      name : carréModulo
@@ -356,15 +248,6 @@ class :
       renvoyer multiplicationModulo(nombre,nombre)
      type : 458752
    -
-     name : carréFractionModulo
-     procedure_id : 1979368719555531470
-     type_code : 12
-     code : |1-
-      PROCÉDURE carréFractionModulo( X Fraction256 ) : Fraction256
-      
-      RENVOYER multiplicationFractionModulo(X,X)
-     type : 458752
-   -
      name : cubeModulo
      procedure_id : 1964412170249914761
      type_code : 12
@@ -372,21 +255,6 @@ class :
       Procédure cubeModulo( nombre est Entier256 ) : entier256
       
       RENVOYER multiplicationModulo( multiplicationModulo(nombre,nombre), nombre)
-      
-     type : 458752
-   -
-     name : cubeFractionModulo
-     procedure_id : 1979369024498281158
-     type_code : 12
-     code : |1+
-      procédure cubeFractionModulo( X fraction256 ) : Fraction256
-      
-      // = A*B/X*Y
-      resultat est Fraction256
-      resultat.numérateur   = cubeModulo(X.numérateur)
-      resultat.dénominateur = cubeModulo(X.dénominateur)
-      RENVOYER  resultat
-      
      type : 458752
    -
      name : multiplicationPar2Modulo
@@ -396,7 +264,6 @@ class :
       // renvoie A * 2 ( mod P )
       // =>décalage de bits
       procédure multiplicationPar2Modulo(  nombreA entier256) : Entier256
-      
       
       // OPTIM: version ASM
       resultat2 est un entier256 = nombreA
@@ -410,53 +277,6 @@ class :
       	resultat2 = soustraction(resultat2, P )
       FIN
       renvoyer resultat2
-      
-      
-      resultat est Entier256 = nombreA
-      
-      // décalage de bits
-      //resultat est un entier256 
-      resultat.val0 = nombreA.val0*2
-      resultat.val1 = nombreA.val1*2 // + (bitDécaleDroite(nombreA.val0, 63) & 1)
-      // récup bit de poids faible a partir de celui de poids fort du précédent
-      si (nombreA.val0 & 0x8000000000000000) <> 0 ALORS
-      	resultat.val1++
-      FIN
-      resultat.val2 = nombreA.val2*2 // + (bitDécaleDroite(nombreA.val1, 63) & 1)
-      SI (nombreA.val1 & 0x8000000000000000) <> 0 ALORS
-      	resultat.val2++
-      FIN
-      resultat.val3 = nombreA.val3*2 // + (bitDécaleDroite(nombreA.val2, 63) & 1)
-      SI (nombreA.val2 & 0x8000000000000000) <> 0 ALORS
-      	resultat.val3++
-      FIN
-      // dépassement sir le bit de poids fort est a 1
-      dépassement est un booléen = (nombreA.val3 & 0x8000000000000000) <> 0
-      									 
-      si dépassement  alors
-      	// ajout le résultat du modulo pour 2^256
-      	resultat = additionModulo( resultat,DeuxPuissance256MoinsP)
-      FIN
-      si resultat.estSupérieurOuEgalA( P ) ALORS
-      	resultat = soustraction(resultat, P )
-      FIN
-      
-      
-      
-      renvoyer resultat
-     type : 458752
-   -
-     name : multiplicationPar2FractionModulo
-     procedure_id : 1979369419635297979
-     type_code : 12
-     code : |1+
-      procédure multiplicationPar2FractionModulo( X Fraction256) : Fraction256
-      
-      // = A*B/X*Y
-      resultat est Fraction256
-      resultat.numérateur   = multiplicationPar2Modulo(X.numérateur)
-      resultat.dénominateur = X.dénominateur
-      RENVOYER  resultat
      type : 458752
    -
      name : MultiplicationPar3Modulo
@@ -680,36 +500,6 @@ class :
       
       renvoyer multiplicationModulo( nombreA, inverseModulo(nombreB))
       
-     type : 458752
-   -
-     name : divisionFractionModulo
-     procedure_id : 1979369922146654287
-     type_code : 12
-     code : |1+
-      // renvoie (A/X) / (B/Y)
-      PROCÉDURE divisionFractionModulo( X Fraction256, Y Fraction256): Fraction256
-      dbgAssertion( pas Y.estEgalAZero())
-      
-      // = A*Y/B*X
-      résultat est Fraction256
-      résultat.numérateur   = multiplicationModulo(X.numérateur, Y.dénominateur)
-      résultat.dénominateur = multiplicationModulo(Y.numérateur, X.dénominateur)
-      RENVOYER  résultat
-     type : 458752
-   -
-     name : divisionFractionModulo_mon
-     procedure_id : 1982589824775160005
-     type_code : 12
-     code : |1-
-      // renvoie mon(A/X) / mon( B/Y )
-      PROCÉDURE divisionFractionModulo_mon( mon_X Fraction256, mon_Y Fraction256): Fraction256
-      dbgAssertion( PAS mon_Y.estEgalAZero())
-      
-      // = A*Y/B*X
-      résultat est Fraction256
-      résultat.numérateur   = REDC_Montgomery(mon_X.numérateur, mon_Y.dénominateur)
-      résultat.dénominateur = REDC_Montgomery(mon_Y.numérateur, mon_X.dénominateur)
-      RENVOYER  résultat
      type : 458752
    -
      name : REDC_Montgomery
@@ -992,20 +782,6 @@ class :
       renvoyer  monX_to_X( mon_résultat )
      type : 458752
    -
-     name : multiplicationPar3FractionModulo
-     procedure_id : 1979369600024032275
-     type_code : 12
-     code : |1+
-      procédure multiplicationPar3FractionModulo( X Fraction256) : Fraction256
-      
-      // = A*B/X*Y
-      résultat est Fraction256
-      résultat.numérateur   = multiplicationPar3Modulo(X.numérateur)
-      résultat.dénominateur = X.dénominateur
-      RENVOYER  résultat
-      
-     type : 458752
-   -
      name : X_to_monX
      procedure_id : 1980741588694062355
      type_code : 12
@@ -1015,30 +791,6 @@ class :
       	RENVOYER REDC_Montgomery( X, _2P512ModP )
      type : 458752
    -
-     name : X_to_monX
-     procedure_id : 1980741588694062355
-     type_code : 12
-     code : |1-
-      PROCÉDURE X_to_monX(X Fraction256) : Fraction256
-      res est Fraction256
-      res.numérateur   =  REDC_Montgomery( X.numérateur,   _2P512ModP )
-      //res.dénominateur = REDC_Montgomery( X.dénominateur, _2P512ModP )	
-      res.dénominateur = REDC_Montgomery( X.dénominateur, _2P512ModP )	
-      renvoyer res
-     type : 458753
-   -
-     name : X_to_monX
-     procedure_id : 1980741588694062355
-     type_code : 12
-     code : |1-
-      PROCÉDURE X_to_monX(P PointFraction256) : PointFraction256
-      
-      Pres est PointFraction256
-      Pres.x = monX_to_X(P.x)
-      Pres.y = monX_to_X(P.y)
-      RENVOYER Pres
-     type : 458754
-   -
      name : monX_to_X
      procedure_id : 1980741640233681594
      type_code : 12
@@ -1046,107 +798,6 @@ class :
       // sortie de mon()
       PROCÉDURE monX_to_X(X entier256) : entier256
       	RENVOYER REDC_Montgomery( X, _1 )
-     type : 458752
-   -
-     name : monX_to_X
-     procedure_id : 1980741640233681594
-     type_code : 12
-     code : |1-
-      PROCÉDURE monX_to_X(X Fraction256) : Fraction256
-      
-      res est Fraction256
-      res.numérateur   = REDC_Montgomery( X.numérateur,   _1 )	
-      res.dénominateur = REDC_Montgomery( X.dénominateur, _1 )	
-      renvoyer res
-     type : 458753
-   -
-     name : monX_to_X
-     procedure_id : 1980741640233681594
-     type_code : 12
-     code : |1-
-      PROCÉDURE monX_to_X(P PointFraction256) : PointFraction256
-      
-      Pres est PointFraction256
-      Pres.x = monX_to_X( P.x )
-      Pres.Y = monX_to_X( P.y )
-      RENVOYER Pres
-      
-      
-      // calcul de A/X* B/Y
-     type : 458754
-   -
-     name : carréFractionModulo_mon
-     procedure_id : 1989266381505910660
-     type_code : 12
-     code : |1+
-      PROCÉDURE carréFractionModulo_mon( fractionA Fraction256) : Fraction256
-      
-      // = A*B/X*Y
-      résultat est Fraction256
-      résultat.numérateur   =  REDC_Montgomery(fractionA.numérateur,  fractionA.numérateur )
-      résultat.dénominateur = REDC_Montgomery(fractionA.dénominateur, fractionA.dénominateur)
-      RENVOYER  résultat
-     type : 458752
-   -
-     name : multiplicationFractionModulo_mon
-     procedure_id : 1982587101756937566
-     type_code : 12
-     code : |1+
-      // calcul de A/X* B/Y
-      procédure multiplicationFractionModulo_mon( fractionA Fraction256, fractionB Fraction256) : Fraction256
-      
-      // = A*B/X*Y
-      résultat est Fraction256
-      résultat.numérateur   =  REDC_Montgomery(fractionA.numérateur,   fractionB.numérateur )
-      résultat.dénominateur = REDC_Montgomery(fractionA.dénominateur, fractionB.dénominateur)
-      renvoyer  résultat
-     type : 458752
-   -
-     name : additionFractionModulo_mon
-     procedure_id : 1982587995112570936
-     type_code : 12
-     code : |1+
-      // addtion de mon( A/X ) + mon( B/Y ) = mon ( C/Z ) (mod N)
-      PROCÉDURE additionFractionModulo_mon( mon_nombreA Fraction256, mon_nombreB Fraction256) : Fraction256
-      
-      résultat est Fraction256 
-      // si meme dénominateur (y compris 1)
-      si mon_nombreA.dénominateur.EstEgalA( mon_nombreB.dénominateur ) ALORS
-      	// C = (A +B ) / X
-      	résultat.numérateur   = additionModulo(mon_nombreA.numérateur, mon_nombreB.numérateur )
-      	résultat.dénominateur = mon_nombreA.dénominateur
-      	renvoyer résultat
-      FIN
-      
-      // C = (A*Y + B*X) / X*Y
-      résultat.numérateur   = additionModulo( REDC_Montgomery( mon_nombreA.numérateur , mon_nombreB.dénominateur ), ...
-      								  		REDC_Montgomery( mon_nombreB.numérateur , mon_nombreA.dénominateur ))
-      résultat.dénominateur = REDC_Montgomery( mon_nombreA.dénominateur , mon_nombreB.dénominateur )
-      RENVOYER résultat
-     type : 458752
-   -
-     name : soustractionFractionModulo_mon
-     procedure_id : 1984908192309207431
-     type_code : 12
-     code : |1-
-      // / renvoie mon(A/X) - mon( B/Y ) = mon( C/Z ) ( mod P )
-      PROCÉDURE soustractionFractionModulo_mon( mon_nombreA Fraction256, mon_nombreB Fraction256) : Fraction256
-      
-      
-      résultat est Fraction256 
-      // si meme dénominateur (y compris 1)
-      SI mon_nombreA.dénominateur.estEgalA( mon_nombreB.dénominateur ) ALORS
-      	// C = (A +B ) / X
-      	résultat.numérateur   = soustractionModulo(mon_nombreA.numérateur, mon_nombreB.numérateur )
-      	résultat.dénominateur = mon_nombreA.dénominateur
-      	RENVOYER résultat
-      FIN
-      
-      // C = (A*Y - B*X) / X*Y
-      résultat.numérateur   = soustractionModulo( REDC_Montgomery( mon_nombreA.numérateur , mon_nombreB.dénominateur ), ...
-      									 	    REDC_Montgomery( mon_nombreB.numérateur , mon_nombreA.dénominateur ))
-      résultat.dénominateur = REDC_Montgomery( mon_nombreA.dénominateur , mon_nombreB.dénominateur )
-      RENVOYER résultat
      type : 458752
    -
      name : multiplicationModulo_PourContstructeur

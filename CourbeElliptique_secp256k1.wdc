@@ -34,12 +34,9 @@ class :
       	// TabPointPow2[3 + 1*256]   =      3 * K
       	// TabPointPow2[1 + 2*266]   =      3 * K
       	TabPointPow2PreCalculé_256 est un tableau <agrandissement=N> de Point256
-      	// idem mais dans la version transformée de montgomery + type fraction
-      	TabPointPow2PreCalculé_mon est un tableau de PointFraction256
       
       	// point générateur pour secp256k1
       	pointGen 		 est Point256
-      	pointFractionGen est PointFraction256
       	// corps spécialisé pour calcul plus rapide de addictions de points de la courbe
       	corps_point_secp256k1 est CorpsModulaire_pointSepc256k1 
       	// corps spécialisé pour calcul des signatures
@@ -77,12 +74,9 @@ class :
       // Init point générateur
       pointGen.x.affecteAvecChaineHexa("0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798")
       pointGen.y.affecteAvecChaineHexa("0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8")
-      pointFractionGen.x.numérateur = pointGen.x
-      pointFractionGen.y.numérateur = pointGen.y
       dbgAssertion(pointEstSurLaCourbe(pointGen))
-      dbgAssertion(pointFractionEstSurLaCourbe(pointFractionGen))
       
-      // compilation de routines ASM pour accélérer le calcul
+      // compilation de routines ASM pour accélérer le calcul d'addition de doublement de points
       pfPointDouble_Jacobi_ASM   = :_pCompileFormule_PointDoubleJacobi()
       dbgAssertion(pfPointDouble_Jacobi_ASM <> 0)
       pfPointAddition_Jacobi_ASM = :_pCompileFormule_PointAdditionJacobi()
@@ -635,23 +629,10 @@ class :
       	// ajout
       	TabPointPow2PreCalculé.Ajoute( pointI )
       FIN
-       dbgAssertion(TabPointPow2PreCalculé..Occurrence = 256)
-       dbgAssertion(TabPointPow2PreCalculé[1].PointestEgalA( :pointGen ) )
-        // autre Init tableau pour calcul rapide de la multiplication du point générateur par K
-       _InitTabPreCalculé_8x256()
-      
-      POUR TOUTE CHAÎNE sLigne DE TabValeurPreCalculées_mon séparée par RC
-      	// récup X,Y au format chaine hexa
-      	sX est chaîne = ExtraitChaîne(sLigne,1," ")
-      	sY est chaîne = ExtraitChaîne(sLigne,2," ")
-      	// init point
-      	pointI est PointFraction256
-      	pointI.x.affecteAvecChaineHexa( sX )
-      	pointI.y.affecteAvecChaineHexa( sY )
-      	// ajout
-      	TabPointPow2PreCalculé_mon.Ajoute( pointI )
-      FIN
-      dbgAssertion(TabPointPow2PreCalculé_mon..Occurrence = 256)
+      dbgAssertion(TabPointPow2PreCalculé..Occurrence = 256)
+      dbgAssertion(TabPointPow2PreCalculé[1].PointestEgalA( :pointGen ) )
+       // autre Init tableau pour calcul rapide de la multiplication du point générateur par K
+      _InitTabPreCalculé_8x256()
       
      type : 458752
    -
@@ -737,58 +718,6 @@ class :
       
       
       RENVOYER pointRésultat
-     type : 458752
-   -
-     name : MultiplicationScalairePointGenérateurFraction
-     procedure_id : 1991113720239772257
-     type_code : 12
-     code : |1-
-      // renvoie K  * G au format fractionnaire. 
-      // ( évite une division modulaire )
-      procédure MultiplicationScalairePointGenérateurFraction( K est Entier256 ) : PointFraction256
-      
-      résultat   est PointFraction256 // 0
-      POUR i = 0 a 255
-      	SI K.bit(i) ALORS
-      		// récup de  G * (2^i) précalculé 
-      		valeurKPow2I  est PointFraction256( TabPointPow2PreCalculé[i+1] )
-      		// r = r + 2^k
-      		résultat = pointPlusPointFraction( valeurKPow2I, résultat )
-      
-      	FIN
-      FIN
-      
-      RENVOYER résultat
-     type : 458752
-   -
-     name : MultiplicationScalairePointGenérateurFraction_Mon
-     procedure_id : 1997963050434330704
-     type_code : 12
-     code : |1+
-      // renvoie K  * G au format fractionnaire. 
-      // ( évite une division modulaire )
-      procédure MultiplicationScalairePointGenérateurFraction_Mon( K est Entier256 ) : PointFraction256
-      
-      mon_résultat   est PointFraction256 // 0
-      POUR i = 0 a 255
-      	SI K.bit(i) ALORS
-      		// récup de  G * (2^i) précalculé 
-      		mon_résultatvaleurKPow2I   est PointFraction256 = TabPointPow2PreCalculé_mon[i+1]
-      		// r = r + 2^k
-      		mon_résultat = pointPlusPoint_mon( mon_résultatvaleurKPow2I, mon_résultat )
-      
-      	FIN
-      FIN
-      
-      // sortie de mon() 
-      résultatFraction   est PointFraction256
-      résultatFraction.x = corps.monX_to_X( mon_résultat.x )
-      résultatFraction.y = corps.monX_to_X( mon_résultat.y )
-      // le point devrait être sur la courbe, sinon erreur de calcul
-      dbgAssertion( pointFractionEstSurLaCourbe( résultatFraction ), "pointEstSurLaCourbe FAILED")
-      
-      
-      RENVOYER résultatFraction
      type : 458752
    -
      name : MultiplicationScalairePointGenérateur_Sans8x256
