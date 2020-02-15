@@ -2436,13 +2436,13 @@ procedure_set :
       	bSigneOppose = Vrai
       	A64 = negation(  A64 )
       FIN
-      dbgAssertion(A64.val3 = 0,"A64.val3="+A64.val2+rc+"A256="+ A256.VersChaineHexa() + RC + "B256="+ B256.VersChaineHexa()) 
+      dbgAssertion(A64.val3 = 0) //,"A64.val3="+A64.val2+rc+"A256="+ A256.VersChaineHexa() + RC + "B256="+ B256.VersChaineHexa()) 
       B64 est Entier256 = soustraction( multiplication256x256_256(A256, U10), multiplication256x256_256(B256,V10) )
       SI B64.val3>=LIMIT_UI64_POSITIF ALORS
       	B64 = negation(  B64 )
       	bSigneOppose = pas bSigneOppose 
       FIN
-      dbgAssertion(B64.val3 = 0,"B64.val3="+B64.val3+rc+"A256="+ A256.VersChaineHexa() + RC + "B256="+ B256.VersChaineHexa()) 
+      dbgAssertion(B64.val3 = 0) //,"B64.val3="+B64.val3+rc+"A256="+ A256.VersChaineHexa() + RC + "B256="+ B256.VersChaineHexa()) 
       SI PAS A64.estSupérieurOuEgalA(B64) ALORS
       	// échange A et B
       	A64  <=> B64
@@ -2671,8 +2671,9 @@ procedure_set :
       
       // division simple
       quotient = nombre_H64 / diviseur_H64
-      dbgAssertion( quotient > 0,"nombreA="+nombreA.VersChaineHexa()+rc+"diviseur="+rc+diviseur.VersChaineHexa()+rc+"numMot"=numMot)
-      
+      si quotient<=0 alors 
+      	dbgAssertion( faux > 0,"nombreA="+nombreA.VersChaineHexa()+rc+"diviseur="+rc+diviseur.VersChaineHexa()+rc+"numMot"=numMot)
+      fin
       
       QxD  =  multiplication256x64_256(diviseur, quotient )
       bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
@@ -2714,75 +2715,6 @@ procedure_set :
       	RENVOYER (0,_0_256) // non géré
       FIN
       RENVOYER (Q256.val0,reste)
-      
-      
-      	
-      //
-      //
-      //
-      //// cas général 
-      //// algorithme de Newton–Raphson
-      //// https://en.wikipedia.org/wiki/Division_algorithm
-      //
-      //// conversion en "flottant" 
-      //diviseur64 est EntierFlottant64( diviseur )
-      //quotient  = division256_f64( nombreA,   diviseur64 ) ;
-      ////reste    est Entier256 //= diviseur  
-      ////addition256_64( reste,1) // pour ne pas entrer dans la boucle
-      //
-      //
-      //nbTour est entier
-      ////QxD est Entier256
-      //QuotientN  est Entier256 
-      //TANTQUE vrai// reste.estSupérieurOuEgalA(diviseur)
-      //	// R = N – (Q * D)
-      //	QxD  =  multiplication256x256_256(quotient, diviseur)
-      //	
-      //	// si a a évaluté un quotient trop grand de 1
-      //	bResteNegatif est un booléen = QxD.estSupérieurStrictA( nombreA )
-      //	SI bResteNegatif ALORS
-      //		// Q = Q - 1
-      //		//quotient = addition( quotient,  _Moins1_256);
-      //		// 	QxD = 	QxD - diviseur 
-      //		//QxD   = soustraction(   QxD, diviseur )
-      //		reste = soustraction(   QxD, nombreA  )
-      //	SINON
-      //		reste = soustraction(   nombreA , QxD )
-      //	FIN
-      //	// si le reste est inférieur au diviseur
-      //	si pas reste.estSupérieurOuEgalA(diviseur) ALORS
-      //		// on a Trouvé !
-      //		SI bResteNegatif ALORS
-      //			// Q = Q - 1
-      //			quotient = addition( quotient,  _Moins1_256);
-      //			// R = R + D
-      //			reste    = soustraction( diviseur, reste )
-      //		FIN
-      //		RENVOYER (quotient.val0,reste)
-      //	FIN
-      //		
-      //	// Qn = Q + R / A
-      //	RsurA est Entier256 = division256_f64( reste, diviseur64 );
-      //	SI bResteNegatif ALORS
-      //		QuotientN  = soustraction( quotient, RsurA );
-      //  	SINON
-      //		QuotientN  = addition(     quotient , RsurA  );
-      //	FIN
-      //	
-      //	// Q = (Q + Qn) / 2
-      //	newQ est un entier256  = addition( quotient, QuotientN)
-      //	newQ.divisePar2();
-      //	
-      //	// anti-boucle infinie si en /2 on retombe sur le même
-      //	SI newQ.estEgalA(quotient) _ET_ reste.estSupérieurOuEgalA(diviseur) ALORS
-      //		 newQ = additionAvecUn( newQ )
-      //	FIN
-      //	
-      //	nbTour++
-      //	dbgAssertion(nbTour <= 200 +256);
-      //	quotient = newQ
-      //FIN
-      //
      type : 458752
    -
      name : _HGDC8vers4
