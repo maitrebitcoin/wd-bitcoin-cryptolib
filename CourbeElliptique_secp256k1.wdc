@@ -55,6 +55,12 @@ class :
       	// racine du polynôme sur corpsOrdre : X^2 + X + 1 = 0 ( modulo N ) 
       	// A la propriété que map(P) = _MulticateurP * P
       	_RacineQuiMuliplie	est Entier256 // = "5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72"
+      	
+      	// constantes calculées par utilPourOptim.CalculeCoefConstantEuclide() pour _Lamda = 0x5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72
+      	V1_X		est Entier256 //("0x03086d221a7d46bcde86c90e49284eb15")
+      	moinsV1_Y	est Entier256 //("0x0e4437ed6010e88286f547fa90abfe4c3")
+      	V2_X		est Entier256 //("0x00e5e9bd2461792dd1aca54cdd1d8b2a6")
+      	moinsV2_Y	est Entier256 //("0x58a1bcb25ae2b9cc084678edad30447a7")
       FIN
       
      type : 131072
@@ -76,6 +82,12 @@ class :
       pointGen.x.affecteAvecChaineHexa("0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798")
       pointGen.y.affecteAvecChaineHexa("0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8")
       dbgAssertion(pointEstSurLaCourbe(pointGen))
+      
+      // constantes calculées par utilPourOptim.CalculeCoefConstantEuclide() pour _Lamda = 0x5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72
+      V1_X    .affecteAvecChaineHexa ("0x03086d221a7d46bcde86c90e49284eb15")
+      moinsV1_Y.affecteAvecChaineHexa("0x0e4437ed6010e88286f547fa90abfe4c3")
+      V2_X	 .affecteAvecChaineHexa("0x00e5e9bd2461792dd1aca54cdd1d8b2a6")
+      moinsV2_Y.affecteAvecChaineHexa("0x58a1bcb25ae2b9cc084678edad30447a7")
       
       // compilation de routines ASM pour accélérer le calcul d'addition de doublement de points
       pfPointDouble_Jacobi_ASM   = :_pCompileFormule_PointDoubleJacobi()
@@ -1357,10 +1369,10 @@ class :
       PROCÉDURE protégée _calcVecteurOpimisePourMult ( _k est Entier256 )  : (Entier256,Entier256, entier,entier)  
       	
       // constantes calculées par utilPourOptim.CalculeCoefConstantEuclide() pour _Lamda = 0x5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72
-      V1_X		est Entier256("0x03086d221a7d46bcde86c90e49284eb15")
-      moinsV1_Y	est Entier256("0x0e4437ed6010e88286f547fa90abfe4c3")
-      V2_X		est Entier256("0x00e5e9bd2461792dd1aca54cdd1d8b2a6")
-      moinsV2_Y	est Entier256("0x58a1bcb25ae2b9cc084678edad30447a7")
+      //V1_X		est Entier256("0x03086d221a7d46bcde86c90e49284eb15")
+      //moinsV1_Y	est Entier256("0x0e4437ed6010e88286f547fa90abfe4c3")
+      //V2_X		est Entier256("0x00e5e9bd2461792dd1aca54cdd1d8b2a6")
+      //moinsV2_Y	est Entier256("0x58a1bcb25ae2b9cc084678edad30447a7")
       //_moinsDelta	est Entier256("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141")	// X2*Y1 -X1*Y2
       
       // B2,B2 : coefficients tels que "(K,0) - (B1*V1 + B2*V2)" soit sur ~128 bits
