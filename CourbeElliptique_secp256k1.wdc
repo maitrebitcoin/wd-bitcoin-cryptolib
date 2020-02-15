@@ -1321,25 +1321,20 @@ class :
       // parcourt en partant du bit de poids fort par bloc de 4 bits
       boucle // POUR i = iMax À 3 pas -4
       	// P = P *  16 
-      	//PointRésultatJ = pointMutlipliePar16_Jacobi( PointRésultatJ )
       	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
       	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
       	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
       	API( pfPointDouble_Jacobi_ASM, &X, &Y, &Z )
-      //	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      //	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      //	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )	
       	
       	// Récup 16 bits P1 et 16 bits de P2
       	n1 = K1._4bit(i) 
       	n2 = K2._4bit(i) 
       	// Calcul de P = k1*P1 + k2*P2
-      //	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1]  )
-      	si n1<>0 alors
+      	si n1 alors
       		point1  <- _MultiplesDeP1[n1]
       		API( pfPointAddition_Jacobi_ASM, &X, &Y, &Z, &point1.x, &point1.y, &point1.z  )
       	fin
-      	si n2<>0 alors
+      	si n2 alors
       		point2  <- _MultiplesDeP2[n2]
       		API( pfPointAddition_Jacobi_ASM, &X, &Y, &Z, &point2.x, &point2.y, &point2.z  )
       	fin
@@ -1351,8 +1346,8 @@ class :
       	i-=4
       FIN
       PointRésultatJ.x = X
-      PointRésultatJ.y = y
-      PointRésultatJ.z = z
+      PointRésultatJ.y = Y
+      PointRésultatJ.z = Z
       
       RENVOYER PointRésultatJ
       
