@@ -1167,64 +1167,27 @@ class :
      type_code : 12
      code : |1+
       // Addition de 3 points en coordonnées de Jacobi
-      // source des formules : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl , "add-1998-cmo-2"
-      // equivalent a pointPlusPoint_Jacobi(point1, pointPlusPoint_Jacobi(point2,point3 ))
-      procédure pointPlusPointPluspoint_Jacobi(  point1 est Point256_3D, point2 est Point256_3D, point3 est Point256_3D ) : Point256_3D
+      // equivalent a point1 = pointPlusPoint_Jacobi(point1, pointPlusPoint_Jacobi(point2,point3 ))
+      procédure pointPlusPointPluspoint_Jacobi(  point1 est Point256_3D, point2 est Point256_3D, point3 est Point256_3D )
       
       // gestion cas particulier P+0 / 0+P
-      SI point1.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point2,point3)
-      SI point2.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point1,point3)
-      SI point3.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point1,point2)
-      // addition
-      pointRésultat_TEMP	est Point256_3D = point1
-      API( pfPointAddition_Jacobi_ASM, &pointRésultat_TEMP.x, &pointRésultat_TEMP.y, &pointRésultat_TEMP.z, &point2.x, &point2.y, &point2.z  )
-      API( pfPointAddition_Jacobi_ASM, &pointRésultat_TEMP.x, &pointRésultat_TEMP.y, &pointRésultat_TEMP.z, &point3.x, &point3.y, &point3.z  )
-      renvoyer pointRésultat_TEMP
+      SI point1.estZéro() ALORS	
+      	point1 = pointPlusPoint_Jacobi(point2,point3)
+      	retour
+      FIN
+      SI point2.estZéro() ALORS
+      	point1 = pointPlusPoint_Jacobi(point1,point3)
+      	retour
+      FIN
+      SI point3.estZéro() ALORS	
+      	point1 = pointPlusPoint_Jacobi(point1,point2)
+      	retour
+      FIN
+      // addition Optimisée
+      //pointRésultat	est Point256_3D = point1
+      API( pfPointAddition_Jacobi_ASM, &point1.x, &point1.y, &point1.z, &point2.x, &point2.y, &point2.z  )
+      API( pfPointAddition_Jacobi_ASM, &point1.x, &point1.y, &point1.z, &point3.x, &point3.y, &point3.z  )
       
-      pointRésultat	est Point256_3D = point1
-      
-      // P1 + P2
-      Z1Z1			est Entier256		= corps.carréModulo( point1.z )
-      Z2Z2			est Entier256		= corps.carréModulo( point2.z )
-      U1				est Entier256		= corps.multiplicationModulo( point1.x, Z2Z2 )
-      U2				est Entier256		= corps.multiplicationModulo( point2.x, Z1Z1 )
-      S1				est Entier256		= corps.multiplicationModulo( point1.y, corps.multiplicationModulo( point2.z, Z2Z2  ) )
-      S2				est Entier256		= corps.multiplicationModulo( point2.y, corps.multiplicationModulo( point1.z, Z1Z1  ) )
-      H				est Entier256		= corps.soustractionModulo( U2, U1)
-      HH				est Entier256		= corps.carréModulo( H )
-      HHH				est Entier256		= corps.multiplicationModulo( HH, H )
-      r				est entier256		= corps.soustractionModulo( S2, S1)
-      V				est entier256		= corps.multiplicationModulo(U1, HH)
-      point1plus2		est Point256_3D
-      HHH_plus2V		est Entier256		=  corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
-      point1plus2.x     =  corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
-      _r_V_Xresultat  est Entier256       = corps.multiplicationModulo( r, corps.soustractionModulo( V, point1plus2.x  ))
-      point1plus2.y		=  corps.soustractionModulo( _r_V_Xresultat, corps.multiplicationModulo( S1, HHH ) )
-      point1plus2.z		= corps.multiplicationModulo( point1.z,  corps.multiplicationModulo( point2.z, H  ) )
-      
-      // (P1 + P2) + P3
-      
-      
-      Z1Z1				= corps.carréModulo( point1plus2.z )
-      Z2Z2				= corps.carréModulo( point3.z )
-      U1					= corps.multiplicationModulo( point1plus2.x, Z2Z2 )
-      U2					= corps.multiplicationModulo( point3.x,      Z1Z1 )
-      S1					= corps.multiplicationModulo( point1plus2.y, corps.multiplicationModulo( point3.z,      Z2Z2  ) )
-      S2					= corps.multiplicationModulo( point3.y,      corps.multiplicationModulo( point1plus2.z, Z1Z1  ) )
-      H					= corps.soustractionModulo( U2, U1)
-      HH					= corps.carréModulo( H )
-      HHH					= corps.multiplicationModulo( HH, H )
-      r					= corps.soustractionModulo( S2, S1)
-      V					= corps.multiplicationModulo(U1, HH)
-      HHH_plus2V			= corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
-      pointRésultat.x     = corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
-      _r_V_Xresultat 	    = corps.multiplicationModulo( r, corps.soustractionModulo( V, pointRésultat.x  ))
-      pointRésultat.y		= corps.soustractionModulo( _r_V_Xresultat, corps.multiplicationModulo( S1, HHH ) )
-      pointRésultat.z		= corps.multiplicationModulo( point1plus2.z,  corps.multiplicationModulo( point3.z, H  ) )
-      
-      dbgAssertion( pointRésultat.y.estEgalA( pointRésultat_TEMP.y)  )
-      
-      RENVOYER pointRésultat
      type : 458752
    -
      name : pointDouble_Jacobi
@@ -1331,18 +1294,11 @@ class :
      type_code : 12
      code : |1+
       // renvoie K1 * P1 + K2 * P2 avec P2 = _PointMultRacine(P1)
-      // .Utilise et renvouer en cood de. Jacobi pour minimiser les divisions modulaires
+      // avec P2 = _N_Ordre3 * P1
+      // version en coordonnées de Jacobi pour éliminer les divisions modulaires
       procédure _multiplicationScalaire2PointJacobi(  P1 est Point256_3D, K1 est Entier256,  K2 est Entier256 , bSigneOpose booléen ) : Point256_3D
       
-      //point2  est Point256 = _PointMultRacine(point1)
-      //si bSigneOpose alors point2 = pointNégation(point2)
-      //
-      //// conversion en coordonnées de Jacobi
-      //P1 est Point256_3D 
-      //P2 est Point256_3D 
-      //P1.VersJacobi(point1) // init à 1*P
-      //P2.VersJacobi(point2) // init à 1*P
-      // précalcul de 2*P,3*P, 15*P
+      // précalcul de 2*P,3*P, ..., 15*P
       _MultiplesDeP1 est un tableau de 15  Point256_3D
       _MultiplesDeP1[1] = P1
       //_MultiplesDeP1[2] = pointDouble_Jacobi(P1)
@@ -1386,7 +1342,7 @@ class :
       
       
       iMax est un entier = 255
-      // OPTIM pour ca K "petit"
+      // OPTIM pour ca K "petit". c'est normalement cas.
       si K1.val3=0  _et_ K2.val3=0  alors  iMax-=64
       si K1.val2<16 _et_ K2.val2<16 alors  iMax-=60
       n,n2 sont entier
@@ -1398,17 +1354,14 @@ class :
       	n  = K1._4bit(i) + 1
       	n2 = K2._4bit(i) + 1
       	// Calcul de P = k1*P1 + k2*P2
-      	PointRésultatJ = pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n] ,  _MultiplesDeP2[n2]  )
-      //	KP1 est Point256_3D = _MultiplesDeP1[n]
-      //	KP2 est Point256_3D = _MultiplesDeP2[n]
-      //    API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &KP1.x, &KP1.y, &KP1.z  )
-      //    API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &KP2.x, &KP2.y, &KP2.z  )
+      	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n] ,  _MultiplesDeP2[n2]  )
       
-      	SI PointRésultatJ.estZéro() ALORS
+      	// OPTIM : test direct sur Z.
+      	//SI PointRésultatJ.estZéro() ALORS 
+      	SI PointRésultatJ.Z.estEgalAZero() ALORS
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
       		si i=3  alors
       			// renvoie (0,0)
-      			//_P0 est Point256_3D 
       			RENVOYER _P0
       		fin
       		// sinon c'est qu'on a pas encore rencontré de 1

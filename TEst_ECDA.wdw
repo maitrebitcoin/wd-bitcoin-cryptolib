@@ -1447,10 +1447,11 @@ window :
          //sERR est chaine
          Trace("Calcul...")
          ChronoDébut()
-         pour i = 1 a 100
+         pour i = 1 a 1000
          	bOK  =  VerifieSignature( N, CléPublique, signature )
          fin
-         Trace( "Temps (ms) : " + ChronoFin() /100 )
+         Trace( "Temps pour 1000 (ms) : " + ChronoFin()  )
+         Trace( "Temps/appel     (ms) : " + ChronoFin() /1000.0 )
          
          
          
