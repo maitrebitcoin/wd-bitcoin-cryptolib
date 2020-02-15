@@ -1385,15 +1385,15 @@ class :
       	n1 = K1._4bit(i) 
       	n2 = K2._4bit(i) 
       	// Calcul de P = k1*P1 + k2*P2
-      	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1]  )
-      //	si n1<>0 alors
-      //		point1 est Point256_3D dynamique <- _MultiplesDeP1[n1+1]
-      //		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point1.x, &point1.y, &point1.z  )
-      //	fin
-      //	si n2<>0 alors
-      //		point2 est Point256_3D dynamique <- _MultiplesDeP1[n2+1]
-      //		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point2.x, &point2.y, &point2.z  )
-      //	fin
+      //	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1]  )
+      	si n1<>0 alors
+      		point1 est Point256_3D dynamique <- _MultiplesDeP1[n1+1]
+      		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point1.x, &point1.y, &point1.z  )
+      	fin
+      	si n2<>0 alors
+      		point2 est Point256_3D dynamique <- _MultiplesDeP2[n2+1]
+      		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point2.x, &point2.y, &point2.z  )
+      	fin
       
       	// 4 bits plus faibles suivant
       	SI i<=3  ALORS
