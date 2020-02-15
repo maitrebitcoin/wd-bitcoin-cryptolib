@@ -1259,24 +1259,17 @@ class :
       // idem P2
       _MultiplesDeP2 est un tableau de 15  Point256_3D
       // OPTIM : P2 = L*P1, inutile de calculer 15 points.
-      PROCÉDURE interne _PointMultRacinJocobi( _p est Point256_3D ) : Point256_3D
-      	pointRésultat est Point256_3D 
-      	pointRésultat.x	= corps.multiplicationModulo( _N_Ordre3, _p.x )
-      	pointRésultat.y	= _p.y
-      	pointRésultat.z	= _p.z
-      	RENVOYER pointRésultat
-      fin
-      PROCÉDURE INTERNE _pointNégationJocobi( _p est Point256_3D ) : Point256_3D
-      	pointRésultat est Point256_3D 
-      	pointRésultat.x	= _p.x
-      	pointRésultat.y	= corps.négationModulo(_p.y)
-      	pointRésultat.z	= _p.z
-      	RENVOYER pointRésultat
-      FIN
-      
+      // Calcul rapide des point de P2
       POUR i = 1 a  15
-      	_MultiplesDeP2[i] = _PointMultRacinJocobi( _MultiplesDeP1[i] )
-      	SI bSigneOpose ALORS _MultiplesDeP2[i] = _pointNégationJocobi(_MultiplesDeP2[i])
+      	//_MultiplesDeP2[i] = _PointMultRacinJocobi( _MultiplesDeP1[i] )
+      	// P2 = L*P1
+      	p est Point256_3D dynamique <- _MultiplesDeP1[i]
+      	_MultiplesDeP2[i]   = p 
+      	_MultiplesDeP2[i].x = corps.multiplicationModulo( _N_Ordre3, p.x ) // Transformation qui fait que P2 = L*P1
+      	SI bSigneOpose ALORS 
+      		//  P2 = -2
+      		_MultiplesDeP2[i].y = corps.négationModulo( p.y)
+      	FIN
       
       FIN
       
