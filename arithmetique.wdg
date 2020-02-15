@@ -312,23 +312,10 @@ procedure_set :
       // renvoie un entier 128 bits sous forme de 2 entiers 64 bits ( poids faible, poids fort )
       procédure multiplication64x64_128( nombreA entier sans signe SUR 8 octet, nombreB Entier sans signe sur 8 octet  ) : entier256 // ( entier sans signe SUR 8 octet, entier sans signe SUR 8 octet)
       
-      si nombreA=0 _ou_ nombreB=0 ALORS
-      	renvoyer _0_256
-      FIN
-      
       //OPIM ASM
       resultat est entier256
       API(addrprocMult64x64_128_ASM, &nombreA, &nombreB, &resultat)
       renvoyer resultat
-      
-      //@TEST OPTIM:
-      // utilisation du type numérique qui calcule sur 128 Bits
-      nAB est un numérique   (38,0) = nombreA 
-      nAB = nAB * nombreB
-      Transfert(&resultat.val0,&nAB,8)
-      Transfert(&resultat.val1,&nAB+8,8)
-      renvoyer resultat
-      
      type : 458752
    -
      name : multiplication64x64_128HL
