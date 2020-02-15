@@ -1557,21 +1557,8 @@ class :
       	Y		= MS_X-8YYYY
       	Z		= 2.YZ
       ]
+      RENVOYER _pCompileFormule( sCodePoint_Doubling_Jacobi )
       
-      CPL est un compilateurDeFormule
-      // déclaration des variables utilisée en entres
-      //CPL.déclareParamètre("X" )
-      //CPL.déclareParamètre("Y" )
-      //CPL.déclareParamètre("Z" )
-      // déclaration des routines a utiliser pour implémenter les opérateur
-      CPL.déclareOpérateurBinaire("*", corps_point_secp256k1.addrprocMult256x256Modulo  )
-      CPL.déclareOpérateurBinaire(".", corps_point_secp256k1.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
-      CPL.déclareOpérateurBinaire("-", corps_point_secp256k1.addrprocSoustractionModulo )
-      
-      // compilation
-      _pf							est un entier système
-      _pf = CPL.compileFormule(sCodePoint_Doubling_Jacobi)
-      renvoyer _pf
      type : 458752
    -
      name : _pCompileFormule_PointAdditionJacobi
@@ -1618,23 +1605,32 @@ class :
       	Z1Z2	= Z1*Z2<§cs:2§>
       	Z1		= Z1Z2*H<§cs:2§>
       ]
+      renvoyer _pCompileFormule( sCodePoint_Addition_Jacobi )
+     type : 458752
+   -
+     name : _pCompileFormule
+     procedure_id : 2182000401807322902
+     type_code : 12
+     code : |1+
+      // compîle en assembleur une routine pour effectuer rapidement les opérations sur les points
+      // <sCodeFormule> est dans un format interne, géré par la classe "compilateurDeFormule"
+      // réusltat a utiliser avec API( _pf, param1, param2, ...)
+      PROCÉDURE PRIVÉE _pCompileFormule( sCodeFormule chaine ) : entier système
       
       CPL est un compilateurDeFormule
-      // déclaration des variables utilisée en entres
-      //CPL.déclareParamètre("X1" )  //IN/OUT
-      //CPL.déclareParamètre("Y1" )  //IN/OUT
-      //CPL.déclareParamètre("Z1" )  //IN/OUT
-      //CPL.déclareParamètre("X2" )  //IN
-      //CPL.déclareParamètre("Y2" )  //IN
-      //CPL.déclareParamètre("Z2" )  //IN
-      // déclaration des routines a utiliser pour implémenter les opérateur
+      // déclaration des routines a utiliser pour implémenter les opérateurs
       CPL.déclareOpérateurBinaire("*", corps_point_secp256k1.addrprocMult256x256Modulo  )
       CPL.déclareOpérateurBinaire(".", corps_point_secp256k1.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
       CPL.déclareOpérateurBinaire("-", corps_point_secp256k1.addrprocSoustractionModulo )
+      CPL.déclareOpérateurBinaire("+", corps_point_secp256k1.addrprocAdditionModulo     )
       
-      // compilation
+      // compilation de la formule
       _pf							est un entier système
-      _pf = CPL.compileFormule(sCodePoint_Addition_Jacobi)
+      _pf = CPL.compileFormule(sCodeFormule)
+      
+      // renvoie l'adresse la routine. 
+      // a utiliser avec API( _pf, param1, param2, ...)
+      dbgAssertion(_pf<>0,ErreurInfo())
       RENVOYER _pf
      type : 458752
   procedure_templates : []
