@@ -1337,8 +1337,8 @@ class :
       
       // insère "0"
        _P0 est Point256_3D
-       _MultiplesDeP1.Insère(1,_P0)
-       _MultiplesDeP2.Insère(1,_P0)
+      // _MultiplesDeP1.Insère(1,_P0)
+      // _MultiplesDeP2.Insère(1,_P0)
       
       // Accumulateur/résultat
       PointRésultatJ	est Point256_3D		// 0
@@ -1351,14 +1351,20 @@ class :
       // coef sur 4 bits morceaux de K1/K2
       n1,n2 sont entier
       
-      // recherche le 1er I avec pas 0
-      BOUCLE // POUR i = iMax À 3 pas -4
+      // recherche le 1er groupe de 4 bits non a 0 dans K1 ou K2
+      BOUCLE 
       	// Récup 16 bits P1 et 16 bits de P2
       	n1	= K1._4bit(i) 
       	n2	= K2._4bit(i) 
       	// si un des cooef n'est pas 0
       	si n1<>0 _ou_ n2<>0 ALORS
-      		PointRésultatJ = pointPlusPoint_Jacobi( _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1] )
+      		si n2=0 ALORS
+      			PointRésultatJ =  _MultiplesDeP1[n1] 
+      		sinon si n1=0 alors
+      			PointRésultatJ =  _MultiplesDeP2[n2] 
+      		sinon
+      			PointRésultatJ = pointPlusPoint_Jacobi( _MultiplesDeP1[n1] ,  _MultiplesDeP2[n2] )
+      		fin
       		i-=4
       		sortir
       	FIN
@@ -1387,11 +1393,11 @@ class :
       	// Calcul de P = k1*P1 + k2*P2
       //	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1]  )
       	si n1<>0 alors
-      		point1 est Point256_3D dynamique <- _MultiplesDeP1[n1+1]
+      		point1 est Point256_3D dynamique <- _MultiplesDeP1[n1]
       		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point1.x, &point1.y, &point1.z  )
       	fin
       	si n2<>0 alors
-      		point2 est Point256_3D dynamique <- _MultiplesDeP2[n2+1]
+      		point2 est Point256_3D dynamique <- _MultiplesDeP2[n2]
       		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point2.x, &point2.y, &point2.z  )
       	fin
       
