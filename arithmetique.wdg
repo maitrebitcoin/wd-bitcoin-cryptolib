@@ -1559,7 +1559,7 @@ procedure_set :
           quotient =  r1 / r2
               
           // sauver les restes précédents
-          r0 = r1;
+          r0 = r1
           r1 = r2
            
           // calcul du reste
@@ -1591,13 +1591,13 @@ procedure_set :
       si b ALORS
       	//    A2 = U1*A1 - V1*B1 
       	//    B2 = V2*B1 - U2*A1 
-      	AReste =  U1*A1 - V1*B1  // soustraction( multiplication64x64_128(A1, U1), multiplication64x64_128(B1, V1))
-      	BReste =  V2*B1 - U2*A1  // soustraction( multiplication64x64_128(B1, V2), multiplication64x64_128(A1, U2))
+      	AReste =  U1*A1 - V1*B1  
+      	BReste =  V2*B1 - U2*A1  
       sinon
       	//    A2 = V1*B1 - U1*A1 
       	//    B2 = V2*B1 - U2*A1
-      	AReste =  V1*B1 - U1*A1  //soustraction( multiplication64x64_128(B1, V1), multiplication64x64_128(A1, U1))
-      	BReste =  U2*A1 - V2*B1  //soustraction( multiplication64x64_128(A1, U2), multiplication64x64_128(B1, V2))
+      	AReste =  V1*B1 - U1*A1  
+      	BReste =  U2*A1 - V2*B1  
       FIN
       
       renvoyer (  U1, V1,  U2, V2, AReste, BReste, b )
