@@ -963,7 +963,7 @@ class :
       POUR X = 0 À 31
       	// recup de 8 bits K 
       	I est entier = K._8Bits(X)
-      	SI I<>0 ALORS
+      	SI I ALORS
       		// récup de  G = I* (2^X) précalculé 
       		valeurKPow2XJ  est Point256_3D dynamique <- TabPointPow2PreCalculé_256_J[I+X*256]
       		// Addition du point pré-calculé
