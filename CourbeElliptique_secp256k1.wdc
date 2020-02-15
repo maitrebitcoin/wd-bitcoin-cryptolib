@@ -1030,13 +1030,13 @@ class :
       
      type : 458752
    -
-     name : multiplicationScalairePointJacobi
+     name : multiplicationScalairePointJacobi_OSBOLETE
      procedure_id : 2165923497383385657
      type_code : 12
      code : |1+
       // renvoie K * P 
       // version utilisation les coordonnées de Jacobi pour minimiser les divisions modulaires
-      procédure multiplicationScalairePointJacobi(  P est Point256_3D, K est Entier256 ) : Point256_3D
+      procédure multiplicationScalairePointJacobi_OSBOLETE(  P est Point256_3D, K est Entier256 ) : Point256_3D
       
       // conversion en coordonnées de Jacobi
       //P est Point256_3D 
@@ -1340,44 +1340,65 @@ class :
        _MultiplesDeP1.Insère(1,_P0)
        _MultiplesDeP2.Insère(1,_P0)
       
+      // Accumulateur/résultat
+      PointRésultatJ	est Point256_3D		// 0
       
       iMax est un entier = 255
       // OPTIM pour ca K "petit". c'est normalement cas.
       si K1.val3=0  _et_ K2.val3=0  alors  iMax-=64
       si K1.val2<16 _et_ K2.val2<16 alors  iMax-=60
-      n,n2 sont entier
-      PointRésultatJ	est Point256_3D		// 0
-      // parcourt en partant du bit de poids fort par bloc de 4 bits
       i est un entier = iMax
-      boucle // POUR i = iMax À 3 pas -4
-      	// Récup 16 bits P1 et 16 bits de P2
-      	n  = K1._4bit(i) + 1
-      	n2 = K2._4bit(i) + 1
-      	// Calcul de P = k1*P1 + k2*P2
-      	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n] ,  _MultiplesDeP2[n2]  )
+      // coef sur 4 bits morceaux de K1/K2
+      n1,n2 sont entier
       
-      	// OPTIM : test direct sur Z.
-      	//SI PointRésultatJ.estZéro() ALORS 
-      	SI PointRésultatJ.Z.estEgalAZero() ALORS
-      		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
-      		si i=3  alors
-      			// renvoie (0,0)
-      			RENVOYER _P0
-      		fin
-      		// sinon c'est qu'on a pas encore rencontré de 1
+      // recherche le 1er I avec pas 0
+      BOUCLE // POUR i = iMax À 3 pas -4
+      	// Récup 16 bits P1 et 16 bits de P2
+      	n1	= K1._4bit(i) 
+      	n2	= K2._4bit(i) 
+      	// si un des cooef n'est pas 0
+      	si n1<>0 _ou_ n2<>0 ALORS
+      		PointRésultatJ = pointPlusPoint_Jacobi( _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1] )
       		i-=4
-      		continuer
-      	FIN	
-      	SI i=3  ALORS
       		sortir
       	FIN
       	
+      	i-=4
+      	SI i<=3  ALORS
+      		dbgAssertion(faux)
+      		// renvoie (0,0)
+      		RENVOYER _P0
+      	FIN
+      fin
+      dbgAssertion( pas PointRésultatJ.estZéro())
+      
+      // parcourt en partant du bit de poids fort par bloc de 4 bits
+      boucle // POUR i = iMax À 3 pas -4
       	// P = P *  16 
       	//PointRésultatJ = pointMutlipliePar16_Jacobi( PointRésultatJ )
       	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
       	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
       	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
+      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )	
+      	
+      	// Récup 16 bits P1 et 16 bits de P2
+      	n1 = K1._4bit(i) 
+      	n2 = K2._4bit(i) 
+      	// Calcul de P = k1*P1 + k2*P2
+      	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1]  )
+      //	si n1<>0 alors
+      //		point1 est Point256_3D dynamique <- _MultiplesDeP1[n1+1]
+      //		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point1.x, &point1.y, &point1.z  )
+      //	fin
+      //	si n2<>0 alors
+      //		point2 est Point256_3D dynamique <- _MultiplesDeP1[n2+1]
+      //		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point2.x, &point2.y, &point2.z  )
+      //	fin
+      
+      	// 4 bits plus faibles suivant
+      	SI i<=3  ALORS
+      		sortir
+      	FIN
       	i-=4
       FIN
       
@@ -1496,6 +1517,12 @@ class :
       // tels que K = k1 + k2 * _Lambda (modulo N)
       // et _Lambda est tel qu'on peut trouve _Lambda*P par une simple multiplication de P.X
       soit (k1,k2,signek1,signek2) = _calcVecteurOpimisePourMult(K)
+      // cas particulier K est l'ordre de la courbe
+      si k1.estEgalAZero() _et_ k2.estEgalAZero() ALORS
+      	// on renvoie (0,0,0) => point a l'infini
+      	P0 est Point256_3D 
+      	renvoyer  P0
+      FIN
       
       // on vérifie que le résultat a bien les propriétés attendues
       k1AvecSigne	est entier256	= (signek1 = -1) ?  corpsOrdre.négationModulo(k1) sinon k1
@@ -1511,16 +1538,11 @@ class :
       
       // on doit avoir _map(P) = _Lambda * P
       P 		   est Point256 = point
-      //_Lambda_P  est Point256 = _PointMultRacine(point)
       // gestion du cas ou les coefficients sont négatifs
       SI signek1 = -1 ALORS
       	// P = -P
       	P     = pointNégation( point )
       FIN
-      //SI signek2 = -1 ALORS
-      //	// P = -P
-      //	_Lambda_P =  pointNégation( _Lambda_P )
-      //FIN
       bSigneOpose est un booléen = signek1 <> signek2
       
       // conversion en coord de Jacobi

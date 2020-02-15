@@ -61,26 +61,8 @@ class :
       // => la clé publique est la somme K fois du point générateur de la courbe
       procédure DériveCléPubliqueDepuisCléPrivée( CléPrivée Entier256  ) : Point256
       
-      
-      // division modulaire a chaque étape
-      //renvoyer courbeBtc.MultiplicationScalairePointGenérateur( CléPrivée )
+      // rebond version optimisée de la courbe elliptique
       renvoyer courbeBtc.MultiplicationScalairePointGenérateur_PrecalInv( CléPrivée )
-      //renvoyer courbeBtc.MultiplicationScalairePointGenérateur_Sans8x256( CléPrivée )
-      
-      ////@Version avec que des multiplication de fractions modulaires :
-      //ClePubliqueFraction est Point256  = courbeBtc.MultiplicationScalairePointGenérateurFraction( CléPrivée )
-      //
-      //
-      ////@Version avec que des multiplication de fractions modulaires Dans le domaine de montgomery :
-      //// la clé publique est la somme K fois du point générateur de la courbe
-      ////ClePubliqueFraction est PointFraction256 = courbeBtc.MultiplicationScalairePointGenérateurFraction( CléPrivée )
-      //
-      ////=>Division modulaire pour X et Y
-      //ClePublique est Point256  
-      //ClePublique.x = ClePubliqueFraction.x.VersEntier256(corpsECC);
-      //ClePublique.y = ClePubliqueFraction.y.VersEntier256(corpsECC);
-      
-      //renvoyer ClePublique;
      type : 458752
    -
      name : SigneNombre
@@ -120,7 +102,7 @@ class :
       // y=K^-1(  H(m) + sx )
       signature.S =  corpsOrdre.multiplicationModulo( inverseDeK, ...
       	  			corpsOrdre.additionModulo(NombreASigner, ...
-      	   				corpsOrdre.multiplicationModulo( ClePrivee , P.x ) )) 
+      	   				corpsOrdre.multiplicationModulo( CléPrivée , P.x ) )) 
       
       si signature.S.estEgalAZero() ALORS
       	goto recalculer
