@@ -32,6 +32,7 @@ class :
       	addrprocMult256x256Modulo		est entier système
       	addrprocMult256x64Modulo		est entier système
       	addrprocSoustractionModulo		est entier système
+      	addrprocAdditionModulo			est entier système
       FIN
       
      type : 131072
@@ -54,6 +55,8 @@ class :
       	:addrprocMult256x64Modulo	=  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo256x64_sepc256k.asm")) 
       	// 256-256  mod P :
       	:addrprocSoustractionModulo	=  compileAsmX86_API( fChargeRessourceTexte("soustractionModulo_sepc256k.asm")) 
+      	// 256+256 mod P:
+      	:addrprocAdditionModulo     =  compileAsmX86_API( fChargeRessourceTexte("additionModulo_sepc256k.asm")) 
       FIN
      type : 589824
    -

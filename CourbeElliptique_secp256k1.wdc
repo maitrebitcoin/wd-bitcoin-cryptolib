@@ -46,7 +46,8 @@ class :
       	corps_ordre_secp256k1 est CorpsModulaire_ordreCourbeSepc256k1
       	
       	// routines ASM pour accéler le calcul
-      	pfPointDoube_Jacobi_ASM est un entier système
+      	pfPointDouble_Jacobi_ASM est un entier système
+      	pfPointAddition_Jacobi_ASM est un entier système
       
       prive
       	// un nombre d'ordre 3 sur <corps>
@@ -82,9 +83,10 @@ class :
       dbgAssertion(pointFractionEstSurLaCourbe(pointFractionGen))
       
       // compilation de routines ASM pour accélérer le calcul
-      pfPointDoube_Jacobi_ASM = :_pCompileFormule_PointDoubleJacobi()
-      dbgAssertion(pfPointDoube_Jacobi_ASM <> 0)
-       
+      pfPointDouble_Jacobi_ASM   = :_pCompileFormule_PointDoubleJacobi()
+      dbgAssertion(pfPointDouble_Jacobi_ASM <> 0)
+      pfPointAddition_Jacobi_ASM = :_pCompileFormule_PointAdditionJacobi()
+      dbgAssertion(pfPointAddition_Jacobi_ASM <> 0)
       
       // init  pour MultiplicationScalaire_AvecCache()
       _InitTabPreCalculé()
@@ -1119,6 +1121,10 @@ class :
       si point1.estZéro() ALORS	renvoyer point2
       si point2.estZéro() ALORS	renvoyer point1
       
+      // OPTIM utilisation d'une version généré par le compilateur de formules :
+      pointRésultat est Point256_3D= point1
+      API( pfPointAddition_Jacobi_ASM, &pointRésultat.x, &pointRésultat.y, &pointRésultat.z, &point2.x, &point2.y, &point2.z  )
+      renvoyer pointRésultat
       
       // Z1Z1	= Z1^2
       Z1Z1 est Entier256 = corps.carréModulo( point1.z )
@@ -1143,7 +1149,7 @@ class :
       //V		= U1*HH
       V est entier256    = corps.multiplicationModulo(U1, HH)
       
-      pointRésultat est Point256_3D
+      //pointRésultat est Point256_3D
       // X' = r^2-(HHH+2*V)
       HHH_plus2V est Entier256 =  corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
       pointRésultat.x    =  corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
@@ -1169,6 +1175,13 @@ class :
       SI point1.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point2,point3)
       SI point2.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point1,point3)
       SI point3.estZéro() ALORS	RENVOYER pointPlusPoint_Jacobi(point1,point2)
+      // addition
+      pointRésultat_TEMP	est Point256_3D = point1
+      API( pfPointAddition_Jacobi_ASM, &pointRésultat_TEMP.x, &pointRésultat_TEMP.y, &pointRésultat_TEMP.z, &point2.x, &point2.y, &point2.z  )
+      API( pfPointAddition_Jacobi_ASM, &pointRésultat_TEMP.x, &pointRésultat_TEMP.y, &pointRésultat_TEMP.z, &point3.x, &point3.y, &point3.z  )
+      renvoyer pointRésultat_TEMP
+      
+      pointRésultat	est Point256_3D = point1
       
       // P1 + P2
       Z1Z1			est Entier256		= corps.carréModulo( point1.z )
@@ -1190,7 +1203,7 @@ class :
       point1plus2.z		= corps.multiplicationModulo( point1.z,  corps.multiplicationModulo( point2.z, H  ) )
       
       // (P1 + P2) + P3
-      pointRésultat	est Point256_3D
+      
       
       Z1Z1				= corps.carréModulo( point1plus2.z )
       Z2Z2				= corps.carréModulo( point3.z )
@@ -1209,6 +1222,7 @@ class :
       pointRésultat.y		= corps.soustractionModulo( _r_V_Xresultat, corps.multiplicationModulo( S1, HHH ) )
       pointRésultat.z		= corps.multiplicationModulo( point1plus2.z,  corps.multiplicationModulo( point3.z, H  ) )
       
+      dbgAssertion( pointRésultat.y.estEgalA( pointRésultat_TEMP.y)  )
       
       RENVOYER pointRésultat
      type : 458752
@@ -1380,6 +1394,10 @@ class :
       	n2 = K2._4bit(i) + 1
       	// Calcul de P = k1*P1 + k2*P2
       	PointRésultatJ = pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n] ,  _MultiplesDeP2[n2]  )
+      //	KP1 est Point256_3D = _MultiplesDeP1[n]
+      //	KP2 est Point256_3D = _MultiplesDeP2[n]
+      //    API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &KP1.x, &KP1.y, &KP1.z  )
+      //    API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &KP2.x, &KP2.y, &KP2.z  )
       
       	SI PointRésultatJ.estZéro() ALORS
       		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
@@ -1389,6 +1407,7 @@ class :
       			RENVOYER _P0
       		fin
       		// sinon c'est qu'on a pas encore rencontré de 1
+      		i-=4
       		continuer
       	FIN	
       	SI i=3  ALORS
@@ -1397,12 +1416,10 @@ class :
       	
       	// P = P *  16 
       	//PointRésultatJ = pointMutlipliePar16_Jacobi( PointRésultatJ )
-      	API( pfPointDoube_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	API( pfPointDoube_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	API( pfPointDoube_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	API( pfPointDoube_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
-      	//PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
-      	//PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
+      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
+      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
+      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
+      	API( pfPointDouble_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z )
       	i-=4
       FIN
       
@@ -1596,8 +1613,9 @@ class :
      name : _pCompileFormule_PointDoubleJacobi
      procedure_id : 2181732795270527999
      type_code : 12
-     code : |1-
+     code : |1+
       // compîle en assembleur une routine pour doubler un point en coordonnée de jacobi.
+      // P = 2*P
       // proto _PointDoube_Jacobi_ASM( &X, &Y, &Z )
       procédure _pCompileFormule_PointDoubleJacobi()
       
@@ -1633,11 +1651,74 @@ class :
       CPL.déclareOpérateurBinaire("*", corps_point_secp256k1.addrprocMult256x256Modulo  )
       CPL.déclareOpérateurBinaire(".", corps_point_secp256k1.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
       CPL.déclareOpérateurBinaire("-", corps_point_secp256k1.addrprocSoustractionModulo )
+      
+      // compilation
       _pf							est un entier système
-      
-      
       _pf = CPL.compileFormule(sCodePoint_Doubling_Jacobi)
       renvoyer _pf
+     type : 458752
+   -
+     name : _pCompileFormule_PointAdditionJacobi
+     procedure_id : 2181881654550747385
+     type_code : 12
+     code : |1+
+      // compîle en assembleur une routine pour doubler un point en coordonnée de jacobi :
+      // P1 = P1 + P2
+      // proto _PointDoube_Jacobi_ASM( &X1,&Y1,&Z1, &X2,&Y2,&Z2 )
+      procédure _pCompileFormule_PointAdditionJacobi()
+      
+      // Formule de calcul a compiler. 
+      // source :
+      // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl
+      //  "add-1998-cmo-2"
+      sCodePoint_Addition_Jacobi est chaine = [
+      	Z1Z1	= Z1*Z1<§cs:2§>
+      	Z2Z2	= Z2*Z2<§cs:2§>
+      	U1		= X1*Z2Z2<§cs:2§>
+      	U2		= X2*Z1Z1<§cs:2§>
+      	//S1 = Y1*Z2*Z2Z2	<§cs:2§>
+      	Y1Z2	= Y1*Z2<§cs:2§>
+      	S1		= Y1Z2*Z2Z2<§cs:2§>
+      	//S2 = Y2*Z1*Z1Z1	<§cs:2§>
+      	Y2Z1	= Y2*Z1<§cs:2§>
+      	S2		= Y2Z1*Z1Z1<§cs:2§>
+      	H		= U2-U1<§cs:2§>
+      	HH		= H*H<§cs:2§>
+      	HHH		= HH*H<§cs:2§>
+      	r		= S2-S1<§cs:2§>
+      	V		= U1*HH<§cs:2§>
+      	// X' = r^2-HHH-2*V<§cs:2§>
+      	rr		= r*r<§cs:2§>
+      	2V    = 2.V<§cs:2§>
+      	temp	= rr-HHH<§cs:2§>
+      	X1		= temp-2V<§cs:2§>
+      	//	Y' = r*(V-X')-S1*HHH<§cs:2§>
+      	V_X		= V-X1<§cs:2§>
+      	rV_X	= r*V_X<§cs:2§>
+      	S1HHH	= S1*HHH<§cs:2§>
+      	Y1		= rV_X-S1HHH<§cs:2§>
+      	//  Z' = Z1*Z2*H<§cs:2§>
+      	Z1Z2	= Z1*Z2<§cs:2§>
+      	Z1		= Z1Z2*H<§cs:2§>
+      ]
+      
+      CPL est un compilateurDeFormule
+      // déclaration des variables utilisée en entres
+      CPL.déclareParamètre("X1" )  //IN/OUT
+      CPL.déclareParamètre("Y1" )  //IN/OUT
+      CPL.déclareParamètre("Z1" )  //IN/OUT
+      CPL.déclareParamètre("X2" )  //IN
+      CPL.déclareParamètre("Y2" )  //IN
+      CPL.déclareParamètre("Z2" )  //IN
+      // déclaration des routines a utiliser pour implémenter les opérateur
+      CPL.déclareOpérateurBinaire("*", corps_point_secp256k1.addrprocMult256x256Modulo  )
+      CPL.déclareOpérateurBinaire(".", corps_point_secp256k1.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
+      CPL.déclareOpérateurBinaire("-", corps_point_secp256k1.addrprocSoustractionModulo )
+      
+      // compilation
+      _pf							est un entier système
+      _pf = CPL.compileFormule(sCodePoint_Addition_Jacobi)
+      RENVOYER _pf
      type : 458752
   procedure_templates : []
   property_templates : []

@@ -143,6 +143,16 @@ class :
       tabFunction[nom] = newFonc
      type : 458752
    -
+     name : _bTok_EstNombre
+     procedure_id : 2181867043071814814
+     type_code : 12
+     code : |1+
+      // indique si <sToken> est un nombre. ex "4"
+      procédure _bTok_EstNombre( sToken chaine) 
+      
+      renvoyer VérifieExpressionRégulière(sToken,"[0-9]*")
+     type : 458752
+   -
      name : _bParse
      procedure_id : 2181489094526545596
      type_code : 12
@@ -163,6 +173,16 @@ class :
       	// découpe "A=B+C" en ses parties
       	ligneSansEspace	est chaine	= SansEspace( sCodeLigneI,sscTout )
       	ligneSansEspace = Remplace(ligneSansEspace, TAB,"") 
+      	// enlever les commentaires à droite de //
+      	si position( ligneSansEspace , "//") >0 ALORS
+      		ligneSansEspace = ExtraitChaîne(ligneSansEspace,1,"//")
+      	FIN
+      	// ignorer les lignes vides
+      	si ligneSansEspace="" ALORS
+      		nLigne++;
+      		continuer;
+      	FIN
+      	
       	nomVarDest		est chaine	= ExtraitChaîne( ligneSansEspace, 1, "=" )
       	codeOpération	est chaîne	= ExtraitChaîne( ligneSansEspace, 2, "=" )
       	SI nomVarDest="" _OU_ codeOpération="" ALORS
@@ -187,11 +207,10 @@ class :
       	stLigneI.nomVarDest		= nomVarDest
       	stLigneI.var1			= var1
       	stLigneI.var2			= var2
-      	// gestion des litéraux (ex "4")
-      	si VérifieExpressionRégulière(var1,"[0-9]*") ALORS
+      	// gestion des littéraux (ex "4")
+      	si _bTok_EstNombre(var1) ALORS
       		stLigneI.bvar1EstLiteral = vrai
       	FIN
-      	
       	resultat.Ajoute(stLigneI)
       	
       	// ligne suivante
@@ -240,7 +259,7 @@ class :
       // Affection initiale des registre  (pour OPTIM)
       // en entrée les 4 paramètres d'entrés au max sont dans des registres
       pour tout stVar de :tabVariables
-      	si stVar.portée = paramètre _et_ stVar.indice<=4 ALORS
+      	si stVar.portée = paramètre _et_ stVar.indice<=3 ALORS
       		// ex: T["param2"] = "rdx"
       		sReg est chaine =  _sGetNomRegPourParamNum64(stVar.indice+1)
       		_VarUtiliseRegistre( stVar.nom, sReg )
@@ -378,25 +397,13 @@ class :
       si bScrParamètre ALORS
       	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
       	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
+      	// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
       	nOffset est un entier =  8 // prologue
       	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
       	nOffset              += (varI.indice)*nTaille_REG 
       	varI_location = "[rsp+" + nOffset +"]"
       	
-      	// optim si c'est un registre déjà initialisé
-      	// pour ne pas générer "mox rcx,rcx"
-      //	si numParam = varI.indice _et_ numParam<=4 ALORS
-      //		renvoyer ""
-      //	FIN
-      //	SELON varI.indice 
-      //		cas 0 :     varI_location = "rcx"; bScrRegistre = Vrai;
-      //		cas 1 :     varI_location = "rdx"; bScrRegistre = Vrai;
-      //		cas 2 :     varI_location = "r8"; bScrRegistre = Vrai;
-      //		cas 3 :     varI_location = "r9"; bScrRegistre = Vrai;
-      //		AUTRE CAS: 
-      //			dbgAssertion(faux,"TODO")
-      //			//	varI_location = "[rsp+" + (varI.indice)*8 +"]"
-      //	FIN
+      
       sinon 
       	// variable locale : stoquée a partir de rbp
       	// ex : lea r8, [rbp+8]
