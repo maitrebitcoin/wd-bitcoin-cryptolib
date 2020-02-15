@@ -106,22 +106,22 @@ procedure_set :
       	retenue2++
       FIN
       SI retenue1 ALORS
-      	resultat.val2++
-      	SI resultat.val2= 0 ALORS retenue2=1
+      	Résultat.val2++
+      	SI Résultat.val2= 0 ALORS retenue2=1
       FIN
       // 196..256
-      resultat.val3 = nombreA.val3 + nombreB.val3 
+      Résultat.val3 = nombreA.val3 + nombreB.val3 
       //retenue3 = resultat.val3 < nombreA.val3 _OU_ resultat.val3 < nombreB.val3
-      si  resultat.val3 < nombreA.val3 _OU_ resultat.val3 < nombreB.val3 ALORS
+      si  Résultat.val3 < nombreA.val3 _OU_ Résultat.val3 < nombreB.val3 ALORS
       	retenue3++
       FIN
       SI retenue2 ALORS
-      	resultat.val3++
-      	SI resultat.val3= 0 ALORS retenue3=1
+      	Résultat.val3++
+      	SI Résultat.val3= 0 ALORS retenue3=1
       FIN
       
       retenue_out = retenue3
-      renvoyer resultat
+      renvoyer Résultat
      type : 458752
    -
      name : negation
@@ -906,7 +906,6 @@ procedure_set :
       
       Résultat   est Entier256	
       
-      
       // récup  A * BLow32bits
       API(addrprocMult256x32_256_ASM, &nombreA, &nombreB, &Résultat )
       // si que 32 bits ou en mode 64 bits, optim
@@ -920,113 +919,7 @@ procedure_set :
       ABHigh32decale est Entier256	
       Transfert(&ABHigh32decale+4,&ABHigh32, 28 )
       
-      	
       renvoyer addition(Résultat, ABHigh32decale)
-      
-      
-      // extrait les poids faibles (A0,B0) et fort (A1,B1) de A et B ( 2x128 bits ).
-      A0  est Entier256
-      A0.val0 = nombreA.val0
-      A0.val1 = nombreA.val1
-      A1  est Entier256
-      A1.val0 = nombreA.val2
-      A1.val1 = nombreA.val3
-      B0  est Entier256
-      B0.val0 = nombreB
-      
-      
-      // calcul des mots de 128/256 bits résultat
-      R0  est entier256  = multiplication128x128_256(  A0, B0 )
-      retenue0 est Entier256
-      retenue0.val0 = R0.val2
-      retenue0.val1 = R0.val3
-      
-      //R1  est entier sans signe SUR 8 octet  = (A1*B1 + (A1-A0)*(B0-B1) + B0*A0)  + c0
-      R1 est Entier256
-      R1_a1a0b0b1 est Entier256 
-      a1_a0 est Entier256
-      
-      b0_b1 est Entier256
-      
-      // gestion du signe
-      bNegatif est un booléen 
-      SI  A1.estSupérieurOuEgalA(A0) ALORS 
-      	a1_a0 = soustraction(A1,A0)
-      SINON
-      	a1_a0 = soustraction(A0,A1)
-      	bNegatif = Vrai
-      FIN
-      //SI  B0.estSupérieurOuEgalA(B1) ALORS
-      //b0_b1 = soustraction(B0,B1)
-      b0_b1 = B0 
-      //SINON
-      //	b0_b1 = soustraction(B1,B0)
-      //	bNegatif = PAS bNegatif
-      //FIN
-      
-      R1_a1a0b0b1 =  multiplication128x128_256(  a1_a0,  b0_b1 )
-      bretenue est un booléen //entier sur 8 octets sans signe
-      retenueR1 est entier sur 8 octets sans signe
-      //R1 = addition( R0,		   R2, bretenue)
-      R1 = R0
-      //si bretenue alors retenueR1++
-      si bNegatif alors
-      	SI R1_a1a0b0b1.estSupérieurStrictA( R1 ) ALORS
-      		retenueR1--
-      	fin
-      	R1 = soustraction( R1, R1_a1a0b0b1)
-      sinon
-      	R1 = addition( R1, 	   R1_a1a0b0b1, bretenue)
-      	SI bretenue ALORS retenueR1++
-      fin
-      //bR est un booléen
-      R1 = addition( R1, 		retenue0, bretenue)
-      //SI bretenue ALORS retenueR1++
-      
-      //retenue1 est un entier256 // + 128 bit de retenue
-      //retenue1.val0   = R1.val2
-      //retenue1.val1   = R1.val3
-      //retenue1.val2   = retenueR1
-      //R2 = addition(R2,   retenue1)
-      
-      // construire le résultat 2x128 bits + 1x256bits
-      Résultat.val0 = R0.val0
-      Résultat.val1 = R0.val1  
-      Résultat.val2 = R1.val0
-      Résultat.val3 = R1.val1
-      
-      // si c'est le psesudo mercene pour ECDSA
-      //Résultat_DBG est Entier256
-      //SI nombreB = 0x1000003d0 ALORS
-      //	procMult256x32_256_ASM( &nombreA, &nombreB, &Résultat_DBG )
-      //	temp est Entier256 = nombreA
-      //	temp.mulitplieParUnePuissanceDe2(32)
-      //	Résultat_DBG = addition(resultat,temp)
-      //	si pas Résultat_DBG.estEgalA(resultat) alors
-      //		trace(Résultat_DBG.VersChaineHexa())
-      //		trace(resultat.VersChaineHexa())
-      //		stop
-      //	fin
-      //	RENVOYER resultat
-      //FIN
-      
-      
-      //procMult256x32_256_ASM( &nombreA, &nombreB, &Résultat_DBG )
-      //si pas Résultat_DBG.estEgalA(Résultat) alors
-      //	trace(Résultat_DBG.VersChaineHexa())
-      //	trace(Résultat.VersChaineHexa())
-      //	stop
-      //fin
-      
-      //nombreB_DBG est Entier256( nombreB )
-      //Résultat_DBG est Entier512 = multiplication256x256_512(nombreA,nombreB_DBG)
-      //si pas Résultat_DBG.valPoidsFaible.estEgalA(Résultat) alors
-      //	trace(Résultat_DBG.valPoidsFaible.VersChaineHexa())
-      //	trace(Résultat.VersChaineHexa())
-      //	stop
-      //FIN
-      
-      renvoyer Résultat 
      type : 458752
    -
      name : divisionEuclidienneSimplifiee64

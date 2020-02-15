@@ -1261,7 +1261,6 @@ class :
       // OPTIM : P2 = L*P1, inutile de calculer 15 points.
       // Calcul rapide des point de P2
       POUR i = 1 a  15
-      	//_MultiplesDeP2[i] = _PointMultRacinJocobi( _MultiplesDeP1[i] )
       	// P2 = L*P1
       	p est Point256_3D dynamique <- _MultiplesDeP1[i]
       	_MultiplesDeP2[i]   = p 
@@ -1273,10 +1272,7 @@ class :
       
       FIN
       
-      // insère "0"
-       _P0 est Point256_3D
-      // _MultiplesDeP1.Insère(1,_P0)
-      // _MultiplesDeP2.Insère(1,_P0)
+      
       
       // Accumulateur/résultat
       PointRésultatJ	est Point256_3D		// 0
@@ -1311,11 +1307,14 @@ class :
       	SI i<=3  ALORS
       		dbgAssertion(faux)
       		// renvoie (0,0)
+      		_P0 est Point256_3D
       		RENVOYER _P0
       	FIN
       fin
       dbgAssertion( pas PointRésultatJ.estZéro())
       
+      point1 est Point256_3D dynamique
+      point2 est Point256_3D dynamique
       // parcourt en partant du bit de poids fort par bloc de 4 bits
       boucle // POUR i = iMax À 3 pas -4
       	// P = P *  16 
@@ -1331,11 +1330,11 @@ class :
       	// Calcul de P = k1*P1 + k2*P2
       //	pointPlusPointPluspoint_Jacobi( PointRésultatJ, _MultiplesDeP1[n1+1] ,  _MultiplesDeP2[n2+1]  )
       	si n1<>0 alors
-      		point1 est Point256_3D dynamique <- _MultiplesDeP1[n1]
+      		point1  <- _MultiplesDeP1[n1]
       		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point1.x, &point1.y, &point1.z  )
       	fin
       	si n2<>0 alors
-      		point2 est Point256_3D dynamique <- _MultiplesDeP2[n2]
+      		point2  <- _MultiplesDeP2[n2]
       		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &point2.x, &point2.y, &point2.z  )
       	fin
       
