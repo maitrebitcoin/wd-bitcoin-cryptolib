@@ -182,7 +182,6 @@ class :
       // vérifie que <signature> est bien la signature de <Nombre> avec une clé correspondant a <CléPublique>
       procédure vérifieSignatureNombre( NombreSigné Entier256, CléPublique point256, signature SignatureEcdsa ) : (booléen, chaine)
       
-      erreurSiEchec_OUT est chaine 
       // vérification des pré-requis sur la clé publique
       si CléPublique.estZéro() ALORS
       	renvoyer (faux, sERR_CLEPUB_INVALIDE + "La clé est nulle (pb d’initialisation ?).")

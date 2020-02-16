@@ -715,7 +715,7 @@ window :
          ExécuteTraitement(BTN_CréePaireDeClé,trtClic)
          
          ChronoDébut()
-         pour i = 1 a 1 000
+         pour i = 1 a 10 000
          	ExécuteTraitement(BTN_SigneMessage, trtClic)
          	ExécuteTraitement(BTN_VérifierSignature, trtClic)
          	Multitâche(-1)
