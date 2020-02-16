@@ -28,6 +28,7 @@ class :
       	// adresse de procédures en assembleur pour optim des calculs :
       	// ok que en mode 64 bits + spécialisé modulo 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
       	addrprocMult256x256Modulo		est entier système
+      	addrprocInverseModulo			est entier système
       FIN
      type : 131072
   procedures :
@@ -46,8 +47,10 @@ class :
       	// 256x256 mod P :
       	:addrprocMult256x256Modulo	=  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo_OrdreCourbeSepc256k.asm"), "multiplicationModulo_Ordre_sepc256k_ASM" ) 
        	dbgAssertion(addrprocMult256x256Modulo <> 0)
-      FIN
       
+      FIN
+      // compile une code rapide pour l'inverse modulaire
+       :addrprocInverseModulo = _pCompileInverseModulo()
      type : 589824
    -
      name : Destructeur
@@ -70,6 +73,64 @@ class :
       //si on une routine asm dispo (64 bits)
       API(addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
       RENVOYER resultat
+     type : 458752
+   -
+     name : _pCompileInverseModulo
+     procedure_id : 2182412727330015498
+     type_code : 12
+     code : |1+
+      // compile une formule qui renvoie l'inverse modulaire spécifique au corps CorpsModulaire_ordreCourbeSepc256k1
+      // pour Optim de la vérification de signature.
+      procédure privée _pCompileInverseModulo()
+      
+      // Algo : on régénère une formule qui calcule X^(P-2) (Algorithme d'Euler) puis on la compile.
+      
+      // debut
+      sCodeFormule est une chaîne = [
+      inverveModuloOrdre( X )
+      	P = X*X
+      ]
+      // construit le code
+      POUR  i = 1 À 255
+      	// si bit a 1 on multiplie le résultat par P = nombre^(2^I)
+      	SI PMoins2.bit(i) ALORS
+      		sCodeFormule += RC + "X = X*P "
+      	FIN
+      	// pour tous les bits : P = nombre^(2^I) (sauf le dernier)
+      	si i<255 alors
+      		sCodeFormule += RC + "P = P*P " 
+      	fin
+      FIN
+      
+      
+      CPL est un compilateurDeFormule
+      // déclaration des routines a utiliser pour implémenter les opérateurs
+      CPL.déclareOpérateurBinaire("*", addrprocMult256x256Modulo  )
+      
+      // compilation de la formule
+      _pf							est un entier système
+      _pf = CPL.compileFormule(sCodeFormule)
+      
+      // renvoie l'adresse la routine. 
+      // a utiliser avec API( _pf, param1, param2, ...)
+      dbgAssertion(_pf<>0,ErreurInfo())
+      RENVOYER _pf
+      
+     type : 458752
+   -
+     name : inverseModulo
+     procedure_id : 2182410489648780926
+     type_code : 12
+     code : |1+
+      // version spécialisé pour les corps "ordre"
+      PROCÉDURE virtuelle inverseModulo( nombre entier256 ) : entier256
+      
+      // rebond version compilé spécialement pour ce modulo
+      resultat est un entier256 = nombre
+      API( addrprocInverseModulo, &resultat  )
+      
+      renvoyer resultat
+      
      type : 458752
   procedure_templates : []
   property_templates : []

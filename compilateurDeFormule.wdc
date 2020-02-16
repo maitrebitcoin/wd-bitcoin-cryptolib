@@ -725,6 +725,7 @@ class :
       // The registers RAX, RCX, RDX, R8, R9, R10, R11 are considered volatile (caller-saved).[20]
       _VarDissocieRegiste("rax")
       _VarDissocieRegiste("rcx")
+      _VarDissocieRegiste("rdx")
       _VarDissocieRegiste("r8")
       _VarDissocieRegiste("r9")
       _VarDissocieRegiste("r10")

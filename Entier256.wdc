@@ -296,6 +296,18 @@ class :
      procedure_id : 2169407338639345226
      type_code : 12
      code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // [ <Résultat> = ] estEgalAmoins1 ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	booléen : <indiquez ici les valeurs possibles ainsi que leur interprétation>
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
       PROCÉDURE estEgalAmoins1() : booléen		 
       
       RENVOYER val0 = -1 _ET_

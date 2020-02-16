@@ -331,7 +331,7 @@ class :
       // ajout partie haute avec une table pré-calculé du reste modulaire des puissance de 2 a partir de 256
       si nPoidsFortRestant <> 0 alors
       	pr est Entier256 = TabPow2_MoinsP[ nPoidsFortRestant ]
-      	renvoyer additionModulo( resultat, pr )
+      	renvoyer additionModulo( résultat, pr )
       fin
       
       
@@ -430,10 +430,11 @@ class :
      code : |1+
       // renvoie l'inverse modulaire d'un nombre A.
       // cas un nombre I tel que A * I = 1 (mod P)
-      Procédure inverseModulo( nombre entier256 ) : entier256
+      Procédure virtuelle inverseModulo( nombre entier256 ) : entier256
       
       inverseMod est Entier256
       
+      // calcul "rapide" par une version optimisée de l'algorithme d'Eurclide étendu.
       inverseMod = inverseModulaire_HGCD256( P, nombre  )
       // si echec
       si inverseMod.estEgalAZero() ALORS
