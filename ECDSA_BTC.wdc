@@ -222,7 +222,7 @@ class :
       // signature OK ssi X == S.R
       si PAS P_Jacobi.X.estEgalA( SRfoisPJZCarre ) alors
       	// signature invalide 
-      	renvoyer (faux,  sERR_SIGNATURE_INVALIDE + "Elle ne correspond a la paire messsage/clé publique." )
+      	renvoyer (faux,  sERR_SIGNATURE_INVALIDE + "Elle ne correspond au message ou a la clé publique." )
       fin
       
       // signature valide 						

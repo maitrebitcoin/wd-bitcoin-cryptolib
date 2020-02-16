@@ -211,15 +211,13 @@ class :
      name : declareOptimRegistre
      procedure_id : 2182446623217186059
      type_code : 12
-     code : |1-
+     code : |1+
       // <nomRegistre> doit être R12, R13, R14, R15
       procédure declareOptimRegistre( nomVar chaine, nomRegistre chaine )
       // The registers RBX, RBP, RDI, RSI, RSP, R12, R13, R14, and R15 are considered nonvolatile (callee-saved).[20]
       
+      nomRegistre=Minuscule(nomRegistre)
       tabOptimVarVersReg[nomVar] = nomRegistre
-      
-      // ajout comme registre utilisable
-      :_VarUtiliseRegistre(nomVar,nomRegistre)
      type : 458752
    -
      name : _bTok_EstNombre
@@ -423,15 +421,18 @@ class :
       	//@Cas particulier "3.X"
       	si stLigneI.bvar1EstLiteral ALORS
       		dbgAssertion(func.nom=".")
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT		
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var2 )		
       		//@@On inverse P1/P2
       		sCodeAsm += [RC] + "mov " + _sGetNomRegPourParamNum64(2) + "," +  stLigneI.var1
       		_VarDissocieRegiste(_sGetNomRegPourParamNum64(2))
-      		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var2 )
-      		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT
+      
       	sinon
-      		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var1 )
+      		// NB: ordre inverse des paramètres ou maximiser les change de pouvoir réutiliser les registres
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT				
       		sCodeAsm += [RC] + _genCodeAsmInitParam( 1, stLigneI.var2 )
-      		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var1 )	
+      
       	fin
       	sCodeAsm += [RC] + "call 0x" + EntierVersHexa(  func.addresse )
       	// apres un call certains registre peuvent être modifié:
@@ -545,7 +546,7 @@ class :
       	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
       	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
       	// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
-      	nOffset est un entier =  8 // prologue
+      	nOffset est un entier =  nTaille_REG * _nNbRegPushPrologue()     // prologue 
       	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
       	nOffset              += (varI.indice)*nTaille_REG 
       	varI_location = "[rsp+" + nOffset + "]"
@@ -680,7 +681,16 @@ class :
       		dbgAssertion(Faux)
       FIN
       renvoyer "***ERR***" // ne compilera pas.
+     type : 458752
+   -
+     name : _nNbRegPushPrologue
+     procedure_id : 2182464898307416814
+     type_code : 12
+     code : |1-
+      // renvoie le nombre de registre sauvés par Push dans le prologue
+      procédure _nNbRegPushPrologue()
       
+      renvoyer 1 + tabOptimVarVersReg..Occurrence
      type : 458752
    -
      name : _genCodeAsm_Prologue
@@ -695,6 +705,7 @@ class :
       	mov    [rsp+10h],rdx  ; idem P2 
       	mov    [rsp+18h],r8   ; idem P3 
       	mov    [rsp+20h],r9   ; idem P4 
+      	PUSH_OPTIM
       	push   rbp
       	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variables locale + appel des procédures
       	lea    rbp,[rsp+20h]        ; rbp pointe sur le debut des variables locales
@@ -704,18 +715,21 @@ class :
       sCodeASM est chaine = remplace(sCodeASM_Prologue,"TAILLE_VAR_LOC", ""+nTailleVarLoc )
       
       // Optim des variables a conserver en registre
+      sPUSH_OPTIM est chaine
       pour TOUT sRegOptim,sNomVar DE :tabOptimVarVersReg
       	soit(b, stVar) = _bChercheVariableParNom(sNomVar)
       	si b alors
       		soit (sLocalisation,bSourceVariable) = _GetLocalisationVariable(stVar, vrai )
       		si  stVar.portée = paramètre
-      			sCodeASM += RC + "mov " + sRegOptim + "," + sLocalisation 
+      			sCodeASM += [RC] + "mov " + sRegOptim + "," + sLocalisation 
       		else
-      			sCodeASM += rc + "lea " + sRegOptim + "," + sLocalisation 
+      			sCodeASM += [rc] + "lea " + sRegOptim + "," + sLocalisation 
       		fin
       	fin
+      	// sauver ce registre pour l'appelant
+      	sPUSH_OPTIM += [RC]+ "push " + sRegOptim
       FIN
-      	
+      sCodeASM  = remplace(sCodeASM,"PUSH_OPTIM", sPUSH_OPTIM )	
       
       
       
@@ -732,11 +746,20 @@ class :
       ; Epilogue
       	add    rsp, TAILLE_VAR_LOC
       	pop    rbp
+      	POP_OPTIM
       	ret  
       ]
       // calcul taille pile
       nTailleVarLoc	est un entier	= _nGetTailleAllocaVarLoc()
       sCodeASM		est chaine		= remplace(sCodeASM_Epilogue,"TAILLE_VAR_LOC", ""+nTailleVarLoc )
+      
+      sPOP_OPTIM est une chaîne
+      POUR TOUT sRegOptim,sNomVar DE :tabOptimVarVersReg
+      	// restaurer ce registre pour l'appelant
+      	// dans l'ordre inverse des push
+      	sPOP_OPTIM = "pop " + sRegOptim + rc + sPOP_OPTIM
+      FIN
+      sCodeASM  = Remplace(sCodeASM,"POP_OPTIM", sPOP_OPTIM )	
       
       RENVOYER sCodeASM 
      type : 458752
