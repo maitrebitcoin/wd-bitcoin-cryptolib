@@ -451,6 +451,9 @@ class :
       pResultat est un entier système
       sErr est chaine
       (pResultat,sErr) = compileAsmX86_API(sCodeFinal)
+      
+      
+      
       dbgAssertion(pResultat<>0,sErr)
       
       renvoyer pResultat
@@ -719,7 +722,8 @@ class :
       pour TOUT sRegOptim,sNomVar DE :tabOptimVarVersReg
       	soit(b, stVar) = _bChercheVariableParNom(sNomVar)
       	si b alors
-      		soit (sLocalisation,bSourceVariable) = _GetLocalisationVariable(stVar, vrai )
+      		sLocalisation est chaine
+      		sLocalisation = _GetLocalisationVariable(stVar, vrai )
       		si  stVar.portée = paramètre
       			sCodeASM += [RC] + "mov " + sRegOptim + "," + sLocalisation 
       		else
