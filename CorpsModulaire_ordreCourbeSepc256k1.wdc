@@ -106,6 +106,8 @@ class :
       CPL est un compilateurDeFormule
       // déclaration des routines a utiliser pour implémenter les opérateurs
       CPL.déclareOpérateurBinaire("*", addrprocMult256x256Modulo  )
+      //CPL.declareOptimRegistre("P", "R12" )
+      //CPL.declareOptimRegistre("X", "R13" )
       
       // compilation de la formule
       _pf							est un entier système

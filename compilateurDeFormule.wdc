@@ -34,6 +34,9 @@ class :
       	// options
       	bAvecCommentaire		est un booléen	// mets des commentaire dans l'ASM généré
       	
+      	// indique que certaines var doivent être mise en registre pour optim
+      	tabOptimVarVersReg 	est un tableau associatif de chaine
+      	
       	// indique sur quelle adresse les registres pointent apres chaque ligne de code générée
       	tabRegVersVar	est un tableau associatif de chaine
       	tabVarVersReg	est un tableau associatif de chaine
@@ -202,6 +205,21 @@ class :
       FIN
       // ajoute la fonction qui gère l'opérateur
       tabFunction[nom] = newFonc
+      
+     type : 458752
+   -
+     name : declareOptimRegistre
+     procedure_id : 2182446623217186059
+     type_code : 12
+     code : |1-
+      // <nomRegistre> doit être R12, R13, R14, R15
+      procédure declareOptimRegistre( nomVar chaine, nomRegistre chaine )
+      // The registers RBX, RBP, RDI, RSI, RSP, R12, R13, R14, and R15 are considered nonvolatile (callee-saved).[20]
+      
+      tabOptimVarVersReg[nomVar] = nomRegistre
+      
+      // ajout comme registre utilisable
+      :_VarUtiliseRegistre(nomVar,nomRegistre)
      type : 458752
    -
      name : _bTok_EstNombre
@@ -496,6 +514,59 @@ class :
       renvoyer faux
      type : 458752
    -
+     name : _GetLocalisationVariable
+     procedure_id : 2182448865190178038
+     type_code : 12
+     code : |1+
+      // renvoie l'adresse d'une variable + si elle est dans un registre
+      // ex: ([esp+40], faux) ou (rax, vrai)
+      procédure _GetLocalisationVariable( varI est STVariable, bPourPrologue = faux ) : (chaine, booléen)
+      
+      
+      
+      // SOURCE : ou récupérer la valeur de varI
+      varI_location	est chaine	// morceau de code pour la source. ex [rsp+8]
+      bScrRegistre	est un booléen	= faux
+      
+      
+      // OPTIM : si on a sa valeur dans un registre
+      SI :tabVarVersReg[varI.nom]..Existe ALORS
+      	// on renvoie le rgistre a utiliser
+      	renvoyer (tabVarVersReg[varI.nom], Vrai )
+      FIN
+      SI pas bPourPrologue _et_ :tabOptimVarVersReg[varI.nom]..Existe ALORS
+      	// on renvoie le registre a utiliser
+      	RENVOYER (tabOptimVarVersReg[varI.nom], Vrai )
+      FIN
+      
+      
+      bScrParamètre	est un booléen	= varI.portée = paramètre
+      SI bScrParamètre ALORS
+      	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
+      	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
+      	// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
+      	nOffset est un entier =  8 // prologue
+      	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
+      	nOffset              += (varI.indice)*nTaille_REG 
+      	varI_location = "[rsp+" + nOffset + "]"
+      	
+      	
+      SINON 
+      	// variable locale : stoquée a partir de rbp
+      	// ex : lea r8, [rbp+8]
+      	//@TODO : additionner les offsets
+      	nOffset est un entier = (varI.indice)*nTaille_INT256
+      	SI nOffset= 0 ALORS
+      		varI_location = "[rbp]"
+      	SINON
+      		varI_location = "[rbp+" + nOffset +"]"
+      	FIN
+      FIN
+      
+      
+      renvoyer (varI_location, bScrRegistre )
+     type : 458752
+   -
      name : _genCodeAsmInitParam
      procedure_id : 2180638502028265783
      type_code : 12
@@ -514,33 +585,34 @@ class :
       varI_location est chaine  // morceau de code pour la source. ex [rsp+8]
       bScrRegistre  est un booléen = faux
       bScrParamètre est un booléen = varI.portée = paramètre
-      
-      si bScrParamètre ALORS
-      	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
-      	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
-      	// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
-      	nOffset est un entier =  8 // prologue
-      	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
-      	nOffset              += (varI.indice)*nTaille_REG 
-      	varI_location = "[rsp+" + nOffset + "]"
-      
-      
-      sinon 
-      	// variable locale : stoquée a partir de rbp
-      	// ex : lea r8, [rbp+8]
-      	//@TODO : additionner les offsets
-      	nOffset est un entier = (varI.indice)*nTaille_INT256
-      	si nOffset= 0 alors
-      		varI_location = "[rbp]"
-      	sinon
-      		varI_location = "[rbp+" + nOffset +"]"
-      	fin
-      FIN
-      // OPTIM : si on a sa valeur dans un registre
-      SI :tabVarVersReg[nom]..Existe ALORS
-      	varI_location	= tabVarVersReg[nom]
-      	bScrRegistre	= Vrai
-      FIN
+      (varI_location, bScrRegistre ) =  _GetLocalisationVariable(varI)
+      //
+      //si bScrParamètre ALORS
+      //	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
+      //	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
+      //	// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
+      //	nOffset est un entier =  8 // prologue
+      //	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
+      //	nOffset              += (varI.indice)*nTaille_REG 
+      //	varI_location = "[rsp+" + nOffset + "]"
+      //
+      //
+      //sinon 
+      //	// variable locale : stoquée a partir de rbp
+      //	// ex : lea r8, [rbp+8]
+      //	//@TODO : additionner les offsets
+      //	nOffset est un entier = (varI.indice)*nTaille_INT256
+      //	si nOffset= 0 alors
+      //		varI_location = "[rbp]"
+      //	sinon
+      //		varI_location = "[rbp+" + nOffset +"]"
+      //	fin
+      //FIN
+      //// OPTIM : si on a sa valeur dans un registre
+      //SI :tabVarVersReg[nom]..Existe ALORS
+      //	varI_location	= tabVarVersReg[nom]
+      //	bScrRegistre	= Vrai
+      //FIN
       
       
       sCodeASM est chaine
@@ -630,6 +702,22 @@ class :
       // calcul taille pile
       nTailleVarLoc est un entier = _nGetTailleAllocaVarLoc()
       sCodeASM est chaine = remplace(sCodeASM_Prologue,"TAILLE_VAR_LOC", ""+nTailleVarLoc )
+      
+      // Optim des variables a conserver en registre
+      pour TOUT sRegOptim,sNomVar DE :tabOptimVarVersReg
+      	soit(b, stVar) = _bChercheVariableParNom(sNomVar)
+      	si b alors
+      		soit (sLocalisation,bSourceVariable) = _GetLocalisationVariable(stVar, vrai )
+      		si  stVar.portée = paramètre
+      			sCodeASM += RC + "mov " + sRegOptim + "," + sLocalisation 
+      		else
+      			sCodeASM += rc + "lea " + sRegOptim + "," + sLocalisation 
+      		fin
+      	fin
+      FIN
+      	
+      
+      
       
       RENVOYER sCodeASM 
      type : 458752
