@@ -17,6 +17,9 @@ class :
    -
      code : |1-
       // gestion des point d'entrée pour la cryptographie ECDSA pour Bitcoin
+      
+      privé
+      	
       ECDSA_BTC est une Classe
       	courbeBtc    est CourbeElliptique_secp256k1 // pour opérations sur les points de la courbe a la norme secp256k1
       	corpsECC     est CorpsModulaire dynamique   // pointeur sur le corps utilisé par <courbeBtc> pour les points
@@ -53,16 +56,65 @@ class :
       PROCEDURE Destructeur()
      type : 655360
    -
+     name : CréePaireCléPrivéePublique
+     procedure_id : 2182283788099713812
+     type_code : 12
+     code : |1-
+      // renvoie une paire : ( clé privée, clée publique )
+      procédure CréePaireCléPrivéePublique() : ( Entier256, Point256 )
+      
+      // génère une clé privée au hasard. 
+      cléPrivée est Entier256
+      cléPrivée.affecteAvecBuffer( HasardCryptoBuffer(32) )
+      // calcule la clé publique associée
+      cléPublique est Point256
+      cléPublique = courbeBtc.MultiplicationScalairePointGenérateur_PrecalInv( cléPrivée )
+      
+      renvoyer (cléPrivée, cléPublique)
+     type : 458752
+   -
      name : DériveCléPubliqueDepuisCléPrivée
      procedure_id : 1980737504169448104
      type_code : 12
      code : |1+
       // renvoie la clé publique associée a une clé privée
       // => la clé publique est la somme K fois du point générateur de la courbe
-      procédure DériveCléPubliqueDepuisCléPrivée( CléPrivée Entier256  ) : Point256
+      procédure DériveCléPubliqueDepuisCléPrivée( cléPrivée Entier256  ) : Point256
       
       // rebond version optimisée de la courbe elliptique
-      renvoyer courbeBtc.MultiplicationScalairePointGenérateur_PrecalInv( CléPrivée )
+      renvoyer courbeBtc.MultiplicationScalairePointGenérateur_PrecalInv( cléPrivée )
+      
+     type : 458752
+   -
+     name : SigneBuffer
+     procedure_id : 2182288980717890457
+     type_code : 12
+     code : |1+
+      // signe le buffer <chaineASigner> avec la a clé privée <CléPrivée>
+      procédure SigneBuffer( chaineASigner buffer, cléPrivée Entier256 ) : SignatureEcdsa
+      
+      // conversion de <chaineASigner> en entier256 par hash
+      NombreASigner est Entier256 
+      NombreASigner.affecteAvecBuffer( HashChaîne(HA_HMAC_SHA_256_DOUBLE, chaineASigner) )
+      // rebond version entier
+      renvoyer SigneNombre( NombreASigner, cléPrivée )
+      
+     type : 458752
+   -
+     name : vérifieSignatureBuffer
+     procedure_id : 2182292661504933915
+     type_code : 12
+     code : |1+
+      // vérifie la signature 
+      // renvoie ( singarture OK, Message si erreur )
+      procédure vérifieSignatureBuffer( chaineSignée est buffer , CléPublique Point256, signature SignatureEcdsa  ) : (booléen, chaine )
+      
+      // conversion de <chaineASigner> en entier256 par hash
+      NombreSigné est Entier256 
+      NombreSigné.affecteAvecBuffer( HashChaîne(HA_HMAC_SHA_256_DOUBLE, chaineSignée) )
+      // rebond version entier
+      RENVOYER vérifieSignatureNombre( NombreSigné, CléPublique, signature  )
+      
      type : 458752
    -
      name : SigneNombre
@@ -70,7 +122,7 @@ class :
      type_code : 12
      code : |1+
       // signe <NombreASigner> avec la clé privée <CléPrivée>
-      procédure SigneNombre(  NombreASigner Entier256, ClePrivee Entier256 ) : signatureEcdsa
+      procédure SigneNombre(  NombreASigner Entier256, cléPrivée Entier256 ) : signatureEcdsa
       
       recalculer:
       // il faut tirer un nombre K au hasard
@@ -123,86 +175,59 @@ class :
       renvoyer signature
      type : 458752
    -
-     name : VerifieSignature
+     name : vérifieSignatureNombre
      procedure_id : 1979779374274356610
      type_code : 12
      code : |1+
       // vérifie que <signature> est bien la signature de <Nombre> avec une clé correspondant a <CléPublique>
-      procédure VerifieSignature( NombreSigné Entier256, CléPublique point256, signature SignatureEcdsa, erreurSiEchec_OUT est chaine  ) : booléen
+      procédure vérifieSignatureNombre( NombreSigné Entier256, CléPublique point256, signature SignatureEcdsa ) : (booléen, chaine)
       
-      
+      erreurSiEchec_OUT est chaine 
       // vérification des pré-requis sur la clé publique
       si CléPublique.estZéro() ALORS
-      	erreurSiEchec_OUT = sERR_CLEPUB_INVALIDE + "La clé est nulle (pb d’initialisation ?)."
-      	renvoyer faux
+      	renvoyer (faux, sERR_CLEPUB_INVALIDE + "La clé est nulle (pb d’initialisation ?).")
       FIN
       si pas courbeBtc.pointEstSurLaCourbe(CléPublique) ALORS
-      	erreurSiEchec_OUT = sERR_CLEPUB_INVALIDE + "La clé n'est pas sur la courbe elliptique."
-      	renvoyer faux
+      	renvoyer (faux, sERR_CLEPUB_INVALIDE + "La clé n'est pas sur la courbe elliptique.")
       FIN
-      // --- Test commenté : condition trouvée dans Wikipedia mais pas dans secp256k1_ecdsa_sig_verify() de https://github.com/bitcoin-core/secp256k1
-      ////  N * CléPublique doit être égal a 0
-      //nQ est Point256 = courbeBtc.multiplicationScalairePointJacobi( CléPublique, courbeBtc.Ordre )
-      ////nQ_DBG est Point256 = courbeBtc.MultiplicationScalairePoint( CléPublique, courbeBtc.Ordre )
-      ////dbgAssertion(nQ_DBG.PointestEgalA(nQ))
-      //si pas nQ.x.estEgalAZéro() ALORS
-      //	erreurSiEchec_OUT = "La clé publique est invalide : elle ne respecte par l'ordre de la courbe elliptique"
-      //	RENVOYER Faux
-      //FIN
-      
       // vérification des pré-requis sur la la signature
       // x et y de la signature doivent être dans [1,n-1]
       si signature.R.estEgalAZero() ALORS
-      	erreurSiEchec_OUT = sERR_SIGNATURE_INVALIDE + "R = 0"
-      	renvoyer faux
+      	renvoyer (faux, sERR_SIGNATURE_INVALIDE + "R = 0")
       FIN
       SI signature.S.estEgalAZero() ALORS
-      	erreurSiEchec_OUT = sERR_SIGNATURE_INVALIDE +"S = 0"
-      	RENVOYER Faux
+      	RENVOYER (Faux, sERR_SIGNATURE_INVALIDE + "S = 0")
       FIN
       SI signature.R.estSupérieurOuEgalA( corpsOrdre.P ) ALORS
-      	erreurSiEchec_OUT = sERR_SIGNATURE_INVALIDE + "S trop grand"
-      	RENVOYER Faux
+      	RENVOYER (Faux, sERR_SIGNATURE_INVALIDE + "R trop grand" )
       FIN
       SI signature.S.estSupérieurOuEgalA( corpsOrdre.P ) ALORS
-      	erreurSiEchec_OUT = sERR_SIGNATURE_INVALIDE + "S trop grand"
-      	RENVOYER Faux
+      	RENVOYER (Faux, sERR_SIGNATURE_INVALIDE + "S trop grand" )
       FIN
       
       // calcul de Y^-1 : inversion modulaire
-      inverseDeY est Entier256 = corpsOrdre.inverseModulo( signature.S )
-      
+      inverseDeS est Entier256  = corpsOrdre.inverseModulo( signature.S )
       // calcul du point : c1*G + c2*Q
       // OPTIM: en coordonnées de Jacobi, évite toute division modulaire (opération lente)
-      Coef1 est Entier256 = corpsOrdre.multiplicationModulo(NombreSigné, inverseDeY)
-      Coef2 est Entier256 = corpsOrdre.multiplicationModulo(signature.R, inverseDeY)
-      
-      
-      P1_Jacobi est Point256_3D  = courbeBtc.MultiplicationScalairePointGenérateurJacobi(               Coef1 )
-      P2_Jacobi est Point256_3D  = courbeBtc.multiplicationScalairePoint_OptimiseJacobi(   CléPublique, Coef2 ) 
+      Coef1     est Entier256   = corpsOrdre.multiplicationModulo(NombreSigné, inverseDeS)
+      Coef2     est Entier256   = corpsOrdre.multiplicationModulo(signature.R, inverseDeS)
+      P1_Jacobi est Point256_3D = courbeBtc.MultiplicationScalairePointGenérateurJacobi(               Coef1 ) 
+      P2_Jacobi est Point256_3D = courbeBtc.multiplicationScalairePoint_OptimiseJacobi(   CléPublique, Coef2 ) 
       // P = P1 + P2
       P_Jacobi est Point256_3D 
       P_Jacobi = courbeBtc.pointPlusPoint_Jacobi( P1_Jacobi ,  P2_Jacobi)
-      // conversion finale en coord weistrass
-      //  x = X/Z^2
-      //P1plusP2 est point256 = courbeBtc._JacobiVersPoint(P1plusP2_Jacobi)
-      //PX est Entier256 = P1plusP2.x 
       //OPTIM : on doit vérifier  P.x          = signature.R
       //        soit				PJ.X/PK.Z^2 =  signature.R
       //        équivalent a      PJ.X		=  signature.R * PJ.Z^2
       SRfoisPJZCarre est Entier256 = courbeBtc.corps.multiplicationModulo( signature.R, courbeBtc.corps.carréModulo(P_Jacobi.Z) ) 
-      
       // signature OK ssi X == S.R
-      //si PAS PX.estEgalA( signature.R ) alors
       si PAS P_Jacobi.X.estEgalA( SRfoisPJZCarre ) alors
-      	// signature pas OK
-      	erreurSiEchec_OUT = ChaîneConstruit( <§$0000§>, ...
-      										  NombreSigné.VersChaineHexa(), CléPublique.x.VersChaineHexa(), CléPublique.y.VersChaineHexa() )
-      	renvoyer faux	
+      	// signature invalide 
+      	renvoyer (faux,  sERR_SIGNATURE_INVALIDE + "Elle ne correspond a la paire messsage/clé publique." )
       fin
       
       // signature valide 						
-      RENVOYER Vrai
+      RENVOYER (Vrai, "")
      type : 458752
    -
      name : xVersCléPublique

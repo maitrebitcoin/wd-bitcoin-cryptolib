@@ -34,6 +34,44 @@ procedure_set :
       si m_gpclEDCSA = null ALORS
       	m_gpclEDCSA = allouer un ECDSA_BTC
       FIN
+      
+     type : 458752
+   -
+     name : CréePaireCléPrivéePublique
+     procedure_id : 2182374738330719052
+     type_code : 15
+     code : |1+
+      // crée une nouvelle paire de clé : ( clé privée, clé publique )
+      PROCÉDURE CréePaireCléPrivéePublique() : ( Entier256, Point256 )
+      // init de m_gpclEDCSA si c'est 1er appel de l'API
+      _InitSi1ErAppel()
+      // rebond 
+      renvoyer m_gpclEDCSA.CréePaireCléPrivéePublique()
+      
+     type : 458752
+   -
+     name : SigneBuffer
+     procedure_id : 2182375661748771995
+     type_code : 15
+     code : |1+
+      // signe le buffer <chaineASigner> avec la a clé privée <CléPrivée>
+      PROCÉDURE SigneBuffer( chaineASigner buffer, cléPrivée Entier256 ) : SignatureEcdsa
+      _InitSi1ErAppel()
+      // rebond 
+      RENVOYER m_gpclEDCSA.SigneBuffer(chaineASigner, cléPrivée)
+     type : 458752
+   -
+     name : vérifieSignatureBuffer
+     procedure_id : 2182373316695819969
+     type_code : 15
+     code : |1-
+      // vérifie la signature 
+      // renvoie ( signature OK, Message si erreur )
+      PROCÉDURE vérifieSignatureBuffer( chaineSignée est buffer , CléPublique Point256, signature SignatureEcdsa  ) : (booléen, chaine )
+      // init de m_gpclEDCSA si c'est 1er appel de l'API
+      _InitSi1ErAppel()
+      // rebond 
+      RENVOYER m_gpclEDCSA.vérifieSignatureBuffer( chaineSignée, CléPublique, signature  )
      type : 458752
    -
      name : DériveCléPubliqueDepuisCléPrivée
@@ -55,26 +93,27 @@ procedure_set :
      type_code : 15
      code : |1+
       // signer une nombre avec une clé privée.
-      procédure SigneNombre( nombreASigner Entier256, cléPrivée Entier256 ) : signatureEcdsa
+      procédure SigneNombre( NombreASigner Entier256, cléPrivée Entier256 ) : signatureEcdsa
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond
-      RENVOYER m_gpclEDCSA.SigneNombre(nombreASigner, cléPrivée)
+      RENVOYER m_gpclEDCSA.SigneNombre(NombreASigner, cléPrivée)
       
      type : 458752
    -
-     name : VerifieSignature
+     name : VerifieSignatureNombre
      procedure_id : 2024539397447712176
      type_code : 15
      code : |1+
       // vérifie que <signature> est bien la signature de <Nombre> avec un clé correspondant a <CléPublique>
       // renvoie (OK, détailErreurSiEchec)
-      procédure VerifieSignature( NombreASigner Entier256, CléPublique Point256, signature SignatureEcdsa ) : (booléen, chaine)
+      procédure VerifieSignatureNombre( NombreASigner Entier256, CléPublique Point256, signature SignatureEcdsa ) : (booléen, chaine)
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond
       détailErreurSiEchec_OUT est chaîne
-      signatureOK est un booléen =  m_gpclEDCSA.VerifieSignature( NombreASigner , CléPublique , signature , détailErreurSiEchec_OUT  ) 
+      signatureOK est un booléen 
+      (signatureOK,détailErreurSiEchec_OUT ) =  m_gpclEDCSA.VerifieSignatureNombre( NombreASigner , CléPublique , signature   ) 
       renvoyer (signatureOK, détailErreurSiEchec_OUT)
      type : 458752
    -

@@ -1422,8 +1422,14 @@ class :
       FIN
       // si VX_Test<0
       SI VY_Resultat.bit(255)=1 ALORS
-      	// y' = -y
-      	VY_Resultat	= corps.négationModulo( VY_Resultat ) 
+      	// Cas particulier ou k2 est > ordre de la courbe 
+      	si VY_Resultat.estSupérieurOuEgalA( corpsOrdre.P ) ALORS
+      		//VY_Resultat = soustraction( VY_Resultat, corpsOrdre.P  )	
+      		VY_Resultat = negation( VY_Resultat  )	
+      	sinon
+      		// y' = -y
+      		VY_Resultat	= corps.négationModulo( VY_Resultat ) 
+      	fin
       	signeY		= -1
       FIN	
       	
