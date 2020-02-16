@@ -961,12 +961,15 @@ class :
       PointRésultatJ  est Point256_3D
       // 	32 additions par blocs de valeurs K*P précalculées
       X est un entier
+      _8KibtsDeK est entier
+      
+      // debut de boucle pour trouver le 1er groupe de 8 bits non null
       POUR X = 0 À 31
       	// recup de 8 bits K 
-      	I est entier = K._8Bits(X)
-      	SI I ALORS
+      	_8KibtsDeK = K._8Bits(X)
+      	SI _8KibtsDeK ALORS
       		// récup de  G = I* (2^X) précalculé 
-      		PointRésultatJ=  TabPointPow2PreCalculé_256_J[I+X*256]
+      		PointRésultatJ=  TabPointPow2PreCalculé_256_J[_8KibtsDeK+X*256]
       		X++
       		sortir
       	fin
@@ -974,10 +977,10 @@ class :
       // suite avec PointRésultatJ non null
       POUR X = X À 31
       	// recup de 8 bits K 
-      	I est entier = K._8Bits(X)
-      	SI I ALORS
+      	_8KibtsDeK = K._8Bits(X)
+      	SI _8KibtsDeK ALORS
       		// récup de  G = I* (2^X) précalculé 
-      		valeurKPow2XJ  est Point256_3D dynamique <- TabPointPow2PreCalculé_256_J[I+X*256]
+      		valeurKPow2XJ  est Point256_3D dynamique <- TabPointPow2PreCalculé_256_J[_8KibtsDeK+X*256]
       		API( pfPointAddition_Jacobi_ASM, &PointRésultatJ.x, &PointRésultatJ.y, &PointRésultatJ.z, &valeurKPow2XJ.x, &valeurKPow2XJ.y, &valeurKPow2XJ.z  )
       	FIN
       FIN
