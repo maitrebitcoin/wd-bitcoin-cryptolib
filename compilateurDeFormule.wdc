@@ -40,9 +40,10 @@ class :
       FIN
       // types de variables gérées
       ETypeVar est une énumération
-      	PUI256 // pointeur sur un entier 256 bits (paramètres uniquement)
-      	UI256  // entier 256 bits (var locale uniquement )
-      	UI8    // entier sur 8
+      	PUI256      // pointeur sur un entier 256 bits (paramètres uniquement)
+      	PST256_XYZ  // pointeur sur une structure de 3 entier 256 bits X,Y,Z (paramètres uniquement)
+      	UI256  		// entier 256 bits (var locale uniquement )
+      	UI8    	    // entier sur 8
       fin
       EPortée est une énumération
       	paramètre
@@ -50,10 +51,11 @@ class :
       FIN
       // 1 variables
       STVariable est une structure
-      	nom		est chaine		// nom de la variable
-      	type	est ETypeVar	// type de la variable
-      	portée	est EPortée		// porte de la variable
-      	indice	est entier		// n° de la variable dans sa portée, commence a 0
+      	nom		     est chaine		// nom de la variable
+      	type	     est ETypeVar	// type de la variable
+      	portée	     est EPortée	// porte de la variable
+      	indice	     est entier		// n° de la variable dans sa portée, commence a 0
+      	offsetStruct est entier    // si la variable est dans une structure (ex: P.Z), offset par rapport au début (32 ou 64)
       fin 
       // 1 fonction
       STFonction est un structure
@@ -78,6 +80,8 @@ class :
       
       // taille en octet des type gérés
       constant nTaille_INT256 = 32 
+      // nom de type gérés
+      constant sNomType_POINT32 = "Point3D"
       
       // taille prise pas un registre
       CONSTANT nTaille_REG = 8
@@ -103,13 +107,13 @@ class :
       PROCEDURE Destructeur()
      type : 655360
    -
-     name : declarePrototype
+     name : _declarePrototype
      procedure_id : 2181992559179551443
      type_code : 12
      code : |1+
       // déclare le prototype (ie les paramètres de la fonction a générér)
       // ex: PointDouble(X,Y,Z)
-      procédure declarePrototype( sProto est chaine )
+      procédure privée _declarePrototype( sProto est chaine )
       
       
       //
@@ -128,10 +132,28 @@ class :
       
       // extraire les paramètres
       sListeParam est chaine = milieu(sProto, nPosDebut+1, nPosFin-nPosDebut-1 )
-      sListeParam = SansEspace(sListeParam,sscTout)
-      pour TOUTE CHAÎNE sParmaI DE sListeParam SÉPARÉE PAR ","
-      	// on déclare le paramètre
-      	_déclareParamètre(sParmaI)
+      sListeParam = SansEspace(sListeParam)
+      sExprParametreI est chaine
+      pour TOUTE CHAÎNE sExprParametreI DE sListeParam SÉPARÉE PAR ","
+      	sExprParametreI  = SansEspace(sExprParametreI)
+      	typeParamètre est ETypeVar = PUI256 
+      	// si le type est défini.
+      	// ex :"P Point3D"
+      	sNomParametre est chaine = sExprParametreI
+      	sNomType      est chaine = ExtraitChaîne(sExprParametreI,2," ")
+      	si sNomType<>EOT ALORS
+      		// seul type supporté
+      		si sNomType=sNomType_POINT32 ALORS
+      			sNomParametre = ExtraitChaîne(sExprParametreI,1," ")
+      			typeParamètre = PST256_XYZ
+      		sinon
+      			ErreurDéclenche(ERR_COMPILATION_FORMULE,"type non géré : " + sNomType )
+      			RETOUR
+      		FIN
+      	FIN
+      	
+      	// on déclare le paramètre 
+      	_déclareParamètre(sNomParametre, typeParamètre)
       FIN
       	
       
@@ -142,7 +164,7 @@ class :
      procedure_id : 2180413497281210159
      type_code : 12
      code : |1+
-      procédure _déclareParamètre( nom chaine, type ETypeVar = PUI256 )
+      procédure privée _déclareParamètre( nom chaine, type ETypeVar )
       dbgAssertion(nom<>"")
       dbgAssertion(pas tabVariables[nom]..existe)
       
@@ -195,7 +217,7 @@ class :
      name : _bParse
      procedure_id : 2181489094526545596
      type_code : 12
-     code : |1-
+     code : |1+
       // analyse syntaxique de <sCode>
       procédure privee _bParse( sCode chaine, resultat tableau de STFormuleParsee, sProto_OUT chaine ) : booléen
       
@@ -266,6 +288,44 @@ class :
       renvoyer vrai
      type : 458752
    -
+     name : _bChercheVariableParNom
+     procedure_id : 2182270289013573270
+     type_code : 12
+     code : |1-
+      // recheche une variable a partir de son nom
+      procédure _bChercheVariableParNom( sNomVar est chaine ) : (booléen, STVariable )
+      
+      // cas de P.X, P.Y, ....
+      si position(sNomVar,".")>0 ALORS
+      	sNomStruct est chaine = ExtraitChaîne(sNomVar,1,".")
+      	sNomMembre est chaine = ExtraitChaîne(sNomVar,2,".")
+      	SI PAS :tabVariables[sNomStruct]..Existe ALORS
+      		stVarVide est STVariable
+      		RENVOYER (Faux, stVarVide)
+      	FIN
+      	stVarResultat est STVariable = tabVariables[sNomStruct]
+      	// offset selon le membre
+      	selon sNomMembre
+      		cas "X" : stVarResultat.offsetStruct = 0
+      		cas "Y" : stVarResultat.offsetStruct = 32
+      		cas "Z" : stVarResultat.offsetStruct = 64
+      		AUTRE CAS
+      			// non géré
+      			dbgAssertion(Faux, sNomMembre) 
+      	FIN
+      	// var trouvée et initialisée
+      	renvoyer (vrai, stVarResultat)
+      FIN
+      
+      
+      si pas :tabVariables[sNomVar]..Existe ALORS
+      	stVarVide est STVariable
+      	renvoyer (faux, stVarVide)
+      FIN
+      // OK variable trouvée
+      renvoyer (vrai, :tabVariables[sNomVar] )
+     type : 458752
+   -
      name : compileFormule
      procedure_id : 2180632166951339637
      type_code : 12
@@ -282,7 +342,7 @@ class :
       	renvoyer  0 // erreur
       FIN
       // Init proto
-      declarePrototype(sProto)
+      _declarePrototype(sProto)
       si ErreurDétectée ALORS
       	RENVOYER  0 // erreur
       FIN
@@ -293,14 +353,17 @@ class :
       // parcourt des lignes a compiler 
       stLigneI est STFormuleParsee
       POUR TOUT stLigneI de résultatParsing
+      	bVarExiste est un booléen
       	// si un var source est utilisé non déclarée
       	si pas stLigneI.bvar1EstLiteral alors // ignorer les littéraux
-      		SI PAS :tabVariables[stLigneI.var1]..Existe ALORS
+      		bVarExiste = _bChercheVariableParNom( stLigneI.var1 ) 
+      		SI PAS bVarExiste  ALORS
       			ErreurDéclenche(ERR_COMPILATION_FORMULE,"variable inconnue : "  + stLigneI.var1  )
       			RENVOYER  0 // erreur
       		FIN
-      		fin
-      	SI PAS :tabVariables[stLigneI.var2]..Existe ALORS
+      	fin
+      	bVarExiste = _bChercheVariableParNom( stLigneI.var2 ) 
+      	SI PAS bVarExiste ALORS
       		ErreurDéclenche(ERR_COMPILATION_FORMULE,"variable inconnue : "  + stLigneI.var2  )
       		RENVOYER  0 // erreur
       	FIN	
@@ -416,10 +479,6 @@ class :
       si _bParseUnOpérateur(expression,"*", var1_out,var2_out,operation_out ) ALORS
       	renvoyer Vrai	
       FIN
-      // 3*B
-      SI _bParseUnOpérateur(expression,".", var1_out,var2_out,operation_out ) ALORS
-      	RENVOYER Vrai	
-      FIN
       // A+B
       SI _bParseUnOpérateur(expression,"+", var1_out,var2_out,operation_out ) ALORS
       	RENVOYER Vrai	
@@ -428,7 +487,10 @@ class :
       SI _bParseUnOpérateur(expression,"-", var1_out,var2_out,operation_out ) ALORS
       	RENVOYER Vrai	
       FIN
-      
+      // 3.B => a la fin pour que "P.X" soit prioritaire
+      SI _bParseUnOpérateur(expression,".", var1_out,var2_out,operation_out ) ALORS
+      	RENVOYER Vrai	
+      FIN
       
       // erreur de syntaxe
       renvoyer faux
@@ -438,14 +500,18 @@ class :
      procedure_id : 2180638502028265783
      type_code : 12
      code : |1+
-      // générèe le code ASM pour init d'un paramètre avant appel de procédure
+      // génère le code ASM pour initialisation d'un paramètre avant appel de procédure
+      // ex : "mov rcx,[rsp-20]"
       // <numParam> : commence à 0
       procédure privée _genCodeAsmInitParam( numParam entier, nom chaine) : chaine
       
       // récup var
-      varI est STVariable dynamique <- :tabVariables[nom]
+      varI est STVariable //dynamique <- :tabVariables[nom]
+      bOk est un booléen
+      (bOk,varI) = _bChercheVariableParNom( nom )
+      dbgAssertion(bOk, nom )
       // SOURCE : ou récupérer la valeur de varI
-      varI_location est chaine
+      varI_location est chaine  // morceau de code pour la source. ex [rsp+8]
       bScrRegistre  est un booléen = faux
       bScrParamètre est un booléen = varI.portée = paramètre
       
@@ -456,8 +522,8 @@ class :
       	nOffset est un entier =  8 // prologue
       	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
       	nOffset              += (varI.indice)*nTaille_REG 
-      	varI_location = "[rsp+" + nOffset +"]"
-      	
+      	varI_location = "[rsp+" + nOffset + "]"
+      
       
       sinon 
       	// variable locale : stoquée a partir de rbp
@@ -480,7 +546,7 @@ class :
       sCodeASM est chaine
       
       // DEST.
-      // ex: lea rcx,[rbp+8]
+      // ex: "lea rcx," 
       // recup du nom du registre a effecter
       sNomRegDest est chaine = _sGetNomRegPourParamNum64(numParam + 1)
       // si la source est un registre
@@ -506,6 +572,14 @@ class :
       SI :bAvecCommentaire
       	sCodeASM += " ; " + nom
       FIN
+      // si la source est dans un structure, on rajoute le décalage
+      si varI.offsetStruct ALORS
+      	// ex: "add rcx,32"
+      	sCodeASM += RC 
+      	sCodeASM += "add " + sNomRegDest + "," + varI.offsetStruct
+      
+      FIN
+      
       
       // MAJ utilisation des registres
       _VarUtiliseRegistre( varI.nom , sNomRegDest)

@@ -15,7 +15,7 @@ window :
   -
     name : priv_pub
     identifier : 0x2b7cfee80119d106
-    internal_properties : BQAAAAUAAACq2znJSi8KoTx/tQmsKgeNGgWAAv1mEcfA7nQsfexeF0ChjIqPnAqMvulIdz+0WMg4wCIBl4oIko5iNpYWyOUN0TVz5mGD7GzMHuvAI0Nxtmrd4I8jpnD+h4q8jweflXqpCILBi56Q9hrEChkPKn+m8OZqAHuRc9XYry/t3l1+liJTZF4s0cfHlllVhyF6ytFWuKnOb+bpfHMvalZVOLm1ApQpp9x+C+//QRO3gmXr3O0Swe/3oA1B7GRlG+Ce7mVOXJsgWd2fY6CUEHxlAWCfXoE6PaTdhmPle3lVJEGicXtgmjVMkIrN7l/HmJDwINF71SvKvAOMYoKSbOgpOtnFXXr4yO7ZdvRVQAa93M8Q32t+eHQkM2Fy/t8kz4FBUv0T1oyakGQFq4QfjHkZdRhl38RlLUeu/WiZbwvnFDwHg+gqkNcuDKNftCG1adKpLumT5hR/GzriW5XXSmDjuJNjToet2OcREqh9yVXYixx1e9hitoqTluo1R4ut6EvlDkz21obTu27SlXm3EY4m8zEGoQAGEIwlJp0n2qJRM83syVukNzKn1JiDAXYgv3dLeZsLhJFxXT+en8Jg8Afyx22mwqg1Y0Wu8FsW64pTKrcOMcvq5of7td54ESdfcoMWIsSollzKy5irIJofSe/wq5ik42zvzEsbkXLjoD8YvqmGeok091QvUHApGQSSHnPqlrBjV8dagf+V+OODuXbxgCosWpAl2aGTYVBR1PSC43gnTeez4aOGb9TFwx5ISFZPX3YRUXpvztAw7Gybow==
+    internal_properties : BQAAAAUAAADaC2k52t8asczvxbn82ncdijWwsg3W4dfQnoScDdyO53ARfLrfTNpcjlmY508kyJgo8BLxZzqYIh6SRgamOBXdQaWjFjHzPLyczrtwc3MhRpoNEL9zFgBOV/oMP1dPxYqZuDKxGw7gBir0Ggmfmi/2YBbasAvBgyUoH3+drg3uJlIDFM68wNj3Pa0zyOWWOzP4RIcwI4ZcAzh5YsbZZEGpjnQl8yC6+3fbAfO/JmmbWMFiZRO7jJ25ODTtcyR6rpn6jP+0vZlXa9z0WMRJZWDDOnlWoXiJThsxq7n9aEUKlX8YflG4pHp1yhffABxU6AX3df/mUIfkMsby7LCtTmkpUXJs9HJNhtwZcLYVmAPAG+8+XNho95kKSndk113FegF3bmDGFHbjAf5NVmsbfx7PTYpfBzFYw67LRaUhXv7F3aZIshkonjF1zj+3AzRbtFMBtAZhZXRIQZ9ldBqlwomF9E3n0jn7+BZPX4fCLU67TR7IyKw1oPDDmZHnci0XlDZ07Pi13RiIQ3O1A5CwTVfY9/4gKi5XVEuhmJx7Zb8yswmyIfyp5oZpAxyy4dHtJ/VZlBBvrBRrDMlH2Sq6j6VbKU0LJ5ae4EsGG7pjOoc+4Ru6NjdLZY6oQRdPQlMmEjQ4Juy624ibEIoPuX9Ae0jUs7y//BtLwSJTUG8ojvk2qlkExwR/ACBZSfSCboP6hqBzZ9dKke+F6JPzKcYBkBocqmB1CXHDkQABBKTSMwiXPfdDcRMWnwT1M444WKYfD6YhYQrfXkAg3BzLUw==
     type : 4
     code_elements :
      type_code : 4
@@ -68,7 +68,7 @@ window :
   -
     name : ECDSA_SigneNombre
     identifier : 0x2b9198d600a6d698
-    internal_properties : BQAAAAUAAACXiNQelJCjrfvKiHNJu2W5PWFeItIFYxjl3Tkrni1YbTZVZAWJE4iJSharO0hZa1wAlTL4evluVJzo954bhToAaLv+Dm2XOo2PHIJaaT3cs31fitq3PGO7fT4+qXVAr5lrdw55SjwFiMfy8HufgIa/zsqRb5iy2FzeiMiC3ZPOXbQLm8PEbIRiMeyq+6ouJMnBqG1hIpHtz+HrvbfWq58bTKSxcTcY4zSo5aD+7s4WXrFHzx6cAzn2554RXmde//NXGXnTSjr3qGmv49DkjZOY631eP43Uub9WkR5/aLVSsUl0haT5h1duq5xHKbGTFbFVE/G1i+KOdLONb9HEgubiPbheAbN4L1TJ8xvGo89LMgjtZARA1KiumFqkWNjJryqBlmZPBXhBK+SZOUhh7+6Ydjmrbj3qcSrHQ/50UuAjviPdLpJKkA8bkCdSzozfcHpwNZSEydzQAb8jfV3J+BNuldBtQfsdxqrj4XxJS0777CG91LPjuvYNr0GML0nRGm9534wYMcbaX99H9mEq9zW5VMMaAwx7MF0n+DVMFuDTN8e7xaFtoBzPlQgVzAWxm7RAMglgChJSqar2u5Ui6+kzW5yRXUIAv4TVq78rlRxBYSX0g7VuK7mNWQkEX0uyiXoARjQb5SQvaPZFZnZ6VqsGn3l0Upudw1o9bKsWrDEOM8MQU/PxwU1myyja3Ol4eLcsoUykXDdwyUM2mr+VAWGumpqoBDVokIfs6FWdAwoKkcm8hgQw
+    internal_properties : BQAAAAUAAABQJwa7ko54cZp24ZXL7U0ZrLtoFHHIyzU2e6wLsNpjE3l+C7wPtm2l/YfbQz6EEICT7J3Rp1oEraesLjv++TKMhYQ4jSamhwnYz8dTeXVHxnGYIC5MZxJJ9MEqw0KeiQ2ajVFpBm/XChiXLJ7e/k6HGpVKnQZCebE+xr2RC7KyvZijSGfwuld/i+h2DTfMph4lMhkGmZCS4C6Noz9cDaO7hGx748Lo/K4gDBBzj6RJr633BOrFK853aNvVOxQqO5HyJF0v9Od4XITYTlxVszRwLJ7UkCEtnI5UffcAgRNjKAU5rmY2sbQ5ZrW+3iSFNB22MUMp8dqxvmS5CkyxBBKCuGgIGQSLv62GG2mLtCzmajAz7T076+Sx1MD75wA/BYyvI/DYeYgtxrWVeBGdjQQmCLZjD51GecMWP6njfHK92Ink3DmcojFIS4VvT1zhcmgK4CRvj96CdPCZNl69jItgK/sBdqGBTjP6W8ka4UaXjOVqDIC18kII1Jud/IMBViddmjDhhZbe8twf4Ti8bbtHVhwewHDL5N4utE7BOmq1/XHCwUbP2GA+2riMA8+PsU6GXJH+GSvd5xJZDYe73JrEtlhcX7Mu/81OsFahpZlN0ymws9/4ylaxxQROX8TnnpWJyGMMAZzTcHsh2f02L7mhZJKN7I+qOdYBzSmzkTgFHOwofm/xhTuJ5KanLqg96J9RfznFsN4h+Vlr0YBvduU2SluMXKtYICHsM90w1paQGdF/sw==
     type : 4
     code_elements :
      type_code : 4
@@ -114,7 +114,7 @@ window :
   -
     name : ECDSA_SigneNombre_ECDSA_VérifieSignature
     identifier : 0x2c02cf800181802d
-    internal_properties : BQAAAAUAAAB09Zg4/OhtEIbrcUDhkav1kw4WWXc3KzWEnu1KG2fzOncoYzWNiQtjP4NQrtEzWTomdve0rv4fYoYKQyE43nYXDMSuEMCs7WKrs2S9e/AJOkpq3OMJkDUz8chIKQvL8YUQynRkEyLVPiWqaa0wcw1ZwcOidFnm2+JzmY44Mi3Wc1GyvlLmuRKOT5wUZP9CJzV9QUv+RMOKt0Lq+woY9/gTXeTh27RqzDZGQagMe2X9MR4ATGfaxmo1vE5WPTNoZJfgsCrpsIOo5P87VrdO1jY0mLHUHy2alXpy8Su6HI/DIL4AZT9tM1/UyxWjDhr58cH1wYPqtMI5BylTejTxrSQlNPoRqK4nAtNuuSnye3b89sIa/qP0N5aOwNnNelHomjtcV180iTfKf2kexW2n6b9eP9vpCIG2RBaK5dU2NJUQ+qRcscZ8mBhCTBvyDJa2XPwTctfnazB5Ipg8QN9X0CjofA+PDeXMQ77aOAvRXmvsUP7hDNfzgG+T7B3XZfJCXT5vpregtqHgeQ6lT0HP9JKyWI/e7Fg/DwGO/wGhjpMt8XsrDjxyLl5eqWa2bhiBW7ffgzc3S8GnwV/bPaxQmyxV/Nx9ZbzuSPhEWr2OP/xSYaYMF6WZJAPMxdfL5yI5vx3Slyn+llXjOxBPaRofbRWX8Yu3qY8qrX6NPPgdYQZaHcXxGBIEO4g2uPMrzuND9Pe5JhlXjS4hbeuS5VGCjakC7RRFmWtQzX7Xp6Ak45mZjKFW7NJs4aGuSj4YAzdy3hZKyxzERzDbeJjHXubnwA==
+    internal_properties : BQAAAAUAAABXcqlR4IRa8Z5UFt2czH7xQ9eGEbah808duB0nfQkNoCUNABcmgTyQHtFN1AgMqJzVQYAdLZt2OcBkRk2VqsAcuC5An19IMNJyFrT1BmlGcUmOAy3x5GunW7fO461c1rHpXGYYHy9OyL0/Ncp7/T2RjHHGz4xSuh9SsGtCjdLqNLzqbFF6CCLxNSp7RZvReh7K3iv+cwKUikEMveAE5k766vmm4lHpzvDDbVhrL2jTP6Ui5zJ/oVXrzDYFjGqHJO4Ld1mKnKf2d9DpgHVoZyD15hNhbtx+illRpykZVXcXr4nze5DuHNFnX6Z4CNUyPfKxrnYwmZnXzonBUZaADd2WfCowb23L+AWuZ7apwe4MPJRTnm89lwElsy2yfbR4PjAwR4IP9nYVXQn69p/wbRFQfFaXweLGzkx+pfLMq03wBhNZS3lzUCxCVrHj0JuAPgYu4+3s6gSNwp7eBxPGtPrS+3RZJrZW8eikhuABa+FMDDsMYnqquqV1HHmghyHSh8hIXWtZ54GO84DT1jcEHPJmexjkrXdLt2UwpUTT4VOHs7hSOAv//OqGE4w/Ru0NOaXomEy3gCWiiQN2CYQK6mHzGiPY2v1O/eV3KN1ujWSPsippwKpYy8bBXgZTMtjgECzqrQDj4Vev7Nwj1CyKeYG/NFA5OGvpdhPnYSl0jx9jwMoS3+XCTEJAVcZDBvDJVtpywffeaITN3X8SNsePk6ockqeVyRUa30QTNhRlt3LgdVGjLS2Z5wt4UElyPHod+z1+P4NqlPUXWgJ5q/A=
     type : 4
     code_elements :
      type_code : 4
@@ -158,7 +158,7 @@ window :
   -
     name : ECDSA_VérifieSignature
     identifier : 0x2e1b496d009cf43f
-    internal_properties : BQAAAAUAAAB3K2KUk7+AwZEiRD3dX11nsRptjDmH6ujLcgg0KtzSH835C2soxUouMq4W4czFMZkFob+yLHFyKIEPKH2Mogg4pLYQKEC8PD4STAEmABOUP7pjYIpLCbiTa7dchFnHSaItJC43DHGS/QxqjXitZ+m4ox1kKGQIlvVVhCtKyD3iQW9qXltqml6Jr9fyryzulciJDluFqlV+XjaXSYu7/oEQ3a9IBCrNMzWBcrtiDbiWhYTVA8DwHlyujI2R+wsbasNtzuVtk5UUOLU6SRYTs+aR08WQwR22y6M9oTzBvtgwpY0H6ZWbn5jx8BaGndkZ+s5+r5xOfyLAFZKDxdtrNwTMV7e5UyPrNrZeB0Uqb99H8fq7aFQgPmiajFf8Zo1iP2OIGLfntTlxagafK1YXNk7Tw4kc7C1Du1XdRYRojHEjI0YVZ4IuhYtyQoVsTsYY1qVda1GQmbfImr2dO7kPKZGBxvZCveve+M0hOwZFY/f3Fdilawuht+iOTcu+VbdMAuRc/UOalWN6bgk98PeCSvsoxY/t5z6S5jAVMOn+nbZkBRWYScJG+m8PTBtoD2gXnhpGXyvI4OBs4OlM6dN48um9aryQkpfpyBJx3DY1D0Pztg6XX/pfgQMdP69NxeDge43NpKBEQHCTM4hNHlSwVTmHrXWJpNZNbmxJqZc5CCJA8JFlYdA03WeJn4BrNdnPnjUhFBTXdKqAIr6hlMRkkXd61wShHDjmW/GN9rEG6/IIwjSOWRgFkyuFKKSjKA==
+    internal_properties : BQAAAAUAAAA94cQ75M2WcjZbsmCmUWFrEdYWNGi92I3TIVAJM6DF6ihpf7/MHb28PfRItZaYKy+AzK/cOmlpyAkBJo6RXhJpvaXesfys0GIwmNQtro/c4taXfqAMaVARvhPkVn+6S4Me51LvDJliBJyDEj3FlWPu37mRfx7NpLxwZCv/QJVCHnRcyuxqgVkhmeMyL2zuFQhJjtvFCvV+ftY3SQt7PkGQnW/IxErtc1VhUntijfhWRYRVgwDQ/pwOLC0Ru0sb6sOtjqUtczVUGJUayZaTM2ZRU4VQwb0Wi0NdATxBPliwpQ2HKZX7fxjRkPZG3dkZ+o5+71yOX4LA9fIjhRvrd8TMl7c504MLtpb+pwUq7x+H8fo76JQAnih6bPf85o3ib9O4KGeXJUkh+hZPW4bnRr5D85mMXF3Ta6VttXQYHMFT0zbllzKe1TtCEjWcvpYoxtUN+4GAyUc4as1NK6lfecFxdgay7VuuaF0xazY1MwfnBcj1m7uRR9jenXvuhYccMlRMzTOKxTNqfpltoKcSWusYdR+dly7iFsBloJkubcZUdYXoOTL2Sl8fXMuY/zinDop2b4dqJkkevsRv+su3hYbQ4jTIhf0/jxsnUUuCIPCW5QyOHdrauu5kSLbTkn5aiFrQU7O8FgqZWvHIsS+qyZct8Oe7jN5taiCyFGteaMBmo7GXBYyAACLkLEVFXrTkVuWLfrYGRZLsjmot7B2kDvbg1id1xo8NIjdNEYiN2PV5jHOtZeGXQX3WfkrZ8g==
     type : 4
     code_elements :
      type_code : 4
@@ -251,7 +251,7 @@ window :
   -
     name : Compile_formule_Double_Jacobi
     identifier : 0x2e464ed4009f76b4
-    internal_properties : BQAAAAUAAAB8HvWjFjqjL92OQZ0MSPLumMcB5UniYywulJSUA1ih/gh5G3e4tXGU/UQIXS5I50NwnLusPgFFmEmBdg4JPkhCm0tMsD7JtC6iAgaO7sqWf9xPnYj/bOhd/DmFbG2vZgiO+0Aeze7Z0nEhJZxH8kh5q97S1Uhgq4WltzIsjMNQ/cpcclQqBcuKL/VOsN7pio6lmguN3nH8aCoZYuFIsu2yVvfiVCqd483ZShMazfhGvUR9a2ioprSuHJ0Ru0PDotNlDsX9Y+W0IA0C8T4j4zaZA/14idWeczPd0VyR5iDYBZVXifXbf4jZSP7+9bl5GjZelzQGJ+ooBcLDhVuDb9xMnwfpM/M7Fp4Gn/0S7x8nOTpj0DwYBgBq7KdMBpXqc99EpDNjUR19Rio7T4rj6gIPb1VYGJknJ/GhUZj8+JUXX5KBQ67K2efOZoEAYnLMqoG5xz28NZsUtgFJXx3LbdVN8sIuWTeCFNmlh+oZf8ubsdRRZ2c9y5QqobdSKYNgZhAICV/WUbdmWq2ZVOte7l9EIbsJ01qGUuwp0jdDKjnLNdXplPuzp446xe7tXmUFy+MMGYMYF4xlz00g65ZhM0AMFfKnqQKBuAbKM9gVrOUah7HoB3etgMs0Q2two3SF/MJ8AArf97lHYf5GIz156AA9wyjmJw90qsjvuVyTBErgIU/pt76+grxuutOv8Po++MvR6KAg+2ym6LgTDgeCINiGPMkVrLedMOW5VURbIGvJY6hamjxKlsgOJ4mYMw==
+    internal_properties : BQAAAAUAAAAmNaYHzt9vFi3ezOcKyR3F0u/FwYaIOoZ6YFlMBP3SAlFEP8cga9WA0IvdI8gDpUDp2AnXzRWOWUsqHMcxVDFgn32Ghq0X9sZW5AlGWPeHsAJG0JhjpOg8mes2+LHRq3RmDqilczX4obvruAy8h2nhcno7nOpBu+P5JP96daedf/In/os2+toPe7ql/dwQCccdGGez4PbL9YR3wzySzCj/+Q+26KS9XdXhLF8EJR1xqVzD0sFGD5MYu6zAwaEqQ4cmWjoaidqbWRbIKHtGorqkem8tnW+3ggvTTPTJ55dKeMvxe/ZfEsH3eSfgyqgXVk9C1solaZlleWhClrYmjEviYy4gq+SJPoaA7sApyBGaNtKaHwWAqWix/U5rNnTY6TSf2SeR+WbXcdJESlBnTWRA4kLG1PEaTahF5CWoiphXrh+sAyxSjGcPyJQl5FB5OuQGlktyx9p+cTuk4COphmFyletadeNXILTtXitlfQQhUvv6j/eRCJyHITD5sz8tUtUD1tEm8xhcA3cSi6cICwVbmoZL3QAPGBHH3/rIk1lM3ggOmhMtpHR3qcdSZq/570g4dwS5d3vek3t9UHfma6USrTXqfL0oECmFwW27rc6vB8WUx2oDUtsiTRxA4UyZBO/zHAiEpTpVSrJwEwaOXQ6VHDMCKPoW6pdipES4m7LcLJEBbBe/FhZ/zM55ZnBV0PmsrTpdNYjofTnER8gIAwVoUfjL3zcmnjSES5PXvAC1DqBw+FoflBFZ99V0OZ0=
     type : 4
     code_elements :
      type_code : 4
@@ -274,23 +274,23 @@ window :
          _pf est un entier système
          //The "dbl-1998-cmo-2" doubling formulas
          sCodePoint_Doubling_Jacobi est chaine = [
-         double(X,Y,Z)
-         	XX	  = X*X
-         	YY	  = Y*Y
-         	ZZ    = Z*Z
-         	XYY   = X*YY
+         doubleP( P Point3D )
+         	XX	  = P.X*P.X
+         	YY	  = P.Y*P.Y
+         	ZZ    = P.Z*P.Z
+         	XYY   = P.X*YY
          	S	  = 4.XYY
          	2S	  = 2.S
          	M	  = 3.XX 
          	MM    = M*M
-         	X     = MM-2S
-         	S_X   = S-X
+         	P.X   = MM-2S       // resultat X
+         	S_X   = S-P.X
          	YYYY  = YY*YY
          	8YYYY = 8.YYYY
          	MS_X  = M*S_X
-         	YZ	  = Y*Z	
-         	Y 	  = MS_X-8YYYY
-         	Z	  = 2.YZ
+         	YZ	  = P.Y*P.Z	 
+         	P.Y   = MS_X-8YYYY // resultat Y
+         	P.Z	  = 2.YZ	   // resultat Z
          ]
          
          _pf = CPL.compileFormule(sCodePoint_Doubling_Jacobi)
@@ -313,10 +313,20 @@ window :
          Trace("Z:"+P2.z.VersChaineHexa() )
          trace("GO : ---------------------------------")
          //_Resultat	est Entier256
-         API( _pf, &_X, &_Y,&_Z) // (3*3)-3 => 6
-         trace("X:"+_X.VersChaineHexa() )
-         trace("Y:"+_Y.VersChaineHexa() )
-         trace("Z:"+_Z.VersChaineHexa() )
+         bufVecteur est un buffer sur 96
+         Transfert( &bufVecteur,    &P.x, 32)
+         Transfert( &bufVecteur+32, &P.y, 32)
+         Transfert( &bufVecteur+64, &P.z, 32)
+         
+         API( _pf, &bufVecteur) // (3*3)-3 => 6
+         
+         Transfert( &P.x, &bufVecteur,    32)
+         Transfert( &P.y, &bufVecteur+32, 32)
+         Transfert( &P.z, &bufVecteur+64, 32)
+         
+         trace("X:"+P.X.VersChaineHexa() )
+         trace("Y:"+P.Y.VersChaineHexa() )
+         trace("Z:"+P.Z.VersChaineHexa() )
          
         type : 18
       -
@@ -325,7 +335,7 @@ window :
   -
     name : Compile_formule_addition_Jacobi
     identifier : 0x2e478d210126d408
-    internal_properties : BQAAAAUAAAD97uLpE84ii839a+cd2gXpoo3Mx1WzAqKVKmT6XEZtuCY2/5U37OQGw5rtOKHe9qWS7L2W3sgYtWHmwxF+pJWv4Bh9ODaIKO5oAIiDHxv+99oF1pNzW2WOeKRIYKFbFHre/zDYwqCJCY5PvP+sKPClB3YTJ0P2Xye20FMuwlPxxYgpi4/kQQPq/YThWw4urcg7LRMFPlIsRjS7s/uM9J/AzSkh9gxOoVr7jw6z3honMvG4wwdNFz9JQrSQYy+xgq23WxafxWcm0RzrUuHzbU2Qctj/89q9fYD1DBC1Zx+q/hCxYezJx5mPabTSp8b3G+YP6o9zDXcQPMXYjTP6CNndbNJAC4m2KNDYL3OvzOq1Bs3eE7OUrbJ6ndQ1CixqcFoGm33Vm3+HDCkoV7CDvgp7nhoi1DFbPZNwaiJIYJnVnUcQr+qqHU9yH8QG3lbcbgmEKN1+cXO80ohuQ1U7gXOD5ddOa8cWjkdg9BIxaWVR92EM1fu1B/jiLADQtfew9vSBYG+IeVs0lAQCpBPazrluLEzF69D0ZrzSMbXDzsnr6SpccCP5K2IkCktnfNeUaVs0FwrTQw3JW4vJZahyrnzWDYGSgxXL548UYC3CZq6KHROPQWAiDtyuVaVxbHyweIY/S6v4yFRswDqbDZS6TJAU+tu72LgXAL+oYdgBQKDIzr8q4xXSInuxIuVFclLyTIjKPWKh3D4F+YTSwQdDspoztyp5/iQPKkvMYOrT/PFb6+ZsMyetM1lZ1xTjVFwlBUcpk/CH
+    internal_properties : BQAAAAUAAAA9riKpUw7iy429K6fdGsWpYs2MBxVzQmLVaqQ6nAat+Gb2P1V3LKRGg1qt+GEetmVSLH3WnohYdaEmA1G+ZNXvINi9+HbI6C4owEhD31u+t5pFltMzG6VOuOSIoOEbVLoev3CYAuBJSU4PfL9saLBlx7bTZwO2n+f2EJNuAhMxBcjpy08kHHFE2UAY8gZBcm2wTfWpEu7YvuIBE9mC+rFiN69Demxu0RJBxe5N0FQ5jHtGiff5Y2up9MZ0AUXXYItRaaDD+cPeSe7VaqMtF2P+fM79qwZJaSBjynjnMV0cgO6D04AtO6Vrq/Y2VWTNZcBFpNlPMRt41DcqQfl0+jeDYrzCp1megDj+FYdxjqDnoMPo1Y8w8aqWE/Lt3GLYvnBokfRw+EpeXQ41Wk8AKZOCDUGFs/JqMDzpX6nD2dCelEI7VqUvkL7bdKn5LSOnh9DL3zBdCuovB43DtgRIlMBu8DotHhzJPbT9ab1Qtij2OiBzQHLu/vOn0S2PyMDHW1/sy8In2rqXealnZ7JnUZ5xU1uoukHrYbFXjqjK09QAnOlbTx4eToENE/iqK6x3br5vaptH5KWy3tEqeLNXMbyWTUHSw9ULJ0/UoO0Cpm5KXdPPASBizpzulWWxLDzwuEZ/C+s4iJSsgPrbzdT6DFBUuht7mPjXwP/oIRjBAOAIjv/qI1WSYrtx4iUFspKyDMiKfSJhHP7FOcSSAccD8trz9+q5PuRPaguMoKoTPLEbK6as8+ft8xmZF9QjFBxlRQdpUzDH
     type : 4
     code_elements :
      type_code : 4
