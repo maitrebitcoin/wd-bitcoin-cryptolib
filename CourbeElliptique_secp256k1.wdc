@@ -958,6 +958,7 @@ class :
       procédure MultiplicationScalairePointGenérateurJacobi(K est Entier256  ): Point256_3D
       
       // résultats
+      
       PointRésultatJ  est Point256_3D
       
       // 	32 additions par blocs de valeurs K*P précalculées
