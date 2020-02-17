@@ -358,52 +358,6 @@ class :
       renvoyer résultat
      type : 458752
    -
-     name : puissanceModulo_Montgomery
-     procedure_id : 1967015199648228841
-     type_code : 12
-     code : |1+
-      // envoie A^B (mod p)
-      // en utilisant la méthode de montgomery 
-      procédure puissanceModulo_Montgomery( nombreA entier256,  nombreB entier256) : Entier256
-      
-      //	Procédure interne X_to_monX(X)
-      //		renvoyer REDC_Montgomery( X, _2P512ModP )
-      //	fin
-      //	PROCÉDURE INTERNE monX_to_X(X)
-      //		RENVOYER REDC_Montgomery( X, _1 )
-      //	FIN
-      	
-      // tranformation de A en mon(A) = RECD( A, R2 )
-      //mon_A est Entier256 = REDC_Montgomery( nombreA, PAuCarre )
-      mon_A est Entier256 = X_to_monX( nombreA )
-      
-      // test, devrait être égaux
-      //t_dbg est Entier256 = monX_to_X( mon_A )
-      //si pas t_dbg.estEgalA(nombreA ) alors
-      //	trace(nombreA.VersChaineHexa())
-      //	trace(t_dbg.VersChaineHexa())
-      //	RENVOYER _0
-      //fin
-      // calcul de mon_A ^nombreB
-      //R512 est Entier512
-      mon_ApowI2	 est Entier256 	  = mon_A // valeur successive de mon( A ^(2*i) )
-      mon_résultat est Entier256   =  X_to_monX( _1 )
-      POUR  i = 0 a 255
-      	// si le bit I est a 1,
-      	SI nombreB.bit(i) ALORS
-      		// mon_résultat = mon_résultat * mon_résultat^(2*I)
-      		mon_résultat =REDC_Montgomery(mon_résultat, mon_ApowI2 )
-      
-      	FIN
-      	// calcul cumulatif de A^(2*I)
-      	mon_ApowI2 = REDC_Montgomery(mon_ApowI2, mon_ApowI2)
-      FIN
-      
-      //  mpn( résultat ) => résultat
-      renvoyer  monX_to_X( mon_résultat )
-      
-     type : 458752
-   -
      name : MultiplicationModulo_Montgomery
      procedure_id : 1979739813333047969
      type_code : 12
@@ -440,7 +394,7 @@ class :
       si inverseMod.estEgalAZero() ALORS
       	// calcul par le théorème d’Euler :
       	//  inverse(A) = A ^ (P-2)
-      	inverseMod  = puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
+      	inverseMod  = puissanceModulo( nombre, PMoins2 )
       sinon
       	//gère le cas ou l'on obtient P-X au lieu de X
       	SI pas multiplicationModulo( nombre, inverseMod ).val0 = 1 ALORS
@@ -451,28 +405,12 @@ class :
       			dbgAssertion(faux,"nombre*inverseMod <>1."+rc+"nombre = "+nombre.VersChaineHexa())
       			// calcul par le théorème d’Euler :
       			//  inverse(A) = A ^ (P-2)
-      			inverseMod  = puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
+      			inverseMod  = puissanceModulo( nombre, PMoins2 )
       		FIN
       	FIN
       
       fin
       
-      
-      // calcul par le théorème d’Euler :
-      //  inverse(A) = A ^ (P-2)
-      //inverseMod  = puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
-      //trace( inverseMod.VersChaineHexa())
-      // Calcul par Euclide étendu
-      //inverseMod est Entier256 =  PGCD_Etendu(nombre, :P)
-      //inverseMod est Entier256 =  inverseModuloParPartie(nombre, :P)
-      // c'est l'inverse modulaire au signe près
-      //inverseMod est Entier256
-      //si u.bNégatif alors
-      //	inverseMod = négationModulo(u.valAbs)
-      //sinon
-      //	inverseMod =  u.valAbs
-      //FIN
-      //
       //@TEST en debug  on vérifie qu'on a bien trouvé l'inverse modulaire
       si pas gbModeBench _et_ EnModeTest() 
       	DBG_1 est Entier256 = multiplicationModulo( inverseMod, nombre )
@@ -480,16 +418,6 @@ class :
       fin
       
       renvoyer inverseMod
-      
-      
-      // calcul par le théorème d’Euler :
-      //  inverse(A) = A ^ (P-2)
-      //InverseDeNombre est Entier256 = puissanceModulo( nombre, PMoins2 )
-      // OPTIM : utilisation de l'algorithme de _Montgomery
-      //RENVOYER  puissanceModulo_MontgomeryParBloc32( nombre, PMoins2 )
-      //RENVOYER  puissanceModulo_MontgomeryParBloc64( nombre, PMoins2 )
-      
-      
      type : 458752
    -
      name : divisionModulo
@@ -619,46 +547,6 @@ class :
       renvoyer resultat
      type : 458752
    -
-     name : puissanceModulo_MontgomeryParBloc32
-     procedure_id : 1968880813142150325
-     type_code : 12
-     code : |1+
-      // envoie A^B (mod p)
-      // en utilisant la méthode de montgomery 
-      procédure puissanceModulo_MontgomeryParBloc32( nombreA entier256,  nombreB entier256) : Entier256
-      
-      //	Procédure interne X_to_monX(X)
-      //		renvoyer REDC_MontgomeryParBloc32( X, _2P512ModP )
-      //	fin
-      //	PROCÉDURE INTERNE monX_to_X(X)
-      //		RENVOYER REDC_MontgomeryParBloc32( X, _1 )
-      //	FIN
-      	
-      // transformation de A en mon(A) = RECD( A, R2 )
-      mon_A est Entier256 = X_to_monX( nombreA )
-      
-      // calcul de mon_A ^nombreB
-      mon_ApowI2	 est Entier256 	  = mon_A // valeur successive de mon( A ^(2*i) )
-      mon_résultat est Entier256   =  X_to_monX( _1 )
-      POUR  i = 0 a 254
-      	// si le bit I est a 1,
-      	SI nombreB.bit(i) ALORS
-      		// mon_résultat = mon_résultat * mon_résultat^(2*I)
-      		mon_résultat =REDC_MontgomeryParBloc32(mon_résultat, mon_ApowI2 )
-      	FIN
-      	// calcul cumulatif de A^(2*I)
-      	mon_ApowI2 = REDC_MontgomeryParBloc32(mon_ApowI2, mon_ApowI2)
-      FIN
-      SI nombreB.bit(255) ALORS
-      	// mon_résultat = mon_résultat * mon_résultat^(2*I)
-      	mon_résultat =REDC_MontgomeryParBloc32(mon_résultat, mon_ApowI2 )
-      FIN
-      
-      
-      //  mpn( résultat ) => résultat
-      renvoyer  monX_to_X( mon_résultat )
-     type : 458752
-   -
      name : REDC_MontgomeryParBloc64
      procedure_id : 1969261931373429511
      type_code : 12
@@ -741,64 +629,6 @@ class :
       FIN
       
       renvoyer resultat
-     type : 458752
-   -
-     name : puissanceModulo_MontgomeryParBloc64
-     procedure_id : 1969265015160142079
-     type_code : 12
-     code : |1+
-      // envoie A^B (mod p)
-      // en utilisant la méthode de montgomery 
-      procédure puissanceModulo_MontgomeryParBloc64( nombreA entier256,  nombreB entier256) : Entier256
-      
-      //	Procédure interne X_to_monX(X)
-      //		renvoyer REDC_MontgomeryParBloc64( X, _2P512ModP )
-      //	fin
-      //	PROCÉDURE INTERNE monX_to_X(X)
-      //		RENVOYER REDC_MontgomeryParBloc64( X, _1 )
-      //	FIN
-      	
-      // transformation de A en mon(A) = RECD( A, R2 )
-      mon_A est Entier256 = X_to_monX( nombreA )
-      
-      // calcul de mon_A ^nombreB
-      mon_ApowI2	 est Entier256 	  = mon_A // valeur successive de mon( A ^(2*i) )
-      mon_résultat est Entier256   =  X_to_monX( _1 )
-      POUR  i = 0 a 254
-      	// si le bit I est a 1,
-      	SI nombreB.bit(i) ALORS
-      		// mon_résultat = mon_résultat * mon_résultat^(2*I)
-      		mon_résultat =REDC_Montgomery(mon_résultat, mon_ApowI2 )
-      	FIN
-      	// calcul cumulatif de A^(2*I)
-      	mon_ApowI2 = REDC_Montgomery(mon_ApowI2, mon_ApowI2)
-      FIN
-      SI nombreB.bit(255) ALORS
-      	// mon_résultat = mon_résultat * mon_résultat^(2*I)
-      	mon_résultat =REDC_Montgomery(mon_résultat, mon_ApowI2 )
-      FIN
-      
-      
-      //  mpn( résultat ) => résultat
-      renvoyer  monX_to_X( mon_résultat )
-     type : 458752
-   -
-     name : X_to_monX
-     procedure_id : 1980741588694062355
-     type_code : 12
-     code : |1+
-      // entrée dans mon()
-      PROCÉDURE X_to_monX(X entier256) : entier256
-      	RENVOYER REDC_Montgomery( X, _2P512ModP )
-     type : 458752
-   -
-     name : monX_to_X
-     procedure_id : 1980741640233681594
-     type_code : 12
-     code : |1+
-      // sortie de mon()
-      PROCÉDURE monX_to_X(X entier256) : entier256
-      	RENVOYER REDC_Montgomery( X, _1 )
      type : 458752
    -
      name : multiplicationModulo_PourContstructeur
