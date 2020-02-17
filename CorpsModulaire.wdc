@@ -397,10 +397,11 @@ class :
       	inverseMod  = puissanceModulo( nombre, PMoins2 )
       sinon
       	//gère le cas ou l'on obtient P-X au lieu de X
-      	SI pas multiplicationModulo( nombre, inverseMod ).val0 = 1 ALORS
+      	_valTest est Entier256 =  multiplicationModulo( nombre, inverseMod )
+      	SI pas _valTest.estEgalA1() ALORS
       		inverseMod = négationModulo( inverseMod ) // soustraction( inverseDex, gCorps.P )
-      		//inverseModinverseDex = additionAvecUn(inverseDex)
-      		SI pas multiplicationModulo( nombre, inverseMod ).val0 = 1 ALORS
+      		_valTest =  multiplicationModulo( nombre, inverseMod )
+      		SI pas _valTest.estEgalA1() ALORS
       			// Pb
       			dbgAssertion(faux,"nombre*inverseMod <>1."+rc+"nombre = "+nombre.VersChaineHexa())
       			// calcul par le théorème d’Euler :
