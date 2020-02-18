@@ -33,26 +33,16 @@ class :
      name : Constructeur
      procedure_id : 1964401093529038548
      type_code : 27
-     code : |1+
-      PROCEDURE Constructeur( moduloHexa chaine, ordreHexa chaine ) 
-        corps = allouer un corps( moduloHexa )
-        
-        Ordre.affecteAvecChaineHexa(ordreHexa)
-        corpsOrdre = allouer un CorpsModulaire( ordreHexa )
-     type : 589824
-   -
-     name : Constructeur
-     procedure_id : 1964401093529038548
-     type_code : 27
      code : |1-
-      // constructeur avec un crops en paramètre, pour dériver...
-      PROCÉDURE Constructeur( corps_, corpsOrdre_ ) 
-      corps = corps_
-      corpsOrdre = corpsOrdre_
+      // constructeur avec 2 corps en paramètres.
+      // pour dérivation
+      PROCÉDURE Constructeur( corpsCoord_ est CorpsModulaire, corpsOrdre_  est CorpsModulaire ) 
+      corps 	   <- corpsCoord_
+      corpsOrdre <- corpsOrdre_
       
       //Ordre.affecteAvecChaineHexa(ordreHexa)
       //corpsOrdre = allouer un CorpsModulaire( ordreHexa )
-     type : 589825
+     type : 589824
    -
      name : Destructeur
      procedure_id : 1964401093529104084

@@ -23,11 +23,8 @@ class :
       	
       	// OTIMS :
       	// constantes et tables pour accélérer les calculs
-      	MaxInt256 est entier256  // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       	_1 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000001
       	_0 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000000
-      	// 2^256^2 mod P, pour algorithme de Montgomery 
-      	_2P512ModP est Entier256 ///= 2^512 Mod P
       	// P' tels que P'*P = -1 mod 2^256 ( ou 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF )
       	invPmod2P256 est Entier256 	// ex: "c9bd1905155383999c46c2c295f2b761bcb223fedc24a059d838091dd2253531"  si P="0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
       	// P' tels que P'*P = -1 mod 2^32  pour montgomery par bloc
@@ -60,7 +57,8 @@ class :
       p.affecteAvecChaineHexa( valeurHexa )
       
       // Init constantes 
-      MaxInt256.affecteAvecChaineHexa( Répète("F",64) )
+      MaxInt256 est entier256("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+      //MaxInt256.affecteAvecChaineHexa( Répète("F",64) )
       _1.affecteAvecEntierPositif(1)
       
       // Init constantes en fonction de P
@@ -91,9 +89,6 @@ class :
       	//Trace(n.VersChaineHexa())
       FIN
       
-      // 2^512 Mod P
-      _2P512ModP  = multiplicationModulo_PourContstructeur(DeuxPuissance256MoinsP,DeuxPuissance256MoinsP)
-      dbgAssertion(pas _2P512ModP.estEgalAZero())
       // 2^32  Mod P
       _2P32ModP.affecteAvecChaineHexa("0x100000000")
       
@@ -192,49 +187,45 @@ class :
      group : 1
      code : |1+
       // renvoie A * B ( mod P )
-      procédure virtuelle multiplicationModulo(  nombreA entier256, nombreB entier256) : Entier256
-      dbgAssertion( P.val0 <> 0xFFFFFFFEFFFFFC2F, "ne devrait pas être appelé dans le corps sepc256k1" ) // car dérivée 
-      
+      procédure  abstraite  multiplicationModulo(  nombreA entier256, nombreB entier256) : Entier256 
+      //dbgAssertion( P.val0 <> 0xFFFFFFFEFFFFFC2F, "ne devrait pas être appelé dans le corps sepc256k1" ) // car dérivée 
       // cas particulier de la multiplication par 1 (fractions)
-      si nombreA.EstEgalA1() ALORS
-      	renvoyer nombreB
-      FIN 
-      SI nombreB.estEgalA1() ALORS
-      	RENVOYER nombreA
-      FIN 
-      
-      //@Test
-      //renvoyer MultiplicationModulo_Montgomery( nombreA, nombreB)
-      
-      resultat est un entier256
-      // calcul d'un cache des valeur de A * K pour K de 0 a 255
-      si TabCacheA..Occurrence>0 _et_ PAS TabCacheA[1].estEgalA(nombreA)
-      	TabCacheA.SupprimeTout()
-      fin
-      si TabCacheA.Occurrence()=0 ALORS
-      	nCur est Entier256 = nombreA
-      	pour i = 1 a 256
-      		TabCacheA.Ajoute( nCur )
-      		nCur = additionModulo( nCur, nombreA )
-      	FIN
-      FIN
-      
-      pour i = 31 a 0 pas -1
-      	// r = r * 256
-      	resultat = multiplicationPar256Modulo(resultat)
-      	// r = r + k * A
-      	kB est entier = nombreB._8Bits( i ) 
-      	si kB<>0 alors
-      		// récup de A * K en cache
-      		AMultK est un Entier256 = TabCacheA[kB]
-      		resultat = additionModulo(resultat, AMultK)
-      	fin
-      
-      
-      FIN
-      
-      
-      renvoyer résultat
+      //si nombreA.EstEgalA1() ALORS
+      //	renvoyer nombreB
+      //FIN 
+      //SI nombreB.estEgalA1() ALORS
+      //	RENVOYER nombreA
+      //FIN 
+      //
+      //resultat est un entier256
+      //// calcul d'un cache des valeur de A * K pour K de 0 a 255
+      //si TabCacheA..Occurrence>0 _et_ PAS TabCacheA[1].estEgalA(nombreA)
+      //	TabCacheA.SupprimeTout()
+      //fin
+      //si TabCacheA.Occurrence()=0 ALORS
+      //	nCur est Entier256 = nombreA
+      //	pour i = 1 a 256
+      //		TabCacheA.Ajoute( nCur )
+      //		nCur = additionModulo( nCur, nombreA )
+      //	FIN
+      //FIN
+      //
+      //pour i = 31 a 0 pas -1
+      //	// r = r * 256
+      //	resultat = multiplicationPar256Modulo(resultat)
+      //	// r = r + k * A
+      //	kB est entier = nombreB._8Bits( i ) 
+      //	si kB<>0 alors
+      //		// récup de A * K en cache
+      //		AMultK est un Entier256 = TabCacheA[kB]
+      //		resultat = additionModulo(resultat, AMultK)
+      //	fin
+      //
+      //
+      //FIN
+      //
+      //
+      //renvoyer resultat
      type : 458752
    -
      name : carréModulo
@@ -358,26 +349,6 @@ class :
       renvoyer résultat
      type : 458752
    -
-     name : MultiplicationModulo_Montgomery
-     procedure_id : 1979739813333047969
-     type_code : 12
-     code : |1+
-      // renvoie A * B mod P
-      // utilise la réduction de montgomery
-      procédure MultiplicationModulo_Montgomery( nombreA entier256,  nombreB entier256) : Entier256
-      
-      mon_A est Entier256 = REDC_Montgomery( nombreA,_2P512ModP )
-      mon_B est Entier256 = REDC_Montgomery( nombreB,_2P512ModP )
-      //mon_A est Entier256 = X_to_monX( nombreA )
-      //mon_B est Entier256 = X_to_monX( nombreB )
-      
-      mon_Résultat est Entier256 = REDC_Montgomery( mon_A, mon_B)
-      
-      //renvoyer monX_to_X( mon_Résultat )
-      RENVOYER  REDC_Montgomery( mon_Résultat, _1 )
-      
-     type : 458752
-   -
      name : inverseModulo
      procedure_id : 1964420450947150377
      type_code : 12
@@ -430,254 +401,6 @@ class :
       
       renvoyer multiplicationModulo( nombreA, inverseModulo(nombreB))
       
-     type : 458752
-   -
-     name : REDC_Montgomery
-     procedure_id : 1965140729853810839
-     type_code : 12
-     code : |1-
-      // opérateur de réduction de Montgomery
-      // renvoie t = A*B*P'
-      //  avec
-      //    P' tels que P'*P = -1 mod 2^256
-      //    R = 2^256
-      Procédure REDC_Montgomery(  nombreA entier256, nombreB entier256 ) : Entier256
-      
-      //@Test
-      renvoyer REDC_MontgomeryParBloc64(nombreA,nombreB)
-      
-      
-      // calcul de
-      // T = A*B (sur 512 bits)
-      AB512 est Entier512
-      // OPTIM cas sortie de _MON
-      si nombreB.estEgalA( _1 ) alors
-      	AB512.valPoidsFaible = nombreA
-      sinon
-      	AB512 = multiplication256x256_512(nombreA,nombreB)
-      fin
-      
-      // calcul de 
-      // m = ((A*B mod R)*P′') mod R
-      m est un Entier512 		  = multiplication256x256_512(AB512.valPoidsFaible, invPmod2P256 )
-      m_mod2N  est un Entier256 = m.valPoidsFaible // modulo R
-      
-      // calcul de
-      //  t = (T + m*P) /  2^256 
-      mP est un Entier512 	  = multiplication256x256_512( m_mod2N, P )
-      retenue_out est un booléen
-      T_mp est Entier512 		  = addition512(AB512, mP , retenue_out)
-      // division par   2^256 ( OK car T_mp.poidsFaible = 0 )
-      dbgAssertion( T_mp.valPoidsFaible.estEgalAZero() )
-      resultat est Entier256    = T_mp.valPoidsFort
-      
-      si retenue_out alors
-      	renvoyer soustraction(resultat,P)
-      FIN
-      si resultat.estSupérieurOuEgalA( P ) ALORS
-      	renvoyer  soustraction(resultat,P)
-      FIN
-      
-      renvoyer resultat
-     type : 458752
-   -
-     name : REDC_MontgomeryParBloc32
-     procedure_id : 1968871836660312042
-     type_code : 12
-     code : |1-
-      // opérateur de réduction de Montgomery
-      // renvoie t = A*B*P'
-      //  avec
-      //    P' tels que P'*P = -1 mod 2^256
-      //    R = 2^32
-      Procédure REDC_MontgomeryParBloc32(  nombreA entier256, nombreB entier256 ) : Entier256
-      
-      // calcul de
-      // T = A*B (sur 512 bits)
-      T est Entier512
-      // OPTIM cas sortie de _MON
-      si nombreB.estEgalA( _1 ) alors
-      	T.valPoidsFaible = nombreA
-      sinon
-      	T = multiplication256x256_512(nombreA,nombreB)
-      fin
-      
-      x est un entier sur 8 sans signe
-      c est un entier sur 4 sans signe
-      m est un entier sur 4 sans signe
-      	
-      // N = invPmod2P32
-      Nprime est un entier sur 4 sans signe = invPmod2P32._32Bits(0)
-      
-      
-      pour i = 0 a 7
-      	// rendre T divisible par 2^32(i+1)
-      		
-      	//  m ← T[i] *⋅ N′ mod B
-      	m  = T._32Bits(i)  * Nprime // x3 & 0xFFFFFFFF // poids faible = modulo
-      
-      	POUR j = 0 a 7
-      		// addition des mots de poids faible + retenue de l'étage précédent
-      		x  =  T._32Bits(i + j) +   P._32Bits(j)*m  + c 
-      		T.set32Bits( i + j, (x)     ) // poids faible
-      		// retenue pour les 32 bits suivant
-      		c = bitDécaleDroite(x,32) //  poids fort
-      	
-      	fin
-      	// ajout des retenues
-      	POUR j = 8 a 15-i
-      		SI c = 0 ALORS
-      			SORTIR
-      		FIN
-      		x = T._32Bits(i + j) + c
-      		T.set32Bits( i + j,    (x) )
-      		c = bitDécaleDroite(x, 32) //  poids fort
-      	FIN
-      FIN
-      
-      retenue_out est un booléen = c
-      resultat est Entier256    = T.valPoidsFort
-      
-      si retenue_out alors
-      	renvoyer soustraction(resultat,P)
-      FIN
-      si resultat.estSupérieurOuEgalA( P ) ALORS
-      	renvoyer  soustraction(resultat,P)
-      FIN
-      
-      renvoyer resultat
-     type : 458752
-   -
-     name : REDC_MontgomeryParBloc64
-     procedure_id : 1969261931373429511
-     type_code : 12
-     code : |1-
-      // opérateur de réduction de Montgomery 
-      // renvoie t = A*B*P'
-      //  avec
-      //    P' tels que P'*P = -1 mod 2^256
-      // par bloc de 64 bits
-      Procédure REDC_MontgomeryParBloc64(  nombreA entier256, nombreB entier256 ) : Entier256
-      
-      // calcul de
-      // T = A*B (sur 512 bits)
-      AB512 est Entier512
-      // OPTIM cas sortie de _MON
-      si nombreA.estEgalA( _1) alors
-      	AB512.valPoidsFaible = nombreB
-      sinon si nombreB.estEgalA( _1 ) alors
-      	AB512.valPoidsFaible = nombreA
-      sinon
-      	AB512 = multiplication256x256_512(nombreA,nombreB)
-      fin
-      
-      x0 est un entier sur 8 sans signe
-      x1 est un entier sur 8 sans signe // poids fort
-      //x128 est Entier256
-      c est un entier sur 8 sans signe
-      m est un entier sur 8 sans signe
-      Tij est un entier sur 8 sans signe
-      iPlusj est un entier
-      	
-      // N' tel que P * N' = 0xFFFFFFFFFFFFFFFF
-      Nprime est un entier sur 8 sans signe = invPmod2P64.val0
-      
-      
-      pour i = 0 a 3
-      	// rendre T divisible par 2^32(i+1)
-      		
-      	//  m ← T[i] *⋅ N′ mod B
-      	m  = AB512._64Bits(i)  * Nprime // x3 & 0xFFFFFFFF // poids faible = modulo
-      
-      	POUR j = 0 a 3
-      		iPlusj = i + j
-      		// addition des mots de poids faible + retenue de l'étage précédent
-      		(x0,x1)= multiplication64x64_128HL( P._64Bits(j), m)
-      		Tij = AB512._64Bits( iPlusj )
-      		x0 += Tij
-      		si (x0 <  Tij) x1++
-      		x0 += c
-      		SI (x0 <  c) x1++
-      		AB512.set64Bits( i + j, x0      ) // poids faible
-      		// retenue pour les 32 bits suivant
-      		c = x1 
-      	
-      	fin
-      	// ajout des retenues
-      	POUR j = 4 a 7-i
-      		SI c = 0 ALORS
-      			SORTIR
-      		FIN
-      		Tij = AB512._64Bits(i + j) 
-      		x1  = 0
-      		//x0 = addition64_64_retenueCumulative( Tij, c,  x1)
-      		x0 = Tij + c
-      		si (x0 < Tij _ou_ x0 < c) x1++
-      
-      		AB512.set64Bits( i + j,    x0 )
-      		c =  x1 
-      	FIN
-      FIN
-      
-      //retenue_out est un booléen = c
-      resultat est Entier256    = AB512.valPoidsFort
-      
-      si c alors
-      	renvoyer soustraction(resultat,P)
-      FIN
-      si resultat.estSupérieurOuEgalA( P ) ALORS
-      	renvoyer  soustraction(resultat,P)
-      FIN
-      
-      renvoyer resultat
-     type : 458752
-   -
-     name : multiplicationModulo_PourContstructeur
-     procedure_id : 1993357917700109077
-     type_code : 12
-     group : 1
-     code : |1+
-      // renvoie A * B ( mod P )
-      // version non optimisée n'utilisant pas les constantes pré-calculées dans le constructeur
-      procédure multiplicationModulo_PourContstructeur(  nombreA entier256, nombreB entier256) : Entier256
-      
-      // cas particulier de la multiplication par 1 (fractions)
-      si nombreA.EstEgalA1() ALORS
-      	renvoyer nombreB
-      FIN 
-      SI nombreB.estEgalA1() ALORS
-      	RENVOYER nombreA
-      FIN 
-      
-      
-      resultat est un entier256
-      // calcul d'un cache des valeur de A * K pour K de 0 a 255
-      si TabCacheA..Occurrence>0 _et_ PAS TabCacheA[1].estEgalA(nombreA)
-      	TabCacheA.SupprimeTout()
-      fin
-      si TabCacheA.Occurrence()=0 ALORS
-      	nCur est Entier256 = nombreA
-      	pour i = 1 a 256
-      		TabCacheA.Ajoute( nCur )
-      		nCur = additionModulo( nCur, nombreA )
-      	FIN
-      FIN
-      
-      pour i = 31 a 0 pas -1
-      	// r = r * 256
-      	resultat = multiplicationPar256Modulo(resultat)
-      	// r = r + k * A
-      	kB est entier = nombreB._8Bits( i ) 
-      	si kB<>0 alors
-      		// récup de A * K en cache
-      		AMultK est un Entier256 = TabCacheA[kB]
-      		resultat = additionModulo(resultat, AMultK)
-      	fin
-      
-      
-      FIN
-      
-      renvoyer resultat
      type : 458752
   procedure_templates : []
   property_templates : []
