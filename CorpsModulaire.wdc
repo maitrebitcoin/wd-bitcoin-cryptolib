@@ -25,24 +25,13 @@ class :
       	// constantes et tables pour accélérer les calculs
       	_1 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000001
       	_0 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000000
-      	// P' tels que P'*P = -1 mod 2^256 ( ou 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF )
-      	invPmod2P256 est Entier256 	// ex: "c9bd1905155383999c46c2c295f2b761bcb223fedc24a059d838091dd2253531"  si P="0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
-      	// P' tels que P'*P = -1 mod 2^32  pour montgomery par bloc
-      	_2P32ModP est Entier256 ///= 2^32 Mod P
-      	invPmod2P32  est Entier256  // ex : "5f4a72907543367f61d0fb07f7f1ffa1c447723a87f9235090703845d2253531" si P="0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
-      	invPmod2P64  est Entier256  // ex : "5f4a72907543367f61d0fb07f7f1ffa1c447723a87f9235090703845d2253531" si P="0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
-      
       	
       	//  c = 2n −p : pour L’algorithme basé sur la retenue sortante d’Omura 
       	DeuxPuissance256MoinsP est entier256
-      	// P - 2; pour inverse modulaire
+      	// P - 2 : pour inverse modulaire par algorithme d'Euleur
       	PMoins2 est Entier256
       	
       	
-      	// tableau de 2^N (mod P)
-      	TabPow2_MoinsP est un tableau de entier256
-      	
-      	TabCacheA est un tableau de entier256
       FIN
      type : 131072
   procedures :
@@ -52,45 +41,22 @@ class :
      type_code : 27
      code : |1+
       PROCEDURE Constructeur( valeurHexa chaine )
+      	Constructeur _1(1)
       
       // Init P, modulo principal
       p.affecteAvecChaineHexa( valeurHexa )
       
-      // Init constantes 
-      MaxInt256 est entier256("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-      //MaxInt256.affecteAvecChaineHexa( Répète("F",64) )
-      _1.affecteAvecEntierPositif(1)
-      
       // Init constantes en fonction de P
-      DeuxPuissance256MoinsP = soustraction (MaxInt256, P ) 
-      DeuxPuissance256MoinsP = additionAvecUn(DeuxPuissance256MoinsP )
-      // P-2
+      MaxInt256 est entier256("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+      // 2^256-P-1 :
+      :DeuxPuissance256MoinsP = soustraction (MaxInt256, P ) 
+      :DeuxPuissance256MoinsP = additionAvecUn( :DeuxPuissance256MoinsP )
+      // P-2 : 
       deux est Entier256(2)
-      PMoins2 = soustraction (P, deux ) 
+      :PMoins2 = soustraction (P, deux ) 
       
       
-      // calcul de  P' tels que P'*P = -1 mod 2^256
-      _moins1moduloP est Entier256 = negation( P )
-      phi_moins1_256 est Entier256 ( "0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" )
-      invPmod2P256 = puissance256_256( _moins1moduloP, phi_moins1_256 )
-      // calcul de  P' tels que P'*P = -1 mod 2^32
-      phi_moins1_32 est Entier256 ( "0x7FFFFFFF" )
-      phi_moins1_64 est Entier256 ( "0x7FFFFFFFFFFFFFFF" )
-      invPmod2P32 = puissance256_256( _moins1moduloP, phi_moins1_32 )
       
-      invPmod2P64 = puissance256_256( _moins1moduloP, phi_moins1_64 )
-      
-      
-      // Multiples de (2^N-P) mod P
-      k2N_P est Entier256 = DeuxPuissance256MoinsP
-      POUR i = 1 à 256
-      	TabPow2_MoinsP.Ajoute( k2N_P )
-      	k2N_P = additionModulo(k2N_P, DeuxPuissance256MoinsP )
-      	//Trace(n.VersChaineHexa())
-      FIN
-      
-      // 2^32  Mod P
-      _2P32ModP.affecteAvecChaineHexa("0x100000000")
       
      type : 589824
    -
@@ -297,37 +263,6 @@ class :
       
       //@A optimiser
       RENVOYER multiplicationPar2Modulo( multiplicationPar4Modulo( nombre) )
-     type : 458752
-   -
-     name : multiplicationPar256Modulo
-     procedure_id : 1962539719127474187
-     type_code : 12
-     code : |1+
-      // renvoie A * 256 ( mod P )
-      // =>décalage de 8 bits +  gestion du modulo
-      procédure multiplicationPar256Modulo( nombreA entier256 ) : Entier256 
-      
-      // récup du nombre dans un buffer low endian
-      sbufA est un buffer = nombreA.versbuffer( Entier256::BUF_LOW_ENDIAN )
-      nPoidsFortRestant est un entier = asc( sbufA[32] ) // LE : 32 = poids fort
-      sbufAmul256 est un buffer =  caract(0)  + Milieu(sbufA,1,31) 
-      
-      // récup partie basse
-      resultat est un entier256 
-      resultat.affecteAvecBuffer(sbufAmul256)
-      SI resultat.estSupérieurOuEgalA( P ) ALORS
-      	RENVOYER soustraction(resultat, P)
-      FIN
-      
-      // ajout partie haute avec une table pré-calculé du reste modulaire des puissance de 2 a partir de 256
-      si nPoidsFortRestant <> 0 alors
-      	pr est Entier256 = TabPow2_MoinsP[ nPoidsFortRestant ]
-      	renvoyer additionModulo( résultat, pr )
-      fin
-      
-      
-      
-      renvoyer resultat
      type : 458752
    -
      name : puissanceModulo
