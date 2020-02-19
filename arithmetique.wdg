@@ -15,7 +15,7 @@ procedure_set :
   p_codes :
    -
      code : |1-
-      
+      // opérations +,-,*, etc.. sur les entiers de plus de 64 bits
       
       // OPTIM : récup d'un version en assembleur de ces opérations
       addrprocAddition256p256_256c    est entier systeme = pGetprocAddition256p256_256c_ASM()
@@ -24,8 +24,7 @@ procedure_set :
       addrprocMult64x64_128_ASM       est entier système = pGetprocMult64x64_128_ASM()
       addrprocMult256x32_256_ASM      est entier système = pGetprocMult256x32_256_ASM()
       addrprocDivPar2_256_ASM     	est entier système = pGetprocDivisePar2_256()
-      addrprocMult256x256_512_ASM    	est entier système = compileAsmX86_API( fChargeRessourceTexte("multiplication_256x256_512.asm")) 
-      
+      addrprocMult256x256_512_ASM    	est entier système = pCompileAsm32_64( "multiplication_256x256_512_x86.asm", "multiplication_256x256_512.asm") 
       
       
       _2_Puissance64 est un numérique  (38,0)  = 0x100000000

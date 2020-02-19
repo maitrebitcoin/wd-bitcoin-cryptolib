@@ -606,7 +606,7 @@ procedure_set :
      internal_properties : BQAAAAUAAACBd60Z/QmUSGSHs+5nMSAotrmVY9R0fjfG1ua2PNMeCyii/qMOOqq+yDmkFVlBi6oK6hv6/jpxbsNGeaSiOjqx4h8q+3QXQ7UhJL2eE5LLTCHy3ad81WYZoRIYIGKzwz4K9Xn5X35OXQ20DwoA5Oe2kYP8l3Th2t26EwcZJc2d9AAeC7uZGnuCKpuqQE4qMRgUC1JvIbeRLPL/fsoQsw==
      procedure_id : 1997540545854209648
      type_code : 15
-     code : |1-
+     code : |1+
       
       PROCÉDURE pGetprocMult256x32_256_ASM() : entier système
       
@@ -765,7 +765,6 @@ procedure_set :
       
       procMult64x64_128_ASM est une entier système
       SI EnMode64bits() ALORS
-      	//@TODO
       	procMult64x64_128_ASM = compileAsmX86_API( sCodeASMx8632_Mult256x32_256_x64)
       sinon
       	procMult64x64_128_ASM = compileAsmX86_API( sCodeASMx8632_Mult256x32_256 )
@@ -773,6 +772,28 @@ procedure_set :
       dbgAssertion( PAS ErreurDétectée, ErreurInfo())
       dbgAssertion( procMult64x64_128_ASM<>0, ErreurInfo())
       renvoyer procMult64x64_128_ASM
+      
+     type : 458752
+   -
+     name : pCompileAsm32_64
+     procedure_id : 2183354686649434811
+     type_code : 15
+     code : |1-
+      procédure pCompileAsm32_64(  sNomFichierSourceSourceAsm_32bits chaine, sNomFichierSourceSourceAsm_64bits chaine ) : entier système
+      
+      // chargement sur source dans la WDL :
+      sCodeASM est chaine
+      SI EnMode64bits() ALORS
+      	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_64bits) 
+      SINON
+      	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_32bits) 
+      FIN
+      dbgAssertion(sCodeASM<>"",erreurInfo())
+      // compilation en ASM
+      procédureAsm est un entier système =  compileAsmX86_API( sCodeASM ) 
+      dbgAssertion( PAS ErreurDétectée, ErreurInfo())
+      dbgAssertion( procédureAsm<>0, ErreurInfo())
+      RENVOYER procédureAsm 
      type : 458752
    -
      name : pGetprocDivisePar2_256
