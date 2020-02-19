@@ -24,8 +24,7 @@ procedure_set :
       addrprocMult64x64_128_ASM       est entier système = pGetprocMult64x64_128_ASM()
       addrprocMult256x32_256_ASM      est entier système = pGetprocMult256x32_256_ASM()
       addrprocDivPar2_256_ASM     	est entier système = pGetprocDivisePar2_256()
-      addrprocMoyenne_256_ASM     	est entier système = pGetprocMoyenne256_ASM()
-      addrprocMult256v256_512_ASM    	est entier système = compileAsmX86_API( fChargeRessourceTexte("multiplication_256x256_512.asm")) 
+      addrprocMult256x256_512_ASM    	est entier système = compileAsmX86_API( fChargeRessourceTexte("multiplication_256x256_512.asm")) 
       
       
       
@@ -75,53 +74,6 @@ procedure_set :
       retenue_out = api(addrprocAddition256p256_256c, &resultat, &nombreB )
       renvoyer resultat
       
-      ///@@@Ancien code
-      retenue0 est un entier
-      retenue1 est un entier
-      retenue2 est un entier
-      retenue3 est un entier
-      //retenue est un entier
-      
-      // 64 bits poids faible
-      resultat.val0 = nombreA.val0 + nombreB.val0
-      //retenue0 =  resultat.val0 < nombreB.val0 _ou_ resultat.val0 < nombreA.val0 
-      si resultat.val0 < nombreB.val0 _OU_ resultat.val0 < nombreA.val0 ALORS
-      	retenue0++
-      FIN
-      // 64..128
-      resultat.val1 = nombreA.val1 + nombreB.val1 
-      //retenue1 = resultat.val1 < nombreB.val1 _ou_ resultat.val1 < nombreA.val1 
-      si resultat.val1 < nombreB.val1 _ou_ resultat.val1 < nombreA.val1 ALORS
-      	retenue1++
-      FIN
-      si retenue0 ALORS
-      	resultat.val1++
-      	si resultat.val1= 0 alors retenue1=1
-      
-      FIN
-      // 128..196
-      resultat.val2 = nombreA.val2 + nombreB.val2 
-      //retenue2 = resultat.val2 < nombreA.val2 _OU_ resultat.val2 < nombreB.val2
-      si resultat.val2 < nombreA.val2 _OU_ resultat.val2 < nombreB.val2 ALORS
-      	retenue2++
-      FIN
-      SI retenue1 ALORS
-      	Résultat.val2++
-      	SI Résultat.val2= 0 ALORS retenue2=1
-      FIN
-      // 196..256
-      Résultat.val3 = nombreA.val3 + nombreB.val3 
-      //retenue3 = resultat.val3 < nombreA.val3 _OU_ resultat.val3 < nombreB.val3
-      si  Résultat.val3 < nombreA.val3 _OU_ Résultat.val3 < nombreB.val3 ALORS
-      	retenue3++
-      FIN
-      SI retenue2 ALORS
-      	Résultat.val3++
-      	SI Résultat.val3= 0 ALORS retenue3=1
-      FIN
-      
-      retenue_out = retenue3
-      renvoyer Résultat
      type : 458752
    -
      name : negation
@@ -514,7 +466,7 @@ procedure_set :
       // OPTIM, appel version ASM
       Résultat   est Entier512 
       bufRes est un buffer sur 64 // via un buffer car les 2 membres 256 bits ne sont pas contigus en mémoire
-      API(addrprocMult256v256_512_ASM,&nombreA,&nombreB,&bufRes)
+      API(addrprocMult256x256_512_ASM,&nombreA,&nombreB,&bufRes)
       Transfert(&Résultat.valPoidsFaible, &bufRes,    32)
       Transfert(&Résultat.valPoidsFort  , &bufRes+32, 32)
       renvoyer Résultat
@@ -531,7 +483,7 @@ procedure_set :
       Résultat   est Entier256
       // OPTIM, appel version ASM
       bufRes		est un buffer sur 64	// via un buffer car les 2 membres 256 bits ne sont pas contigus en mémoire
-      API(addrprocMult256v256_512_ASM,&nombreA,&nombreB,&bufRes)
+      API(addrprocMult256x256_512_ASM,&nombreA,&nombreB,&bufRes)
       Transfert(&Résultat, &bufRes,    32)
       //Transfert(&Résultat.valPoidsFort  , &bufRes+32, 32)  // ignorer le poids fort
       RENVOYER Résultat
@@ -1804,7 +1756,7 @@ procedure_set :
      name : nLog2_64
      procedure_id : 2000537449452368398
      type_code : 15
-     code : |1-
+     code : |1+
       // renvoie l'indice du 1er bit de poids fort a 1. renvoie 0 si 0.
       PROCÉDURE nLog2_64( nombre est un entier sur 8 octets sans signe)
       si nombre = 0 ALORS
@@ -1821,23 +1773,6 @@ procedure_set :
       FIN
       dbgAssertion(faux)
       renvoyer 0
-      
-      //nRes   est un entier = 32
-      //nRange est un entier = 31
-      ////// rech dichotomique
-      //nTest est entier sur 8 sans signe = 0x100000000
-      //si nombre>nTest ALORS
-      //	// valeur entre [nRes + nRange,  nRange+1]
-      //	nRes += nRange 
-      //	nTest = bitDécaleGauchenTest
-      //FIN
-      //
-      //si nombre & 0x8000000000000000 alors renvoyer 63
-      //si nombre & 0x4000000000000000 alors renvoyer 62
-      //si nombre & 0x2000000000000000 alors renvoyer 61
-      //si nombre & 0x1000000000000000 alors renvoyer 60
-      //
-      //renvoye 0
      type : 458752
    -
      name : nLog2_256
@@ -1857,94 +1792,6 @@ procedure_set :
       	RENVOYER 64 + nLog2_64( nombre.val1 )
       FIN
       renvoyer  nLog2_64( nombre.val0 )
-      
-      
-      
-     type : 458752
-   -
-     name : inverseModuloParRightShift
-     procedure_id : 2007949536486758810
-     type_code : 15
-     code : |1+
-      // calcule l'inverse de A_ modulo P
-      // méthode de right shift. (division par 2 tant que les reste sont pair)
-      PROCEDURE inverseModuloParRightShift( nombre est entier256, P est entier256) 
-      
-      dbgAssertion("on passe ici ?")
-      
-      soit u = P
-      soit v = nombre
-      r est entier256// 0 
-      s est entier256 ( 1 )
-      //bRetenue est un booléen
-      
-      
-      boucle	
-      
-      	//si (  estPair(u.val0) ) alors
-      	si u.val0 & 1 = 0 alors
-      		//si  ( EstPair(r.val0) ) alors
-      		si  (r.val0 & 1) = 0 alors
-      			 API(addrprocDivPar2_256_ASM,&u) // u.divisePar2()// = u/2
-      			 API(addrprocDivPar2_256_ASM,&r) // .divisePar2() // = r/2
-      		sinon
-      			 API(addrprocDivPar2_256_ASM,&u) // u.divisePar2()// = u/2
-      			 //r = _moyenne(r,P) // (r + p)/2,
-      			 API(addrprocMoyenne_256_ASM,&r,&P)
-      			 
-      		fin
-      	//sinon si ( estpair(v.val0)) alors
-      	sinon si v.val0 & 1 = 0 alors
-      		//si ( estpair(s.val0)) alors
-      		si s.val0 & 1 = 0 alors
-      			API( addrprocDivPar2_256_ASM ,&v) // v.divisePar2() // v = v/2
-      			API( addrprocDivPar2_256_ASM,&s)// s.divisePar2() // = s/2
-      		sinon
-      			API( addrprocDivPar2_256_ASM,&v )// v.divisePar2()// = v/2
-      			API( addrprocMoyenne_256_ASM,&s,&P)
-      		fin
-      		si v.estEgalAZero() ALORS
-      			sortir
-      		FIN
-      	sinon
-      	 	si  u.estSupérieurStrictA(v) alors
-      			u = soustraction(u , v)  // u-v
-      		 	
-      	 	 	si r.estSupérieurOuEgalA(s)  alors
-      	 	 		r = soustraction(r, s) // r - s)
-      	 	 	sinon
-      			 	r = addition( r, soustraction(P, s))
-      			 fin
-      		sinon
-      			v = soustraction(v , u)  //v =  -x
-      			si  s.estSupérieurOuEgalA(r) alors
-      				s = soustraction(s, r)
-      			sinon
-      				s = addition(s, soustraction(P, r))
-      			fin
-      			SI v.estEgalAZero() ALORS
-      				SORTIR
-      			FIN					
-      		fin
-      //		SI v.estEgalAZero() ALORS
-      //			SORTIR
-      //		FIN		
-      	fin
-      	
-      	
-      fin // tant que
-      
-      SI r.estSupérieurStrictA(P) ALORS
-      	r = soustraction(r , P)
-      FIN
-      //si (r < 0) alors
-      //	 r = r + P
-      //fin
-      renvoyer r // and k
-      
-      
-      
-      
      type : 458752
    -
      name : inverseModulaire_HGCD256
