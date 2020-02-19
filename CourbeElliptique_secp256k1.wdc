@@ -19,8 +19,6 @@ class :
       // courbe elliptique avec les paramètres pour secp256k1
       // cad pour le ECDSA utilisé par bitcoin
       CourbeElliptique_secp256k1 est une Classe
-      //	Hérite de CourbeElliptique
-      
       	// coefficient de y2 = (x3 + ax + b) [mod p]
       	//coefA est Entier256 // OTIM, non géré car =0 pour secp256k1
       	coefB est Entier256   // =7 pour secp256k1
@@ -37,7 +35,7 @@ class :
       	// TabPointPow2[2 + 1*256]   =      2 * K
       	// TabPointPow2[3 + 1*256]   =      3 * K
       	// TabPointPow2[1 + 2*266]   =      3 * K
-      	TabPointPow2PreCalculé_256 est un tableau <agrandissement=N> de Point256
+      	// TabPointPow2PreCalculé_256 est un tableau <agrandissement=N> de Point256
       	// idem en cordonée de Jacobi
       	TabPointPow2PreCalculé_256_J est un tableau <agrandissement=N> de Point256_3D
       
@@ -780,7 +778,7 @@ class :
       				//Trace(_ResI.x.VersChaineHexa() + " " + _ResI.y.VersChaineHexa() )
       				sFic += [Rc]  +_ResI.x.VersChaineHexa() + " " + _ResI.y.VersChaineHexa() 
       				//Trace( sFic )
-      				TabPointPow2PreCalculé_256[i + x*256] = _ResI
+      				//TabPointPow2PreCalculé_256[i + x*256] = _ResI
       			fin
       			_2puissanceX.multipliePar256()
       		FIN//Pour X
@@ -811,7 +809,7 @@ class :
       	pointI.x.affecteAvecChaineHexa( sX )
       	pointI.y.affecteAvecChaineHexa( sY )
       	// ajout
-      	TabPointPow2PreCalculé_256[i+x*256] = pointI 
+      	//TabPointPow2PreCalculé_256[i+x*256] = pointI 
       	// ajout dans la version en coordonnées de Jacobi
       	pointI_J est Point256_3D
       	pointI_J.VersJacobi(pointI)
@@ -906,7 +904,7 @@ class :
      code : |1+
       // renvoie K  * G 
       // utilise la tables de points pré-calculés TabPointPow2PreCalculé_256 pour les 256 points des 32 puissances de 256
-      // renvoie en coordonées de Jacobi pour éviter les divisions modulaires
+      // renvoie en coordonnées de Jacobi pour éviter les divisions modulaires
       procédure MultiplicationScalairePointGenérateurJacobi(K est Entier256  ): Point256_3D
       
       // résultats
