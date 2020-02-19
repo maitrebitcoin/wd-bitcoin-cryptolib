@@ -18,12 +18,12 @@ class :
       CourbeElliptique est une Classe
       	// coefficient de y2 = (x3 + ax + b) [mod p]
       	//coefA est Entier256 // OTIM, non géré car non nécessaire pour secp256k1
-      	coefB est Entier256
+      	//coefB est Entier256
       	
       	// corps des entiers modulo p, pour calculs sur les x,y des points
       	corps est CorpsModulaire dynamique
-      	// ordre de la courbe : plus petit entier <n> tel que nG = 0
-      	Ordre est entier256;
+      //	// ordre de la courbe : plus petit entier <n> tel que nG = 0
+      //	Ordre est entier256;
       	// corps des entiers modulo N, pour calculs entres les multiples de points
       	corpsOrdre est CorpsModulaire dynamique 
       FIN
@@ -50,168 +50,6 @@ class :
      code : |1+
       PROCEDURE Destructeur()
      type : 655360
-   -
-     name : pointEstSurLaCourbe
-     procedure_id : 1964401956817535081
-     type_code : 12
-     code : |1+
-      // Indique si un point est sur la courbre
-      // ie : y2 = (x3 + ax + b)[mod n]
-      procédure pointEstSurLaCourbe( point est Point256) : booléen
-      
-      
-      // calcul de Y^2
-      Y2 est entier256 = corps.carréModulo( point.y )
-      
-      //	calcul de X^3 + B
-      X3 est   un entier256  = corps.cubeModulo( point.x ) 
-      X3plusB est entier256  = corps.additionModulo(X3, coefB)
-      
-      // le point si sur la courbe si égalité
-      renvoyer Y2.estEgalA( X3plusB ) 
-      
-     type : 458752
-   -
-     name : pointNégation
-     procedure_id : 2167743073166274897
-     type_code : 12
-     code : |1-
-      // négation d'un point: ie renvoie -P
-      PROCÉDURE pointNégation(point Point256)  : Point256
-      
-      PointRésultat est Point256  
-      PointRésultat.x = point.x 
-      PointRésultat.y = corps.négationModulo( point.y )
-      renvoyer PointRésultat
-     type : 458752
-   -
-     name : pointDouble
-     procedure_id : 1964415631993640300
-     type_code : 12
-     code : |1+
-      // Addition d'un point avec lui meme
-      PROCÉDURE pointDouble(point Point256)  : Point256
-      
-      // formule trouvé sur le net :
-      // L = (3x^2) / (2*y)-1  Modulo P
-      N est entier256 = corps.multiplicationPar3Modulo( corps.carréModulo(point.x) )
-      D est entier256 = corps.multiplicationPar2Modulo( point.y )
-      // =>opération longue : inversion modulo ici
-      L est entier256 = corps.divisionModulo( N, D )
-      
-      PointRésultat est Point256 ;
-      //X = (L*L - 2*p.x ) 
-      PointRésultat.x =  corps.soustractionModulo( corps.carréModulo(L),  corps.additionModulo( point.x, point.x ) ) 
-      // Y = - (L * ( X  - p.x ) + p.y )
-      RX est entier256 = PointRésultat.x
-      RY est entier256 = corps.soustractionModulo( RX, point.X )
-      RY  =  corps.multiplicationModulo( L, RY)
-      RY =  corps.additionModulo( RY, point.y )
-      
-      PointRésultat.y = corps.négationModulo( RY )
-      
-      
-      
-      renvoyer PointRésultat;
-     type : 458752
-   -
-     name : pointPlusPoint
-     procedure_id : 1968097561427963392
-     type_code : 12
-     code : |1+
-      // Addition d'un point avec une autre
-      PROCÉDURE pointPlusPoint(pointA Point256, pointB Point256)  : Point256
-      
-      // cas du 0
-      si (pointA.EstZero()) renvoyer pointB;
-      SI (pointB.EstZero()) RENVOYER pointA;
-      
-      // cas d'addition d'un point a lui même
-      si pointA.PointEstEgalA( pointB ) alors
-      	renvoyer pointDouble(pointA)
-      FIN
-      
-      // formule de calcul des coordonnées du point résultat de l'addition
-      // L = (Ya - Yb) / (Xa - Xb)   Modulo P
-      N est entier256 =   corps.soustractionModulo(pointA.y, pointB.y ) 
-      D est entier256 =   corps.soustractionModulo(pointA.x, pointB.x ) 
-      // si A et B sont inverse
-      si D.estEgalAZero() ALORS
-      	// le résultat est 0.
-      	pt0 est Point256;
-      	RENVOYER pt0;
-      FIN
-      // division modulaire : opération la plus lente...
-      L est entier256 = corps.divisionModulo( N, D )
-      LAuCarré est entier256 = corps.carréModulo( L )
-      
-      PointRésultat est Point256 ;
-      //X = (L*L - Xa - Xb ) 
-      PointRésultat.x =  corps.soustractionModulo( LAuCarré,  corps.additionModulo( pointA.x, pointB.x ) ) 
-      // Y = -(YA + L * (Xr -  Xa ))
-      XR est entier256 = PointRésultat.x
-      RY_droite est entier256 =    corps.multiplicationModulo( L,  corps.soustractionModulo( XR, pointA.X )) 
-      PointRésultat.y = corps.négationModulo( corps.additionModulo( pointA.y,  RY_droite )   )
-      
-      
-      renvoyer PointRésultat;
-      
-     type : 458752
-   -
-     name : pointMoinsPoint
-     procedure_id : 2167758444854660272
-     type_code : 12
-     code : |1-
-      // soustraction d'un point avec une autre
-      PROCÉDURE pointMoinsPoint(pointA Point256, pointB Point256)  : Point256
-      
-      moins_pointB est Point256 = pointNégation(pointB)
-      renvoyer pointPlusPoint(pointA,moins_pointB)
-     type : 458752
-   -
-     name : pointPlusPoint_InvModulairePrécalculé
-     procedure_id : 2145519323470119807
-     type_code : 12
-     code : |1-
-      // Addition d'un point avec une autre, version ou l'on a pré-calculé l'inverse modulaire nécessaire a l'opération
-      PROCÉDURE pointPlusPoint_InvModulairePrécalculé(pointA Point256, pointB Point256, InverseDeD entier256)  : Point256
-      
-      // cas du 0
-      SI (pointA.estZéro()) RENVOYER pointB;
-      SI (pointB.estZéro()) RENVOYER pointA;
-      //
-      //// cas d'addition d'un point a lui même
-      SI pointA.PointestEgalA( pointB ) ALORS
-      	dbgAssertion(faux,"cas a voir")
-      	RENVOYER pointDouble(pointA)
-      FIN
-      
-      // formule de calcul des coordonnées du point résultat de l'addition
-      // L = (Ya - Yb) / (Xa - Xb)   Modulo P
-      N est Entier256 =   corps.soustractionModulo(pointA.y, pointB.y ) 
-      //D est Entier256 =   corps.soustractionModulo(pointA.x, pointB.x ) 
-      // si A et B sont inverse
-      //SI D.estEgalAZero() ALORS
-      //	// le résultat est 0.
-      //	pt0 est Point256;
-      //	RENVOYER pt0;
-      //FIN
-      // division modulaire : opération la plus lente : OPTIM, remplacée par la multiplication par l'inverse (connu)
-      //L est Entier256 = corps.divisionModulo( N, D )
-      L est Entier256 = corps.multiplicationModulo( N, InverseDeD )
-      LAuCarré est Entier256 = corps.carréModulo( L )
-      
-      PointRésultat est Point256 ;
-      //X = (L*L - Xa - Xb ) 
-      PointRésultat.x =  corps.soustractionModulo( LAuCarré,  corps.additionModulo( pointA.x, pointB.x ) ) 
-      // Y = -(YA + L * (Xr -  Xa ))
-      XR est Entier256 = PointRésultat.x
-      RY_droite est Entier256 =    corps.multiplicationModulo( L,  corps.soustractionModulo( XR, pointA.x )) 
-      PointRésultat.y = corps.négationModulo( corps.additionModulo( pointA.y,  RY_droite )   )
-      
-      
-      RENVOYER PointRésultat;
-     type : 458752
   procedure_templates : []
   property_templates : []
  code_parameters :

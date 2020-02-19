@@ -263,7 +263,7 @@ window :
         code : |1+
          CPL est un compilateurDeFormule
          courbe est CourbeElliptique_secp256k1
-         corps est un CorpsModulaire_pointSepc256k1 dynamique <-courbe.corps_point_secp256k1
+         corps est un CorpsModulaire_pointSepc256k1 dynamique <-courbe.corps_coord
          
          
          //addrB est un entier système = &_B
@@ -347,7 +347,7 @@ window :
         code : |1+
          CPL est un compilateurDeFormule
          courbe est CourbeElliptique_secp256k1
-         corps est un CorpsModulaire_pointSepc256k1 dynamique <-courbe.corps_point_secp256k1
+         corps est un CorpsModulaire_pointSepc256k1 dynamique <-courbe.corps_coord
          
          
          //addrB est un entier système = &_B

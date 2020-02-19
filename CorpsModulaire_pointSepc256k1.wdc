@@ -19,7 +19,7 @@ class :
       // Utilisé pour de calcul de (x,y) addition de 2 points la courbe elliptique sepc256k1 
       CorpsModulaire_pointSepc256k1 est une Classe
       	hérite de CorpsModulaire
-      	
+      		
       	// constante pour accélérer les calcul
       	//  2^256 mod P  = 2^256-P
       	_2P256_MoinsP est Entier256

@@ -19,7 +19,11 @@ class :
       // courbe elliptique avec les paramètres pour secp256k1
       // cad pour le ECDSA utilisé par bitcoin
       CourbeElliptique_secp256k1 est une Classe
-      	Hérite de CourbeElliptique
+      //	Hérite de CourbeElliptique
+      
+      	// coefficient de y2 = (x3 + ax + b) [mod p]
+      	//coefA est Entier256 // OTIM, non géré car =0 pour secp256k1
+      	coefB est Entier256   // =7 pour secp256k1
       
       	// Tableau pré-calculé de multiples d'un point K par 256 puissances de 2
       	// TabPointPow2[1]   =         K
@@ -39,10 +43,14 @@ class :
       
       	// point générateur pour secp256k1
       	pointGen 		 est Point256
-      	// corps spécialisé pour calcul plus rapide de coordonnées de points de la courbe (addition/doublement)
-      	corps_point_secp256k1 est CorpsModulaire_pointSepc256k1 
-      	// corps spécialisé pour calcul des signatures
-      	corps_ordre_secp256k1 est CorpsModulaire_ordreCourbeSepc256k1
+      	// corps  pour calcul des coordonnées de points de la courbe (addition/doublement)
+      	// modulo   : 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
+      	corps_coord est CorpsModulaire_pointSepc256k1 
+      	// corps  pour calcul des signatures. P est le plus petit entier <n> tel que nG = 0.
+      	// modulo   : 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+      	corps_ordre est CorpsModulaire_ordreCourbeSepc256k1
+      	// ordre de la courbe : plus petit entier <n> tel que nG = 0.  corps_ordre_secp256k1.K
+      //	Ordre est entier256;
       	
       	// routines ASM pour accélérer le calcul
       	pfPointDouble_Jacobi_ASM   est un entier système
@@ -74,7 +82,6 @@ class :
       PROCEDURE Constructeur()
       // P =0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F : nombre utilisé pour le modulo des coord. des points
       // N =0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 : ordre de la courbe
-      Constructeur CourbeElliptique( :corps_point_secp256k1 , :corps_ordre_secp256k1 )
       Constructeur _N_Ordre3(         "7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee")
       Constructeur _RacineQuiMuliplie("5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72")
       coefB.affecteAvecEntierPositif(7)
@@ -106,7 +113,111 @@ class :
      type_code : 28
      code : |1+
       PROCEDURE Destructeur()
+      
      type : 655360
+   -
+     name : pointEstSurLaCourbe
+     procedure_id : 2183334135206936466
+     type_code : 12
+     code : |1+
+      // Indique si un point est sur la courbre
+      // ie : y^2 = x^3  + 7 (modulo P)
+      PROCÉDURE pointEstSurLaCourbe( point est Point256) : booléen
+      
+      // calcul de Y^2
+      Y2		est Entier256		= corps_coord.carréModulo( point.y )
+      
+      //	calcul de X^3 + 7
+      X3		est   un Entier256	= corps_coord.cubeModulo( point.x ) 
+      X3plusB	est Entier256		= corps_coord.additionModulo(X3, coefB)
+      
+      // le point si sur la courbe si égalité
+      RENVOYER Y2.estEgalA( X3plusB ) 
+     type : 458752
+   -
+     name : pointNégation
+     procedure_id : 2183335629860097512
+     type_code : 12
+     code : |1+
+      // négation d'un point: ie renvoie -P
+      PROCÉDURE pointNégation(point Point256)  : Point256
+      
+      PointRésultat est Point256  
+      PointRésultat.x = point.x 
+      PointRésultat.y = corps_coord.négationModulo( point.y )
+      renvoyer PointRésultat
+     type : 458752
+   -
+     name : pointPlusPoint
+     procedure_id : 2183337176052222985
+     type_code : 12
+     code : |1+
+      // Addition d'un point avec une autre
+      PROCÉDURE pointPlusPoint(pointA Point256, pointB Point256)  : Point256
+      
+      // cas du 0
+      SI (pointA.estZéro()) RENVOYER pointB;
+      SI (pointB.estZéro()) RENVOYER pointA;
+      
+      // cas d'addition d'un point a lui même
+      SI pointA.PointestEgalA( pointB ) ALORS
+      	RENVOYER pointDouble(pointA)
+      FIN
+      
+      // formule de calcul des coordonnées du point résultat de l'addition
+      // L = (Ya - Yb) / (Xa - Xb)   Modulo P
+      N	est Entier256	=   corps_coord.soustractionModulo(pointA.y, pointB.y ) 
+      D	est Entier256	=   corps_coord.soustractionModulo(pointA.x, pointB.x ) 
+      // si A et B sont inverse
+      SI D.estEgalAZero() ALORS
+      	// le résultat est 0.
+      	pt0 est Point256;
+      	RENVOYER pt0;
+      FIN
+      // division modulaire : opération la plus lente...
+      L				est Entier256	= corps_coord.divisionModulo( N, D )
+      LAuCarré		est Entier256	= corps_coord.carréModulo( L )
+      
+      PointRésultat	est Point256 ;
+      //X = (L*L - Xa - Xb ) 
+      PointRésultat.x =  corps_coord.soustractionModulo( LAuCarré,  corps_coord.additionModulo( pointA.x, pointB.x ) ) 
+      // Y = -(YA + L * (Xr -  Xa ))
+      XR			est Entier256	= PointRésultat.x
+      RY_droite	est Entier256	= corps_coord.multiplicationModulo( L,  corps_coord.soustractionModulo( XR, pointA.x )) 
+      PointRésultat.y             = corps_coord.négationModulo( corps_coord.additionModulo( pointA.y,  RY_droite )   )
+      
+      
+      RENVOYER PointRésultat;
+     type : 458752
+   -
+     name : pointDouble
+     procedure_id : 2183336875404442093
+     type_code : 12
+     code : |1-
+      // Addition d'un point avec lui meme
+      PROCÉDURE pointDouble(point Point256)  : Point256
+      
+      // formule trouvé sur le net :
+      // L = (3x^2) / (2*y)-1  Modulo P
+      N				est entier256	= corps_coord.multiplicationPar3Modulo( corps_coord.carréModulo(point.x) )
+      D				est entier256	= corps_coord.multiplicationPar2Modulo( point.y )
+      // =>opération longue : inversion modulo ici
+      L				est entier256	= corps_coord.divisionModulo( N, D )
+      
+      PointRésultat	est Point256 ;
+      //X = (L*L - 2*p.x ) 
+      PointRésultat.x =  corps_coord.soustractionModulo( corps_coord.carréModulo(L),  corps_coord.additionModulo( point.x, point.x ) ) 
+      // Y = - (L * ( X  - p.x ) + p.y )
+      RX	est entier256 = PointRésultat.x
+      RY	est entier256 = corps_coord.soustractionModulo( RX, point.X )
+      RY				  = corps_coord.multiplicationModulo( L, RY)
+      RY				  = corps_coord.additionModulo( RY, point.y )
+      PointRésultat.y	  = corps_coord.négationModulo( RY )
+      
+      
+      
+      RENVOYER PointRésultat;
+     type : 458752
    -
      name : _InitTabPreCalculé
      procedure_id : 1968482287425664261
@@ -721,21 +832,21 @@ class :
       // renvoie K * P
       procédure MultiplicationScalairePoint( P est Point256, K est Entier256 ) : Point256
       
-      pointRésultat   est Point256 // 0
+      PointRésultat   est Point256 // 0
       Ppow2I est Point256 = P // p^(2*i)
       POUR i = 0 À 255
       	SI K.bit(i) ALORS
       		// r = r + 2^k
-      		pointRésultat = pointPlusPoint( pointRésultat, Ppow2I  )
+      		PointRésultat = pointPlusPoint( PointRésultat, Ppow2I  )
       	FIN
       	Ppow2I = pointDouble(Ppow2I)
       FIN
       
       // le point devrait être sur la courbe ou null, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat )  _ou_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
+      dbgAssertion( pointEstSurLaCourbe( PointRésultat )  _ou_ PointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
       
       
-      RENVOYER pointRésultat
+      RENVOYER PointRésultat
      type : 458752
    -
      name : MultiplicationScalairePointGenérateur_Sans8x256
@@ -758,162 +869,7 @@ class :
       	FIN
       FIN
       // le point devrait être sur la courbe, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( PointRésultat ), "pointEstSurLaCourbe FAILED")
-      RENVOYER PointRésultat
-     type : 458752
-   -
-     name : MultiplicationScalairePointGenérateur_PrecalInv
-     procedure_id : 2145512713508079699
-     type_code : 12
-     code : |1+
-      // renvoie K  * G 
-      // utilise la tables de points pré-calculés TabPointPow2PreCalculé_256 pour les 256 points des 32 puissances de 256
-      //=>Méthode la plus rapide
-      PROCÉDURE MultiplicationScalairePointGenérateur_PrecalInv( K est Entier256 ) : Point256
-      
-      // création du tableau des points a additionner
-      Point0   est Point256 
-      Tab32Point est un tableau de Point256
-      POUR X = 0 À 31
-      	i est entier = K._8Bits(X)
-      	si i=0 alors
-      		Tab32Point.Ajoute( Point0  )
-      	sinon
-      		Tab32Point.Ajoute( TabPointPow2PreCalculé_256[ i+X*256 ]  )
-      	fin
-      FIN
-      
-      // Ajouter les points du tableau <TabPoint_IN> 2 a 2 avec résultat dans <TabPoint_OUT>
-      // =>L'ajout de plusieurs points permet l'optim de ne calculer qu'un seul inverse modulaire.
-      procédure interne _Ajoute_2A2_TableauDePoints( TabPoint_IN est un tableau de Point256, TabPoint_OUT est un tableau de Point256  )
-      	NBPointDest est entier =TabPoint_IN.Occurrence()/2
-      	NBPointDest_Sur2 est entier = NBPointDest/2
-      	dbgAssertion(NBPointDest=16 _ou_ NBPointDest=8 _ou_ NBPointDest=4 _ou_ NBPointDest=2)
-      	
-      	// récupération des nombres D a inverser pour chaque paire de point
-      	TabD est tableau de Entier256
-      	pour i = 0 _a_ NBPointDest-1
-      		D est entier256 
-      		// cas particulier du point (0,0) => veut dire qu'il y a un "00" dans K. ex : "0x914f06164094ab80f14de57c15a5dead827a473c005837a5c137167db965a203"
-      		si TabPoint_IN[i*2+1].estZéro() _ou_ TabPoint_IN[i*2+2].estZéro() ALORS
-      			D.val0 = 1 // D = 1
-      		sinon
-      			D =   corps.soustractionModulo(TabPoint_IN[i*2+1].x, TabPoint_IN[i*2+2].x) 
-      		fin
-      		dbgAssertion(pas D.estEgalAZero())
-      		TabD.Ajoute(  D )
-      	FIN
-      	// précalcul de produits réutilisables
-      	// on calcule D1*D2  D3*D4 D5*6 ... D13*D14  D15*16
-      	///           D1*D1*D2*D4 D5*D6*D7*D8... D13*D14* D15*16
-      	///           D1*D1*D2*...*D8 D9*D10*...*D15*D16
-      	///           D1*D1*D2*D4*D5*D6*...*D15*D16
-      	TabDPrec est tableau de Entier256 booléens  //  // tableau a l'étape N-1
-      	SI NBPointDest=2 ALORS
-      		TabDPrec.Ajoute( TabD[1] ) // copie profonde (pour asserts)
-      		TabDPrec.Ajoute( TabD[2] ) // copie profonde (pour asserts)
-      	sinon
-      		TabDPrec <- TabD // tableau a l'étape N-1
-      	fin
-      	TabProduit2A2 est un tableau de tableau de entier256 booléens
-      	nTaileTabProduit est entier = NBPointDest_Sur2
-      	tantque nTaileTabProduit>=2
-      		TabProduit_I est un tableau de entier256
-      		POUR i = 0 _a_ nTaileTabProduit-1
-      			TabProduit_I.Ajoute( corps.multiplicationModulo( TabDPrec[i*2+1] ,  TabDPrec[i*2+2] ) )
-      		FIN
-      		TabProduit2A2.Ajoute(TabProduit_I  )	
-      		// étape suivante
-      		TabDPrec <- TabProduit_I
-      		nTaileTabProduit = nTaileTabProduit/2
-      	FIN
-      	// calcul du produit de tous les nombres a inverser.
-      	// ex: (D1*D2*D3 ... D15*D16)
-      	dbgAssertion(TabDPrec.Occurrence()=2)
-      	ProduitD est Entier256 = corps.multiplicationModulo( TabDPrec[1], TabDPrec[2]) 
-      	Produit_D1_D8  est un entier256 = TabDPrec[1] 
-      	Produit_D9_D16 est un entier256 = TabDPrec[2]
-      	
-      	// on inverse le produit (D1*D2*D3 ... * D16)
-      	inverseDeProduitD est Entier256 = corps.inverseModulo(ProduitD )
-      	// on en déduit les inverses pour chaque D en multipliant par tous les autres nombres :
-      	// ex : inv(D1) = inv(D1*D2*D3 ... * D16) * D2*D3....*D16
-      	//Algo plus rapide de la multiplication en N^2. 
-      	// exemple pour 16 :
-      	//             A1                            A2
-      	// Q.D1.D2.D3.D4.D5.D6.D7.D8 ; Q.D9.D10.D11.D12.D13.D14.D14.D16
-      	//      B1            B2              B3           B4
-      	// D1.D2.D3.D4 ; D5.D6.D7.D8 ; D9.D10.D11.D12 ;.D13.D14.D14.D16
-      	//=>     B1' = B1*A2     								B2'=B2*A1    													 B4'=B4*A1
-      	// Q.D9.D10.D11.D12.D13.D14.D14.D16*D1.D2.D3.D4 ; Q.D9.D10.D11.D12.D13.D14.D14.D16* D5.D6.D7.D8; .... ; Q.D1.D2.D3.D4.D5.D6.D7.D8*D13.D14.D14.D16
-      	//    C1   C2       C3      C4                  C8
-      	//  D1.D2 ; D3.D4 ; D5.D6 ; D7.D8 ; ...  ; D14.D16
-      	//=>C1' = C1*B2' ;  C2' = C2*B2
-      	// Q.D9.D10.D11.D12.D13.D14.D14.D16* D5.D6.D7.D8*D1.D2 ; Q.D9.D10.D11.D12.D13.D14.D14.D16*D5.D6.D7.D8*D3.D4
-      	// INV(D1) = D2*C2'
-      	// INV(D2) = D1*C2'
-      	// INV(D3) = D4*C1'
-      	// INV(D4) = D3*C1'
-      	
-      	TabDPrec[1] = corps.multiplicationModulo( TabDPrec[1], inverseDeProduitD )
-      	TabDPrec[2] = corps.multiplicationModulo( TabDPrec[2], inverseDeProduitD )
-      	nProfondeur est un entier = TabProduit2A2.Occurrence()-1
-      	TANTQUE nProfondeur>0
-      		TabProduit_I est un tableau de entier256 <-TabProduit2A2[nProfondeur]
-      		POUR i =0 _a_  TabDPrec.Occurrence()-1
-      			// ex : C1' = C1*B2'
-      			//      C2' = C2*B2 
-      			indPrev est un entier = EstPair(i) ? i+2 sinon i
-      			TabProduit_I[i*2+1] = corps.multiplicationModulo( TabProduit_I[i*2+1], TabDPrec[indPrev] )
-      			TabProduit_I[i*2+2] = corps.multiplicationModulo( TabProduit_I[i*2+2], TabDPrec[indPrev] )
-      		FIN
-      		TabDPrec <-TabProduit_I
-      		nProfondeur--
-      	FIN
-      	dbgAssertion(TabDPrec.Occurrence()=NBPointDest_Sur2 _ou_ NBPointDest=2)
-      	// calcul final de chaque inverse modulaire et des points résultat
-      	POUR i = 0 a NBPointDest-1
-      		// calcul final de l'inverse
-      		InverseD_I est Entier256				
-      		si NBPointDest=2 ALORS
-      			InverseD_I <- i=0 ? TabDPrec[2] sinon TabDPrec[1]
-      		sinon
-      			Isur2 est un entier = i/2
-      			indPrev est un entier = EstPair(Isur2) ? Isur2+2 sinon Isur2
-      			indDI   est un entier = EstPair(i) ? i+2 sinon i		
-      
-      			InverseD_I <- corps.multiplicationModulo( TabD[indDI], TabDPrec[indPrev] )
-      		fin
-      		dbgAssertion(  corps.multiplicationModulo( InverseD_I, TabD[i+1] ).estEgalA1() )		
-      		
-      		// on peut maintenant calculer rapidement chaque Points résultat => ex :  somme 2 a 2 des 16 points a additionner
-      		pointSourceI1 est Point256 <- TabPoint_IN[i*2+1]
-      		pointSourceI2 est Point256 <- TabPoint_IN[i*2+2]
-      		pointRésultatI est Point256  <- pointPlusPoint_InvModulairePrécalculé( pointSourceI1, pointSourceI2, InverseD_I  )
-      		//dbgAssertion( pointEstSurLaCourbe( pointRésultatI ) , "pointEstSurLaCourbe FAILED") // VRAI; mais un peu lent
-      		TabPoint_OUT.Ajoute(pointRésultatI)		
-      	fin
-      fin
-      
-      
-      // Ajoute 32 points 2 a 2
-      Tab16Point est un tableau de Point256
-      _Ajoute_2A2_TableauDePoints(Tab32Point,Tab16Point)
-      // Ajoute 16 points 2 a 2
-      Tab8Point est un tableau de Point256
-      _Ajoute_2A2_TableauDePoints(Tab16Point,Tab8Point)
-      // Ajoute 8 points 2 a 2
-      Tab4Point est un tableau de Point256
-      _Ajoute_2A2_TableauDePoints(Tab8Point,Tab4Point)
-      // Ajoute 4 points 2 a 2
-      Tab2Point est un tableau de Point256
-      _Ajoute_2A2_TableauDePoints(Tab4Point,Tab2Point)
-      
-      // résultat
-      pointRésultat   est Point256 = pointPlusPoint( Tab2Point[1], Tab2Point[2] )
-      // le point devrait être sur la courbe, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat ) _OU_ pointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
-      
+      dbgAssertion( pointEstSurLaCourbe( pointRésultat ), "pointEstSurLaCourbe FAILED")
       RENVOYER pointRésultat
      type : 458752
    -
@@ -926,21 +882,17 @@ class :
       //=>Méthode la plus rapide
       procédure MultiplicationScalairePointGenérateur( K est Entier256 ) : Point256
       
+      // utilisation version en coord de Jacobi pour éviter les inversions modulaires
+      P1_Jacobi est Point256_3D = MultiplicationScalairePointGenérateurJacobi( K ) 
       
-      // résultats
+      // calcul final, conversion en coord 2D (1 inversion modulaire)
       PointRésultat   est Point256 
-      // 	32 additions par blocs de valeurs K*P précalculées
-      POUR X = 0 À 31
-      	// recup de 8 bits K 
-      	I est entier = K._8Bits(X)
-      	SI I<>0 ALORS
-      		// récup de  G = I* (2^X) précalculé 
-      		valeurKPow2X   est Point256 = TabPointPow2PreCalculé_256[ I+X*256 ]
-      		dbgAssertion( pointEstSurLaCourbe( valeurKPow2X ), "pointEstSurLaCourbe FAILED")
-      		// Addition du point précalculé
-      		PointRésultat = pointPlusPoint( PointRésultat, valeurKPow2X )
-      	FIN
+      // cas du 0 (si K = ordre)
+      si P1_Jacobi.estZero() ALORS
+      	renvoyer  PointRésultat
       FIN
+      PointRésultat = _JacobiVersPoint(P1_Jacobi)
+      
       
       // le point devrait être sur la courbe, sinon erreur de calcul
       dbgAssertion( pointEstSurLaCourbe( PointRésultat ) _ou_ PointRésultat.estZéro() , "pointEstSurLaCourbe FAILED")
@@ -992,67 +944,6 @@ class :
       
      type : 458752
    -
-     name : multiplicationScalairePointJacobi_OSBOLETE
-     procedure_id : 2165923497383385657
-     type_code : 12
-     code : |1+
-      // renvoie K * P 
-      // version utilisation les coordonnées de Jacobi pour minimiser les divisions modulaires
-      procédure multiplicationScalairePointJacobi_OSBOLETE(  P est Point256_3D, K est Entier256 ) : Point256_3D
-      
-      // conversion en coordonnées de Jacobi
-      //P est Point256_3D 
-      //P.VersJacobi(point) // init à 1*P
-      // précalcul de 2*P,3*P, ..., 15*P
-      _MultiplesDeP est un tableau de 15  Point256_3D
-      _MultiplesDeP[1] = P
-      _MultiplesDeP[2] = pointDouble_Jacobi(P)
-      pour i = 3 a  15
-      	si EstPair(i) ALORS
-      		// P = P[I/2] * 2
-      		_MultiplesDeP[i] = pointDouble_Jacobi(   _MultiplesDeP[i/2]   ) 
-      	sinon
-      		// P = P[I-1] + 1
-      		_MultiplesDeP[i] = pointPlusPoint_Jacobi(_MultiplesDeP[i-1], P) 
-      	fin
-      FIN
-      
-      PointRésultatJ	est Point256_3D		// 0
-      // parcourt en partant du bit de poids fort par bloc de 4 bits
-      POUR i = 255 À 3 pas -4
-      	// Récup de 16 bits de K
-      	n est un entier = K._4bit(i)
-      	selon n
-      		cas 0:
-      			// rien
-      		autres cas:
-      			// r = r + 2^k
-      			PointRésultatJ = pointPlusPoint_Jacobi( PointRésultatJ,  _MultiplesDeP[n]   )
-      	FIN
-      
-      	SI PointRésultatJ.estZéro() ALORS
-      		// cas particulier multiplication par l'ordre de la courbe : courbeBtc.Ordre
-      		si i=3  alors
-      			// renvoie (0,0)
-      			_P0 est Point256_3D 
-      			RENVOYER _P0
-      		fin
-      		// sinon c'est qu'on a pas encore rencontré de 1
-      		continuer
-      	FIN	
-      	SI i=3  ALORS
-      		sortir
-      	FIN
-      	
-      	// r = r*16
-      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
-      	PointRésultatJ = pointDouble_Jacobi( pointDouble_Jacobi(PointRésultatJ) )
-      	
-      FIN
-      
-      RENVOYER PointRésultatJ
-     type : 458752
-   -
      name : _JacobiVersPoint
      procedure_id : 2166308605637854078
      type_code : 12
@@ -1060,14 +951,14 @@ class :
       // conversion d'un point en coordonnées de Jacobi vers 2D ( ie, en représentation de Weierstrass )
       procédure _JacobiVersPoint( pointJacobi est Point256_3D ) : point256
       
-      _1SurZ			est entier256	= corps.inverseModulo(pointJacobi.z )
-      _1SurZ_Carre	est entier256	= corps.carréModulo(_1SurZ) 
-      _1SurZ_Cube		est entier256	= corps.multiplicationModulo(_1SurZ_Carre, _1SurZ) 
+      _1SurZ			est entier256	= corps_coord.inverseModulo(pointJacobi.z )
+      _1SurZ_Carre	est entier256	= corps_coord.carréModulo(_1SurZ) 
+      _1SurZ_Cube		est entier256	= corps_coord.multiplicationModulo(_1SurZ_Carre, _1SurZ) 
       //  x = X/Z^2
       //  y = Y/Z^3
       pointRésultat	est Point256
-      pointRésultat.x	= corps.multiplicationModulo(pointJacobi.x, _1SurZ_Carre )
-      pointRésultat.y	= corps.multiplicationModulo(pointJacobi.y, _1SurZ_Cube  )
+      pointRésultat.x	= corps_coord.multiplicationModulo(pointJacobi.x, _1SurZ_Carre )
+      pointRésultat.y	= corps_coord.multiplicationModulo(pointJacobi.y, _1SurZ_Cube  )
       renvoyer pointRésultat
      type : 458752
    -
@@ -1086,41 +977,6 @@ class :
       // OPTIM utilisation d'une version généré par le compilateur de formules :
       pointRésultat est Point256_3D= point1
       API( pfPointAddition_Jacobi_ASM, &pointRésultat.x, &pointRésultat.y, &pointRésultat.z, &point2.x, &point2.y, &point2.z  )
-      renvoyer pointRésultat
-      
-      // Z1Z1	= Z1^2
-      Z1Z1 est Entier256 = corps.carréModulo( point1.z )
-      // Z2Z2	= Z2^2
-      Z2Z2 est Entier256 = corps.carréModulo( point2.z )
-      //U1	= X1*Z2Z2
-      U1 est Entier256   = corps.multiplicationModulo( point1.x, Z2Z2 )
-      //U2	= X2*Z1Z1
-      U2 est Entier256   = corps.multiplicationModulo( point2.x, Z1Z1 )
-      //S1		= Y1*Z2*Z2Z2
-      S1 est Entier256   = corps.multiplicationModulo( point1.y, corps.multiplicationModulo( point2.z, Z2Z2  ) )
-      //S2		= Y2*Z1*Z1Z1
-      S2 est Entier256   = corps.multiplicationModulo( point2.y, corps.multiplicationModulo( point1.z, Z1Z1  ) )
-      //H		= U2-U1
-      H est Entier256    = corps.soustractionModulo( U2, U1)
-      //HH		= H^2
-      HH est Entier256   = corps.carréModulo( H )
-      //HHH		= H^3
-      HHH est Entier256  = corps.multiplicationModulo( HH, H )
-      // r		= S2-S1
-      r est entier256    = corps.soustractionModulo( S2, S1)
-      //V		= U1*HH
-      V est entier256    = corps.multiplicationModulo(U1, HH)
-      
-      //pointRésultat est Point256_3D
-      // X' = r^2-(HHH+2*V)
-      HHH_plus2V est Entier256 =  corps.additionModulo(HHH, corps.multiplicationPar2Modulo( V ) )
-      pointRésultat.x    =  corps.soustractionModulo( corps.carréModulo( r ) , HHH_plus2V)
-      // Y' = r*(V-X')-S1*HHH
-      _r_V_Xresultat est Entier256    = corps.multiplicationModulo( r, corps.soustractionModulo( V, pointRésultat.x  ))
-      pointRésultat.Y    =  corps.soustractionModulo( _r_V_Xresultat, corps.multiplicationModulo( S1, HHH ) )
-      //  Z' = Z1*Z2*H
-      pointRésultat.z	   = corps.multiplicationModulo( point1.z,  corps.multiplicationModulo( point2.z, H  ) )
-      
       renvoyer pointRésultat
      type : 458752
    -
@@ -1165,90 +1021,6 @@ class :
       pointRésultat est Point256_3D = point
       API(:pfPointDouble_Jacobi_ASM,&pointRésultat.x,&pointRésultat.y,&pointRésultat.z)
       renvoyer pointRésultat
-      
-      
-      //XX	= X1^2
-      //YY	= Y1^2
-      yy est Entier256     = corps.carréModulo( point.y)
-      //S	    = 4*X1*Y        
-      S  est Entier256     = corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
-      //M	    = 3*XX          
-      M  est Entier256     = corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
-      // X'	= M2-2*S    
-      pointRésultat.X      = corps.soustractionModulo( corps.carréModulo(M), corps.multiplicationPar2Modulo( S ) )
-      //Y'	= M*(S-X')-8*YY^2
-      _M_SX est Entier256  = corps.multiplicationModulo( M, corps.soustractionModulo( S, pointRésultat.x ) )
-      _8YY2 est Entier256  = corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointRésultat.y      = corps.soustractionModulo(_M_SX, _8YY2 )
-      //Z'	= 2*Y*Z
-      pointRésultat.z      =  corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
-      
-      renvoyer pointRésultat
-     type : 458752
-   -
-     name : pointMutlipliePar16_Jacobi
-     procedure_id : 2180017114751480498
-     type_code : 12
-     code : |1+
-      // renvoie 16*point en coordonnées de Jacobi
-      // équilalent a pointDouble_Jacobi(pointDouble_Jacobi(pointDouble_Jacobi(pointDouble_Jacobi( point ))))
-      // pour optim
-      //  source : http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-1998-cmo-2
-      procédure pointMutlipliePar16_Jacobi( point est Point256_3D ) : Point256_3D
-      
-      // 2 * point
-      pointdouble_X      	est Entier256 
-      pointdouble_Y      	est Entier256 
-      pointdouble_Z      	est Entier256 
-      
-      // calcul 2*point = point + point
-      yy		est Entier256	= :corps_point_secp256k1.carréModulo( point.y )
-      S		est Entier256	= :corps_point_secp256k1.multiplication_255x255x8_Modulo( point.x, yy , 4 )
-      M		est Entier256	= :corps_point_secp256k1.carré_255x255x8_Modulo( point.x,  3 )
-      pointdouble_X      		= :corps_point_secp256k1.soustractionModulo( corps_point_secp256k1.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
-      _M_SX	est Entier256	= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointdouble_X ) )
-      _8YY2	est Entier256	= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointdouble_Y			= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
-      pointdouble_Z			= :corps_point_secp256k1.multiplication_255x255x8_Modulo( point.y, point.z, 2 )
-      
-      // === on refait l'opération => *4
-      pointquadruple_X est Entier256 
-      pointquadruple_Y est Entier256 
-      pointquadruple_Z est Entier256 
-      yy						= :corps_point_secp256k1.carréModulo( pointdouble_Y )
-      S						= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_X, yy , 4 )
-      M						= :corps_point_secp256k1.carré_255x255x8_Modulo( pointdouble_X,  3 )
-      pointquadruple_X		= :corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
-      _M_SX					= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointquadruple_X ) )
-      _8YY2					= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointquadruple_Y		= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
-      pointquadruple_Z		= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointdouble_Y, pointdouble_Z, 2 )
-      
-      // === on refait l'opération => *8
-      pointX8_X	est Entier256 
-      pointX8_Y	est Entier256 
-      pointX8_Z	est Entier256 
-      yy						= :corps_point_secp256k1.carréModulo( pointquadruple_Y )
-      S						= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointquadruple_X, yy , 4 )
-      M						= :corps_point_secp256k1.carré_255x255x8_Modulo( pointquadruple_X,  3 )
-      pointX8_X				= :corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
-      _M_SX					= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointX8_X ) )
-      _8YY2					= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointX8_Y				= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
-      pointX8_Z				= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointquadruple_Y, pointquadruple_Z, 2 )
-      
-      // === on refait l'opération => 16
-      pointRésultat	est Point256_3D
-      yy						= :corps_point_secp256k1.carréModulo( pointX8_Y )
-      S						= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointX8_X, yy , 4 )
-      M						= :corps_point_secp256k1.carré_255x255x8_Modulo( pointX8_X,  3 )
-      pointRésultat.x   	    = :corps_point_secp256k1.soustractionModulo( corps.carréModulo(M), corps_point_secp256k1.multiplicationPar2Modulo( S ) )
-      _M_SX					= :corps_point_secp256k1.multiplicationModulo( M, corps_point_secp256k1.soustractionModulo( S, pointRésultat.x ) )
-      _8YY2					= :corps_point_secp256k1.carré_255x255x8_Modulo( yy, 8 )
-      pointRésultat.y			= :corps_point_secp256k1.soustractionModulo(_M_SX, _8YY2 )
-      pointRésultat.z			= :corps_point_secp256k1.multiplication_255x255x8_Modulo( pointX8_Y, pointX8_Z, 2 )
-      
-      RENVOYER pointRésultat
      type : 458752
    -
      name : _multiplicationScalaire2PointJacobi
@@ -1281,15 +1053,12 @@ class :
       	// P2 = L*P1
       	p est Point256_3D dynamique <- _MultiplesDeP1[i]
       	_MultiplesDeP2[i]   = p 
-      	_MultiplesDeP2[i].x = corps.multiplicationModulo( _N_Ordre3, p.x ) // Transformation qui fait que P2 = L*P1
+      	_MultiplesDeP2[i].x = corps_coord.multiplicationModulo( _N_Ordre3, p.x ) // Transformation qui fait que P2 = L*P1
       	SI bSigneOpose ALORS 
       		//  P2 = -2
-      		_MultiplesDeP2[i].y = corps.négationModulo( p.y)
+      		_MultiplesDeP2[i].y = corps_coord.négationModulo( p.y)
       	FIN
-      
       FIN
-      
-      
       
       // Accumulateur/résultat
       PointRésultatJ	est Point256_3D		// 0
@@ -1409,7 +1178,7 @@ class :
       moinsVY		est Entier256 = moinsVY512.valPoidsFaible // corps.négationModulo(VY)
       	
       // k - vx = K - (b2*v2.x - b1*v1.x)
-      KmoinsVX	est Entier256 = corps.soustractionModulo( _k, VX)
+      KmoinsVX	est Entier256 = corps_coord.soustractionModulo( _k, VX)
       
       // Résultat :
       signeX		est entier			= 1
@@ -1419,18 +1188,18 @@ class :
       // si VX_Test<0
       SI VX_Resultat.bit(255)=1 ALORS
       	// x' = -x
-      	VX_Resultat	= corps.négationModulo( VX_Resultat ) 
+      	VX_Resultat	= corps_coord.négationModulo( VX_Resultat ) 
       	signeX		= -1
       FIN
       // si VX_Test<0
       SI VY_Resultat.bit(255)=1 ALORS
       	// Cas particulier ou k2 est > ordre de la courbe 
-      	si VY_Resultat.estSupérieurOuEgalA( corpsOrdre.P ) ALORS
+      	si VY_Resultat.estSupérieurOuEgalA( corps_Ordre.P ) ALORS
       		//VY_Resultat = soustraction( VY_Resultat, corpsOrdre.P  )	
       		VY_Resultat = negation( VY_Resultat  )	
       	sinon
       		// y' = -y
-      		VY_Resultat	= corps.négationModulo( VY_Resultat ) 
+      		VY_Resultat	= corps_coord.négationModulo( VY_Resultat ) 
       	fin
       	signeY		= -1
       FIN	
@@ -1449,7 +1218,7 @@ class :
       PROCÉDURE _PointMultRacine( _p est Point256 ) : Point256
       
       pointRésultat est Point256 
-      pointRésultat.x	= corps.multiplicationModulo( _N_Ordre3, _p.x )
+      pointRésultat.x	= corps_coord.multiplicationModulo( _N_Ordre3, _p.x )
       pointRésultat.y	= _p.y
       RENVOYER pointRésultat
      type : 458752
@@ -1464,10 +1233,15 @@ class :
       
       // N = générateur du groupe des points  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
       // P = ordre de la courbe               = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
+      // cas particulier ou on veut multiplier par K >= ordre
+      si K.estSupérieurOuEgalA( corps_Ordre.P ) ALORS
+      	K = soustraction(K, corps_ordre.P )
+      fin
+      
       
       	// renvoie x + _RacineQuiMuliplie*y mod N
       	PROCÉDURE INTERNE _F( X Entier256, Y Entier256 ) : Entier256
-      		res est Entier256 =corpsOrdre.additionModulo( X, corpsOrdre.multiplicationModulo( Y, _RacineQuiMuliplie ) )
+      		res est Entier256 =corps_Ordre.additionModulo( X, corps_Ordre.multiplicationModulo( Y, _RacineQuiMuliplie ) )
       		RENVOYER res
       	FIN
       	
@@ -1483,11 +1257,13 @@ class :
       FIN
       
       // on vérifie que le résultat a bien les propriétés attendues
-      k1AvecSigne	est entier256	= (signek1 = -1) ?  corpsOrdre.négationModulo(k1) sinon k1
-      k2AvecSigne	est entier256	= (signek2 = -1) ?  corpsOrdre.négationModulo(k2) sinon k2
+      k1AvecSigne	est entier256	= (signek1 = -1) ?  corps_Ordre.négationModulo(k1) sinon k1
+      k2AvecSigne	est entier256	= (signek2 = -1) ?  corps_Ordre.négationModulo(k2) sinon k2
       _Tmp		est Entier256
       _Tmp = _F(k1AvecSigne, k2AvecSigne )
-      dbgAssertion( _Tmp.estEgalA(K) ,"nombre pas OK")
+      si pas _Tmp.estEgalA(K) alors
+      	dbgAssertion( _Tmp.estEgalA(K) ,"nombre pas OK")
+      fin
       // k1 et k2 doivent êtres "petits"
       si k1.val3<>0 alors
       	dbgAssertion( k1.val3 = 0, "point="+point.x.VersChaineHexa()+","+point.y.VersChaineHexa()+rc+"K= "+K.VersChaineHexa())
@@ -1523,23 +1299,22 @@ class :
       
       // on a    Y^2 = X^3 + 7
       _7 est Entier256(7)
-      X3Plus7 est Entier256 = corps_point_secp256k1.additionModulo( corps.cubeModulo(X), _7)
+      X3Plus7 est Entier256 = corps_coord.additionModulo( corps_coord.cubeModulo(X), _7)
       // en débug on vérifie que X^3 + 7 est un résidu quadratique. 
       SI dbgActiveAssertion() ALORS
       	_Pmoins1Sur2	est Entier256("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffff7ffffe17")
-      	_DBG			est Entier256	= corps_point_secp256k1.puissanceModulo(X3Plus7, _Pmoins1Sur2)
+      	_DBG			est Entier256	= corps_coord.puissanceModulo(X3Plus7, _Pmoins1Sur2)
       	dbgAssertion(_DBG.estEgalA1(), "X3Plus7 n'est pas un carré. ie X n'est pas un point de la courbe.")
       FIN
       
       // Y = racine(  X^3 + 7 )
-      Y est un Entier256 = corps_point_secp256k1.racineCarréeModulo(X3Plus7)
+      Y est un Entier256 = corps_coord.racineCarréeModulo(X3Plus7)
       // selon le "signe" voulu on inverse (envoie -P au lieu de P)
       bSigneCourant est un booléen = Y.val3 >= 0x8000000000000000
       si bYPositif<>bSigneCourant ALORS
       	// Y = -Y
-      	Y = corps_point_secp256k1.négationModulo(Y)
+      	Y = corps_coord.négationModulo(Y)
       FIN
-      
       
       // mise dans le point résultat
       Résultat est Point256
@@ -1732,10 +1507,10 @@ class :
       
       CPL est un compilateurDeFormule
       // déclaration des routines a utiliser pour implémenter les opérateurs
-      CPL.déclareOpérateurBinaire("*", corps_point_secp256k1.addrprocMult256x256Modulo  )
-      CPL.déclareOpérateurBinaire(".", corps_point_secp256k1.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
-      CPL.déclareOpérateurBinaire("-", corps_point_secp256k1.addrprocSoustractionModulo )
-      CPL.déclareOpérateurBinaire("+", corps_point_secp256k1.addrprocAdditionModulo     )
+      CPL.déclareOpérateurBinaire("*", corps_coord.addrprocMult256x256Modulo  )
+      CPL.déclareOpérateurBinaire(".", corps_coord.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
+      CPL.déclareOpérateurBinaire("-", corps_coord.addrprocSoustractionModulo )
+      CPL.déclareOpérateurBinaire("+", corps_coord.addrprocAdditionModulo     )
       
       // compilation de la formule
       _pf							est un entier système

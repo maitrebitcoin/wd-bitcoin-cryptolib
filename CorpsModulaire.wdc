@@ -294,6 +294,12 @@ class :
       
       inverseMod est Entier256
       
+      // test division par 0
+      si nombre.estEgalAZero() ALORS
+      	dbgAssertion(faux)
+      	renvoyer inverseMod
+      FIN
+      
       // calcul "rapide" par une version optimisée de l'algorithme d'Eurclide étendu.
       inverseMod = inverseModulaire_HGCD256( P, nombre  )
       // si echec

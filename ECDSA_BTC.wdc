@@ -16,13 +16,13 @@ class :
   p_codes :
    -
      code : |1-
-      // gestion des point d'entrée pour la cryptographie ECDSA pour Bitcoin
+      // gestion des point d'entrée pour la cryptographie ECDSA utilisée par le protocole Bitcoin
       
       privé
       	
       ECDSA_BTC est une Classe
       	courbeBtc    est CourbeElliptique_secp256k1 // pour opérations sur les points de la courbe a la norme secp256k1
-      	corpsECC     est CorpsModulaire dynamique   // pointeur sur le corps utilisé par <courbeBtc> pour les points
+      	corpsCoord   est CorpsModulaire dynamique   // pointeur sur le corps utilisé par <courbeBtc> pour les coordonées de points
       	corpsOrdre   est CorpsModulaire dynamique   // pointeur sur le corps utilisé pour l'ordre de la courbe ( pour signer/vérifier la signature )
       FIN
       
@@ -44,9 +44,8 @@ class :
       	fin
       	ThreadExécute(DonneGuid(),threadNormal,_Init_Hasard)
       
-      corpsECC <-  courbeBtc.corps
-      //corpsOrdre = allouer un CorpsModulaire( courbeBtc.Ordre.VersChaineHexa() )
-      corpsOrdre <-  courbeBtc.corpsOrdre
+      corpsCoord <-  courbeBtc.corps_coord
+      corpsOrdre <-  courbeBtc.corps_ordre
      type : 589824
    -
      name : Destructeur
@@ -60,7 +59,7 @@ class :
      procedure_id : 2182283788099713812
      type_code : 12
      code : |1-
-      // renvoie une paire : ( clé privée, clée publique )
+      // renvoie une paire : ( clé privée, clé publique )
       procédure CréePaireCléPrivéePublique() : ( Entier256, Point256 )
       
       // génère une clé privée au hasard. 
@@ -68,7 +67,7 @@ class :
       cléPrivée.affecteAvecBuffer( HasardCryptoBuffer(32) )
       // calcule la clé publique associée
       cléPublique est Point256
-      cléPublique = courbeBtc.MultiplicationScalairePointGenérateur_PrecalInv( cléPrivée )
+      cléPublique = courbeBtc.MultiplicationScalairePointGenérateur( cléPrivée )
       
       renvoyer (cléPrivée, cléPublique)
      type : 458752
@@ -82,7 +81,7 @@ class :
       procédure DériveCléPubliqueDepuisCléPrivée( cléPrivée Entier256  ) : Point256
       
       // rebond version optimisée de la courbe elliptique
-      renvoyer courbeBtc.MultiplicationScalairePointGenérateur_PrecalInv( cléPrivée )
+      renvoyer courbeBtc.MultiplicationScalairePointGenérateur( cléPrivée )
       
      type : 458752
    -
@@ -138,35 +137,30 @@ class :
       FIN
       // Astuce pour que l'encodage de la paire R,S soit de taille fixe :
       // R doit être compris entre 0x01 et 0x7F.
-      tantque (P.X.val3 < 0x0100000000000000) _OU_ (P.x.val3 & 0x8000000000000000 <> 0)
-      	//K++
-      	K = additionAvecUn(K)
-      	// P = P + point générateur
-      	P = courbeBtc.pointPlusPoint(P, courbeBtc.pointGen )
+      si (P.X.val3 < 0x0100000000000000) _OU_ (P.x.val3 & 0x8000000000000000 <> 0) ALORS
+      	goto recalculer
       FIN
       
-      
-      ///1er nombre renvoyé
+      // 1er nombre renvoyé
       signature est SignatureEcdsa
-      signature.R = P.x //.VersEntier256( corpsECC )
-      // 2eme nombre
-      inverseDeK est Entier256 =corpsOrdre.inverseModulo( K ) // nombre L tel que L*K = 1 (mod N)
+      signature.R = P.x 
+      // 2eme nombre renvoyé
+      inverseDeK est Entier256 = corpsOrdre.inverseModulo( K ) // nombre L tel que L*K = 1 (mod N)
       // y=K^-1(  H(m) + sx )
-      signature.S =  corpsOrdre.multiplicationModulo( inverseDeK, ...
-      	  			corpsOrdre.additionModulo(NombreASigner, ...
-      	   				corpsOrdre.multiplicationModulo( CléPrivée , P.x ) )) 
-      
+      sx    est Entier256      = corpsOrdre.multiplicationModulo( cléPrivée , P.x  ) 
+      h_sx  est Entier256      = corpsOrdre.additionModulo(   NombreASigner , sx   )
+      signature.S              = corpsOrdre.multiplicationModulo( inverseDeK, h_sx )
+      // si on obtient 0, on recommence avec un autre nombre au hasard
       si signature.S.estEgalAZero() ALORS
       	goto recalculer
       FIN
       // BIP 62 / BIP 66 : on ne renvoie pas de valeur "négatives" pour S, ie on renvoie la plus petite entre S et -S
-      //=> if (sig[4] & 0x80) return false;
       si signature.S.val3 & 0x8000000000000000 ALORS
       	signature.S = corpsOrdre.négationModulo(signature.S)
       FIN
       dbgAssertion(signature.S.val3 & 0x8000000000000000 = 0)
       // Astuce pour que l'encodage de la paire R,S soit de taille fixe :
-      // R doit être compris entre 0x01 et 0x7F.
+      // S doit être compris entre 0x01 et 0x7F.
       si (signature.S.val3 < 0x0100000000000000) ALORS
       	// on ré-essaie avec un autre nombre
       	GOTO recalculer
@@ -218,7 +212,7 @@ class :
       //OPTIM : on doit vérifier  P.x          = signature.R
       //        soit				PJ.X/PK.Z^2 =  signature.R
       //        équivalent a      PJ.X		=  signature.R * PJ.Z^2
-      SRfoisPJZCarre est Entier256 = courbeBtc.corps.multiplicationModulo( signature.R, courbeBtc.corps.carréModulo(P_Jacobi.Z) ) 
+      SRfoisPJZCarre est Entier256 = corpsCoord.multiplicationModulo( signature.R, corpsCoord.carréModulo(P_Jacobi.Z) ) 
       // signature OK ssi X == S.R
       si PAS P_Jacobi.X.estEgalA( SRfoisPJZCarre ) alors
       	// signature invalide 
