@@ -41,14 +41,8 @@ class :
           Constructeur CorpsModulaire("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
       	Constructeur _2P256_MoinsP(                                "0x14551231950b75fc4402da1732fc9bebf")
       
-      
-      SI EnMode64bits() ALORS
-      
-      	// 256x256 mod P :
-      	:addrprocMult256x256Modulo	=  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo_OrdreCourbeSepc256k.asm"), "multiplicationModulo_Ordre_sepc256k_ASM" ) 
-       	dbgAssertion(addrprocMult256x256Modulo <> 0)
-      
-      FIN
+      // 256x256 mod P :
+      :addrprocMult256x256Modulo	=  pCompileAsm("mult256x256_Modulo_OrdreCourbeSepc256k")
       // compile une code rapide pour l'inverse modulaire
        :addrprocInverseModulo = _pCompileInverseModulo()
      type : 589824
@@ -69,7 +63,7 @@ class :
       PROCÉDURE virtuelle multiplicationModulo(  nombreA Entier256, nombreB Entier256) : Entier256 
       
       // résultat R
-      resultat est Entier256
+      résultat est Entier256
       //si on une routine asm dispo (64 bits)
       API(addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
       RENVOYER resultat

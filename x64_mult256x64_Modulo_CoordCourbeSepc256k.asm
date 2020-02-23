@@ -1,13 +1,13 @@
 ; multiplication de 1 entier 256 bits par un entire 64 bits modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 ; Proto C :
 ; EXPORT void multiplicationModulo_256x64_sepc256k (byte* pNombreA, UINT64 nombreB, OUT byte* pResultat)
-; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers paramètres. soit :
+; calling convention : RCX, RDX, R8, R9 pours les 4 premiers paramètres. soit :
 ; byte* pNombreA  : rcx
 ; UIN64 nombreB   : rdx
 ; byte* pResultat : r8
 
 .CODE
-multiplicationModulo_256x64_sepc256k_ASM PROC
+mult256x64_Modulo_CoordCourbeSepc256k PROC
 
 ; prologue
  push        rax
@@ -106,6 +106,6 @@ neDepassePas:
  pop         rbx
  pop         rax
  ret  
-
- multiplicationModulo_256x64_sepc256k_ASM endp
+ 
+ mult256x64_Modulo_CoordCourbeSepc256k endp
  END

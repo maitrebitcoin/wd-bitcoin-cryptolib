@@ -1,29 +1,11 @@
-; multiplication de 2 entier 256 bits modulo xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
-; Proto C :
-; EXPORT void multiplicationModulo_sepc256k (byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
-; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers param�tres. soit :
-; byte* pNombreA  : rcx
-; byte* pNombreB  : rdx
-; byte* pResultat : r8
-; --------------
-; utilisation des registres 
-;  A0    A1    A2    A3
-;  rbx  rsi   rbp   r14
-;  B0 = > B3
-;  rdx
-;  C0     C1    C2    C3    C4   C5   C6   c7
-;  r8    r9    r10   r11   r12  r13  r14  rbx
+; multiplication de 2 entier 256 bits => 1 entier 512
 
-.DATA
-; 0x14551231950b75fc4402da1732fc9bebf
-_2P256_MoinsP_Ordre qword 402da1732fc9bebfh, 4551231950b75fc4h, 000000000000001h, 000000000000000h
-                           
 
 .CODE
 
 ; Proto C :
 ; EXPORT void multiplication_256x256_512_ASM (byte* pNombreA_256, byte* pNombreB_256, OUT byte* pResultat_512)
-; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers param�tres. soit :
+; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers parametres. soit :
 ; byte* pNombreA_256  : rcx
 ; byte* pNombreB_256  : rdx
 ; byte* pResultat_512 : r8
@@ -35,19 +17,14 @@ _2P256_MoinsP_Ordre qword 402da1732fc9bebfh, 4551231950b75fc4h, 000000000000001h
 ;  rdx
 ;  C0     C1    C2    C3    C4   C5   C6   c7
 ;  r8    r9    r10   r11   r12  r13  r14  rbx
-multiplication_256x256_512_ASM PROC
+multiplication_256x256_512_asm PROC
 
 ; prologue
- mov         qword ptr [rsp+18h],r8    ; sauver pResultat dans la zone des var locales. [rsp+68h] apres les push
- push        rax
+ mov         qword ptr [rsp+18h],r8    ; sauver <pResultat> dans la zone réservée par l'appelant. [rsp+58h] apres les push
  push        rbx
- push        rcx
  push        rbp  
  push        rsi  
  push        rdi
-; pas de push r8,r9 : utilisés par la convention d'appel.
- push        r10  
- push        r11  
  push        r12  
  push        r13  
  push        r14  
@@ -152,7 +129,7 @@ multiplication_256x256_512_ASM PROC
 
 
 ; affectation du resultat dans <pResultat_512>
- mov         rax,qword ptr [rsp+78h] ;  rax = [pResultat]
+ mov         rax,qword ptr [rsp+58h] ;  rax = [pResultat]
  mov         qword ptr [rax    ],r8  ;  C0  = r8  
  mov         qword ptr [rax+8  ],r9  ;  C1  = r9
  mov         qword ptr [rax+10h],r10 ;  C2  = r10
@@ -167,139 +144,15 @@ multiplication_256x256_512_ASM PROC
  pop         r14  
  pop         r13 
  pop         r12
- pop         r11
- pop         r10
  pop         rdi  
  pop         rsi  
  pop         rbp  
- pop         rcx
  pop         rbx
- pop         rax
+
 
  ret  
 
- multiplication_256x256_512_ASM endp
-
-;===========================================================================================
-; point d'entée =>
-; Proto C :
-; EXPORT void multiplicationModulo_Ordre_sepc256k_ASM (byte* pNombreA_256, byte* pNombreB_256, OUT byte* pResultat_256)
-; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers param�tres. soit :
-; byte* pNombreA_256  : rcx
-; byte* pNombreB_256  : rdx
-; byte* pResultat_512 : r8
-;===========================================================================================
- multiplicationModulo_Ordre_sepc256k_ASM PROC
-
- ;prologue
-    ; mov         qword ptr [rsp+20h],rbx  
-     mov         rbx,r8 ; sauver l'adrese du résultat dans rbx
-
-     push        rbp  
-     push        rsi  
-     push        rdi  
-     push        r14  
-     push        r15  
-     lea         rbp,[rsp-40h]  
-     sub         rsp,140h  
-     
-
-	; multiplication A*B => 512 bits
-	; UI512 AxB_512;
-	; multiplication_256x256_512_ASM(pNombreA, pNombreB, (PBYTE)&AxB_512);
-    lea         r8,[rbp-50h]  ;  r8 = &AxB_512 
-    call        multiplication_256x256_512_ASM    ; (rcx,rdx,r8)
-    
- 	; multiplication des 256 bits de poids fort par 2^256 - P => 0x14551231950b75fc4402da1732fc9bebf
-    ;UI512 _resteModulo;
-	; multiplication_256x256_512_ASM( (PBYTE)&AxB_512.high, (PBYTE)&_2P256_MoinsP_Ordre, (PBYTE)&_resteModulo);
-    lea         r8,[rsp+30h] ;  [_resteModulo]  
-    lea         rdx,[_2P256_MoinsP_Ordre]  
-    lea         rcx,[rbp-30h]  ; AxB_512.high
-    call        multiplication_256x256_512_ASM   ; (rcx,rdx,r8)
-    	
-    ; résultat : 256 bits + 64 de "carry"
-	; UI64 C0 = AxB_512.low.v0;
-    mov         rdi,qword ptr [rbp-50h] ; rdi =  &AxB_512 
-    add         rdi,qword ptr [ rsp+30h ]  ;  [_resteModulo]  
-    lea         rdx,[_2P256_MoinsP_Ordre]  
-    mov         rsi,qword ptr [rbp-48h]  
-    lea         rcx,[rsp+50h]  
-    adc         rsi,qword ptr [rsp+38h]  
-    mov         r14,qword ptr [rbp-40h]    
-    adc         r14,qword ptr [rsp+40h]  
-    mov         r15,qword ptr [rbp-38h]  
-    adc         r15,qword ptr [rsp+48h]  
-    adc         qword ptr [rsp+50h],0  
-    adc         qword ptr [rsp+58h],0  
-    adc         qword ptr [rsp+60h],0  
-    adc         qword ptr [rsp+68h],0  
-
-;	multiplication_256x256_512_ASM( (PBYTE)&_resteModulo.high, (PBYTE)&_2P256_MoinsP_Ordre, (PBYTE)&_resteModulo2);
-     lea         r8,[rsp+70h]               ; _resteModulo2
-     call        multiplication_256x256_512_ASM ; (rcx,rdx,r8)  
-     
-     add         rdi,qword ptr [rsp+70h] 
-
-     lea         rdx,[_2P256_MoinsP_Ordre]  
-     adc         rsi,qword ptr [rsp+78h]  
-     lea         rcx,[rbp-70h]  
-     adc         r14,qword ptr [rbp-80h]  
-     adc         r15,qword ptr [rbp-78h]  
-     adc         qword ptr [rbp-70h],0  
-     adc         qword ptr [rbp-68h],0  
-     adc         qword ptr [rbp-60h],0  
-     adc         qword ptr [rbp-58h],0  
-
-;multiplication_256x256_512_ASM( (PBYTE)&_resteModulo2.high, (PBYTE)&_2P256_MoinsP_Ordre, (PBYTE)&_resteModulo3);
-     lea         r8,[rbp-10h]  
-     call        multiplication_256x256_512_ASM
-
-    add         rdi,qword ptr [rbp-10h]  ; _resteModulo2
-
-
-    mov         rax,402DA1732FC9BEBFh  
-    mov         rcx,rdi  
-    adc         rsi,qword ptr [rbp-8]  
-    mov         rdx,rsi  
-    adc         r14,qword ptr [rbp]  
-    mov         r8,r14  
-    adc         r15,qword ptr [rbp+8]  
-    mov         r9,r15  
-    adc         rcx,rax  
-    mov         rax,4551231950B75FC4h  
-    adc         rdx,rax  
-    adc         r8,1  
-    adc         r9,0  
-    setb        al  
-    test        al,al  
- je          multiplicationModulo_ordre_sepc256k_else
-; if (caryy)
-		; Affecation du résultat avec la version qui depsse
-         mov         qword ptr [rbx],    rcx  
-         mov         qword ptr [rbx+8],  rdx  
-         mov         qword ptr [rbx+10h],r8  
-         mov         qword ptr [rbx+18h],r9  
-         jmp         multiplicationModulo_ordre_sepc256k_end
-;	else
-multiplicationModulo_ordre_sepc256k_else:	
-		; Affecation du résultat
-         mov         qword ptr [rbx],    rdi  
-         mov         qword ptr [rbx+8],  rsi  
-         mov         qword ptr [rbx+10h],r14  
-         mov         qword ptr [rbx+18h],r15  
-multiplicationModulo_ordre_sepc256k_end:
-
-; epilogue
- add         rsp,140h  
- pop         r15  
- pop         r14  
- pop         rdi  
- pop         rsi  
- pop         rbp  
- ret  
-
- multiplicationModulo_Ordre_sepc256k_ASM ENDP
+ multiplication_256x256_512_asm endp
 
 
  END

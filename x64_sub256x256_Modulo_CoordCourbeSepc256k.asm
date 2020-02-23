@@ -1,13 +1,13 @@
 ; soustracion de 2 entier 256 bits modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 ; Proto C :
-; EXPORT void soustractionModulo_sepc256k(byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
-; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers paramètres. soit :
+;  void soustractionModulo_sepc256k(byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
+; calling convention : RCX, RDX, R8, R9 pours les 4 premiers paramètres. soit :
 ; byte* pNombreA  : rcx
 ; byte* pNombreB  : rdx
 ; byte* pResultat : r8
 
 .CODE
-soustractionModulo_sepc256k_ASM PROC
+sub256x256_Modulo_CoordCourbeSepc256k PROC
 
 ; prologue
 
@@ -50,5 +50,5 @@ _endif_debordement:
 ;Epilogue
  ret  
 
- soustractionModulo_sepc256k_ASM endp
+ sub256x256_Modulo_CoordCourbeSepc256k endp
  END

@@ -1,14 +1,14 @@
 #To edit and compare internal_properties, use WINDEV integrated tools.
 #Internal properties refer to the properties of controls in windows, reports, etc.
 info :
- name : optim_asm_X86_32bits
+ name : optim_asm_x86_32_64_bits
  major_version : 25
  minor_version : 0
  type : 7
  description : ""
  subtype : 0
 procedure_set :
- identifier : 0x1b9cadaf05a5e6b8
+ identifier : 0x1e52a1de0497a7de
  internal_properties : BQAAAAUAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
  code_elements :
   type_code : 31
@@ -16,7 +16,7 @@ procedure_set :
   procedures :
    -
      name : pGetprocAddition256p256_256c_ASM
-     procedure_id : 1989656441918987932
+     procedure_id : 2184986744160036830
      type_code : 15
      code : |1+
       Procédure pGetprocAddition256p256_256c_ASM() : entier système
@@ -103,7 +103,7 @@ procedure_set :
      type : 458752
    -
      name : pGetprocMult128x128_256_ASM
-     procedure_id : 1989657399696786477
+     procedure_id : 2184986744160102366
      type_code : 15
      code : |1+
       PROCÉDURE pGetprocMult128x128_256_ASM() : entier système
@@ -368,7 +368,7 @@ procedure_set :
      type : 458752
    -
      name : pGetprocMult64x64_128_ASM
-     procedure_id : 1989657747589218188
+     procedure_id : 2184986744160167902
      type_code : 15
      code : |1-
       PROCÉDURE pGetprocMult64x64_128_ASM() : entier système
@@ -484,7 +484,7 @@ procedure_set :
      type : 458752
    -
      name : pGetprocSoustraction256p256_256_ASM
-     procedure_id : 1989672784271453152
+     procedure_id : 2184986744160233438
      type_code : 15
      code : |1+
       Procédure pGetprocSoustraction256p256_256_ASM() :  entier système
@@ -604,7 +604,7 @@ procedure_set :
    -
      name : pGetprocMult256x32_256_ASM
      internal_properties : BQAAAAUAAACBd60Z/QmUSGSHs+5nMSAotrmVY9R0fjfG1ua2PNMeCyii/qMOOqq+yDmkFVlBi6oK6hv6/jpxbsNGeaSiOjqx4h8q+3QXQ7UhJL2eE5LLTCHy3ad81WYZoRIYIGKzwz4K9Xn5X35OXQ20DwoA5Oe2kYP8l3Th2t26EwcZJc2d9AAeC7uZGnuCKpuqQE4qMRgUC1JvIbeRLPL/fsoQsw==
-     procedure_id : 1997540545854209648
+     procedure_id : 2184986744160298974
      type_code : 15
      code : |1+
       
@@ -776,10 +776,10 @@ procedure_set :
      type : 458752
    -
      name : pCompileAsm32_64
-     procedure_id : 2183354686649434811
+     procedure_id : 2184986744160364510
      type_code : 15
-     code : |1-
-      procédure pCompileAsm32_64(  sNomFichierSourceSourceAsm_32bits chaine, sNomFichierSourceSourceAsm_64bits chaine ) : entier système
+     code : |1+
+      procédure pCompileAsm32_64(  sNomFichierSourceSourceAsm_32bits chaine, sNomFichierSourceSourceAsm_64bits chaine, snomProcPointDEntrée est chaine = "" ) : entier système
       
       // chargement sur source dans la WDL :
       sCodeASM est chaine
@@ -787,17 +787,35 @@ procedure_set :
       	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_64bits) 
       SINON
       	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_32bits) 
+      	// en 32 bits il faut rajouter un "_" devant sinon pb de link
+      	si snomProcPointDEntrée<>"" alors
+      		snomProcPointDEntrée = "_" + snomProcPointDEntrée
+      	fin
       FIN
       dbgAssertion(sCodeASM<>"",erreurInfo())
       // compilation en ASM
-      procédureAsm est un entier système =  compileAsmX86_API( sCodeASM ) 
-      dbgAssertion( PAS ErreurDétectée, ErreurInfo())
-      dbgAssertion( procédureAsm<>0, ErreurInfo())
+      sErreur est chaine
+      procédureAsm est un entier système 
+      (procédureAsm, sErreur ) =  compileAsmX86_API( sCodeASM, snomProcPointDEntrée ) 
+      dbgAssertion( procédureAsm<>0, sErreur )
       RENVOYER procédureAsm 
      type : 458752
    -
+     name : pCompileAsm
+     procedure_id : 2184993298283229359
+     type_code : 15
+     code : |1-
+      // compile un fichier assembleur qui contient la procédure <sNomProcAsm>
+      // il doit se trouver dans <autres> sous le nom "x86_<sNomProcAsm>.asm" et ""x64_<sNomProcAsm>.asm" "
+      procédure pCompileAsm( sNomProcAsm chaine ) : entier systeme
+      
+      soit sNomFic_32bits =  "x86_"+ sNomProcAsm + ".asm"
+      soit sNomFic_64bits =  "x64_"+ sNomProcAsm + ".asm"
+      renvoyer pCompileAsm32_64(sNomFic_32bits,sNomFic_64bits, sNomProcAsm)
+     type : 458752
+   -
      name : pGetprocDivisePar2_256
-     procedure_id : 2007144298833139953
+     procedure_id : 2184986744160430046
      type_code : 15
      code : |1+
       Procédure pGetprocDivisePar2_256() : entier système 
@@ -880,11 +898,36 @@ procedure_set :
       fin
       dbgAssertion( PAS ErreurDétectée, ErreurInfo())
       renvoyer procDiv2_ASM
+     type : 458752
+   -
+     name : pGetProcMultiplication_256x256_512_asm
+     procedure_id : 2184986744160495582
+     type_code : 15
+     code : |1+
+      // renvoie d'adresse de la procédure asm :
+      // ;void x86_multiplication256x256_512_ASM( int256* pNombreA256, int256* pNombreB256, OUT int512 *pResultat512)
+      procédure pGetProcMultiplication_256x256_512_asm() : entier système
+      
+      // compile le .asm 32 ou 64 bits
+      renvoyer pCompileAsm32_64( "x86_multiplication_256x256_512.asm", "x64_multiplication_256x256_512.asm", ...
+      							   "multiplication_256x256_512_asm") // point d'entrée de memme nom
+      
       
      type : 458752
    -
+     name : pGetProcMult256x32_Modulo__CoordCourbeSep256k
+     procedure_id : 2184992258900967841
+     type_code : 15
+     code : |1+
+      procédure pGetProcMult256x32_Modulo__CoordCourbeSep256k()
+      
+      // compile le .asm 32 ou 64 bits
+      RENVOYER pCompileAsm32_64( "x86_multiplicationModulo256x64_sepc256k.asm", "x64_multiplicationModulo256x64_sepc256k.asm",...
+      							   "multiplicationModulo256x64_sepc256k") // point d'entrée de memme nom
+     type : 458752
+   -
      name : _NOIMPL_
-     procedure_id : 2023475585780686142
+     procedure_id : 2184986744160561118
      type_code : 15
      code : |1+
       PROCEDURE _NOIMPL_()

@@ -1,13 +1,10 @@
 ; multiplication de 2 entier 256 bits modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-; Proto C :
-; EXPORT void multiplicationModulo_sepc256k (byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
-; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers paramètres. soit :
-; byte* pNombreA  : rcx
-; byte* pNombreB  : rdx
-; byte* pResultat : r8
+; version 64 bits
 
 .CODE
-multiplicationModulo_sepc256k_ASM PROC
+mult256x256_Modulo_CoordCourbeSepc256k PROC
+; Proto C :
+; EXPORT void mult256x256_Modulo_OrdreCourbeSepc256k (byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
 
 ; prologue
  mov         qword ptr [rsp+18h],r8    ; sauver pResultat dans la zone des var locales. [rsp+68h] apres les push
@@ -198,5 +195,5 @@ neDepassePas:
  pop         rax
  ret  
 
- multiplicationModulo_sepc256k_ASM endp
- END
+mult256x256_Modulo_CoordCourbeSepc256k endp
+END

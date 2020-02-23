@@ -50,11 +50,11 @@ class :
       SI EnMode64bits() ALORS
       	:addrprocMult256x64_256_ASM	= arithmetique.addrprocMult256x32_256_ASM
       	// 256x256 mod P :
-      	:addrprocMult256x256Modulo	=  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo_sepc256k.asm")) 
+      	:addrprocMult256x256Modulo	= pCompileAsm("mult256x256_Modulo_CoordCourbeSepc256k") 
       	// 256x64  mod P :
-      	:addrprocMult256x64Modulo	=  compileAsmX86_API( fChargeRessourceTexte("multiplicationModulo256x64_sepc256k.asm")) 
+      	:addrprocMult256x64Modulo	= pCompileAsm("mult256x64_Modulo_CoordCourbeSepc256k") 
       	// 256-256  mod P :
-      	:addrprocSoustractionModulo	=  compileAsmX86_API( fChargeRessourceTexte("soustractionModulo_sepc256k.asm")) 
+      	:addrprocSoustractionModulo	= pCompileAsm("sub256x256_Modulo_CoordCourbeSepc256k")
       	// 256+256 mod P:
       	:addrprocAdditionModulo     =  compileAsmX86_API( fChargeRessourceTexte("additionModulo_sepc256k.asm")) 
       FIN
