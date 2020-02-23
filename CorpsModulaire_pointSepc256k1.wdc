@@ -32,7 +32,7 @@ class :
       	addrprocMult256x256Modulo		est entier système
       	addrprocMult256x64Modulo		est entier système
       	addrprocSoustractionModulo		est entier système
-      	addrprocAdditionModulo			est entier système
+      //	addrprocAdditionModulo			est entier système
       FIN
       
      type : 131072
@@ -56,7 +56,7 @@ class :
       	// 256-256  mod P :
       	:addrprocSoustractionModulo	= pCompileAsm("sub256x256_Modulo_CoordCourbeSepc256k")
       	// 256+256 mod P:
-      	:addrprocAdditionModulo     =  compileAsmX86_API( fChargeRessourceTexte("additionModulo_sepc256k.asm")) 
+      //	:addrprocAdditionModulo     =  pCompileAsm("add256x256_Modulo_CoordCourbeSepc256k")
       FIN
      type : 589824
    -

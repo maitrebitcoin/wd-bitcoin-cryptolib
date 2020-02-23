@@ -1245,7 +1245,7 @@ class :
       CPL.déclareOpérateurBinaire("*", corps_coord.addrprocMult256x256Modulo  )
       CPL.déclareOpérateurBinaire(".", corps_coord.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) 
       CPL.déclareOpérateurBinaire("-", corps_coord.addrprocSoustractionModulo )
-      CPL.déclareOpérateurBinaire("+", corps_coord.addrprocAdditionModulo     )
+      //CPL.déclareOpérateurBinaire("+", corps_coord.addrprocAdditionModulo     )
       
       // compilation de la formule
       _pf							est un entier système
