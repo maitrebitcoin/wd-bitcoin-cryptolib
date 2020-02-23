@@ -775,43 +775,45 @@ procedure_set :
       
      type : 458752
    -
-     name : pCompileAsm32_64
+     name : pCompileAsm
      procedure_id : 2184986744160364510
      type_code : 15
      code : |1+
-      procédure pCompileAsm32_64(  sNomFichierSourceSourceAsm_32bits chaine, sNomFichierSourceSourceAsm_64bits chaine, snomProcPointDEntrée est chaine = "" ) : entier système
+      // compile un fichier assembleur qui contient la procédure <sNomProcAsm>
+      // il doit se trouver dans <autres> sous le nom "x86_<sNomProcAsm>.asm" et ""x64_<sNomProcAsm>.asm" "
+      procédure pCompileAsm(  snomProcPointDEntrée est chaine,  nomSymbole chaine = "", valSymbole entiers système=0  ) : entier système
       
       // chargement sur source dans la WDL :
       sCodeASM est chaine
       SI EnMode64bits() ALORS
+      // 64 bits
+      	sNomFichierSourceSourceAsm_64bits est chaine =  "x64_"+ snomProcPointDEntrée + ".asm"
       	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_64bits) 
       SINON
+      // 32 bits
+      	sNomFichierSourceSourceAsm_32bits est chaine = "x86_"+ snomProcPointDEntrée + ".asm"
       	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_32bits) 
       	// en 32 bits il faut rajouter un "_" devant sinon pb de link
       	si snomProcPointDEntrée<>"" alors
       		snomProcPointDEntrée = "_" + snomProcPointDEntrée
       	fin
+      //	si nomSymbole<>"" ALORS
+      //		nomSymbole = "_" + nomSymbole
+      //	FIN
       FIN
       dbgAssertion(sCodeASM<>"",erreurInfo())
+      // gestion des symboles externes
+      tabSymboleExterne est un tableau associatif d'entiers système
+      si nomSymbole<>"" ALORS
+      	tabSymboleExterne[nomSymbole] = valSymbole
+      FIN
+      
       // compilation en ASM
       sErreur est chaine
       procédureAsm est un entier système 
-      (procédureAsm, sErreur ) =  compileAsmX86_API( sCodeASM, snomProcPointDEntrée ) 
+      (procédureAsm, sErreur ) =  compileAsmX86_API_AvecSymboles( sCodeASM, snomProcPointDEntrée, tabSymboleExterne ) 
       dbgAssertion( procédureAsm<>0, sErreur )
       RENVOYER procédureAsm 
-     type : 458752
-   -
-     name : pCompileAsm
-     procedure_id : 2184993298283229359
-     type_code : 15
-     code : |1-
-      // compile un fichier assembleur qui contient la procédure <sNomProcAsm>
-      // il doit se trouver dans <autres> sous le nom "x86_<sNomProcAsm>.asm" et ""x64_<sNomProcAsm>.asm" "
-      procédure pCompileAsm( sNomProcAsm chaine ) : entier systeme
-      
-      soit sNomFic_32bits =  "x86_"+ sNomProcAsm + ".asm"
-      soit sNomFic_64bits =  "x64_"+ sNomProcAsm + ".asm"
-      renvoyer pCompileAsm32_64(sNomFic_32bits,sNomFic_64bits, sNomProcAsm)
      type : 458752
    -
      name : pGetprocDivisePar2_256
@@ -898,32 +900,6 @@ procedure_set :
       fin
       dbgAssertion( PAS ErreurDétectée, ErreurInfo())
       renvoyer procDiv2_ASM
-     type : 458752
-   -
-     name : pGetProcMultiplication_256x256_512_asm
-     procedure_id : 2184986744160495582
-     type_code : 15
-     code : |1+
-      // renvoie d'adresse de la procédure asm :
-      // ;void x86_multiplication256x256_512_ASM( int256* pNombreA256, int256* pNombreB256, OUT int512 *pResultat512)
-      procédure pGetProcMultiplication_256x256_512_asm() : entier système
-      
-      // compile le .asm 32 ou 64 bits
-      renvoyer pCompileAsm32_64( "x86_multiplication_256x256_512.asm", "x64_multiplication_256x256_512.asm", ...
-      							   "multiplication_256x256_512_asm") // point d'entrée de memme nom
-      
-      
-     type : 458752
-   -
-     name : pGetProcMult256x32_Modulo__CoordCourbeSep256k
-     procedure_id : 2184992258900967841
-     type_code : 15
-     code : |1+
-      procédure pGetProcMult256x32_Modulo__CoordCourbeSep256k()
-      
-      // compile le .asm 32 ou 64 bits
-      RENVOYER pCompileAsm32_64( "x86_multiplicationModulo256x64_sepc256k.asm", "x64_multiplicationModulo256x64_sepc256k.asm",...
-      							   "multiplicationModulo256x64_sepc256k") // point d'entrée de memme nom
      type : 458752
    -
      name : _NOIMPL_

@@ -25,7 +25,7 @@ T14         dword	7Fh,   0
 .CODE
  
 ;------------------------------------------
-_multiplication_256x256_512_asm PROC
+_multiplication_256x256_512 PROC
 ;void x86_multiplication256x256_512_ASM(byte* pNombreA, byte* pNombreB, OUT byte* pResultat512)
 ;prologue
   push        ebp  
@@ -172,6 +172,6 @@ for_k_1a16:
  pop         ebp  
  ret  
  
-_multiplication_256x256_512_asm ENDP
+_multiplication_256x256_512 ENDP
 
 END

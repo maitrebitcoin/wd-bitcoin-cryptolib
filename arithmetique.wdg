@@ -24,7 +24,7 @@ procedure_set :
       addrprocMult64x64_128_ASM       est entier système = pGetprocMult64x64_128_ASM()
       addrprocMult256x32_256_ASM      est entier système = pGetprocMult256x32_256_ASM()
       addrprocDivPar2_256_ASM     	est entier système = pGetprocDivisePar2_256()
-      addrprocMult256x256_512_ASM    	est entier système = pGetProcMultiplication_256x256_512_asm()
+      addrprocMult256x256_512_ASM    	est entier système = pCompileAsm("multiplication_256x256_512")
       
       
       _2_Puissance64 est un numérique  (38,0)  = 0x100000000

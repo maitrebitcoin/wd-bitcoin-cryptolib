@@ -42,9 +42,9 @@ class :
       	Constructeur _2P256_MoinsP(                                "0x14551231950b75fc4402da1732fc9bebf")
       
       // 256x256 mod P :
-      :addrprocMult256x256Modulo	=  pCompileAsm("mult256x256_Modulo_OrdreCourbeSepc256k")
+      :addrprocMult256x256Modulo	=  pCompileAsm("mult256x256_Modulo_OrdreCourbeSepc256k","multiplication_256x256_512", arithmetique.addrprocMult256x256_512_ASM )
       // compile une code rapide pour l'inverse modulaire
-       :addrprocInverseModulo = _pCompileInverseModulo()
+       :addrprocInverseModulo     = _pCompileInverseModulo()
      type : 589824
    -
      name : Destructeur

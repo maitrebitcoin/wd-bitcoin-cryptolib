@@ -1,16 +1,29 @@
 ; multiplication de 2 entier 256 bits modulo xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
-; version 64 bits
-; multiplicationModulo_OrdreCourbeSepc256k()
+; Proto C :
+; EXPORT void multiplicationModulo_sepc256k (byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
+; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers param�tres. soit :
+; byte* pNombreA  : rcx
+; byte* pNombreB  : rdx
+; byte* pResultat : r8
+; --------------
+; utilisation des registres 
+;  A0    A1    A2    A3
+;  rbx  rsi   rbp   r14
+;  B0 = > B3
+;  rdx
+;  C0     C1    C2    C3    C4   C5   C6   c7
+;  r8    r9    r10   r11   r12  r13  r14  rbx
 
 .DATA
 ; 0x14551231950b75fc4402da1732fc9bebf
 _2P256_MoinsP_Ordre qword 402da1732fc9bebfh, 4551231950b75fc4h, 000000000000001h, 000000000000000h
                            
+
 .CODE
-multiplication_256x256_512_ASM PROC
+
 ; Proto C :
-; EXPORT void multiplicationModulo_OrdreCourbeSepc256k (byte* pNombreA_256, byte* pNombreB_256, OUT byte* pResultat_512)
-; convention : RCX, RDX, R8, R9 pours les 4 premiers param�tres. soit :
+; EXPORT void multiplication_256x256_512_ASM (byte* pNombreA_256, byte* pNombreB_256, OUT byte* pResultat_512)
+; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers param�tres. soit :
 ; byte* pNombreA_256  : rcx
 ; byte* pNombreB_256  : rdx
 ; byte* pResultat_512 : r8
@@ -22,6 +35,7 @@ multiplication_256x256_512_ASM PROC
 ;  rdx
 ;  C0     C1    C2    C3    C4   C5   C6   c7
 ;  r8    r9    r10   r11   r12  r13  r14  rbx
+multiplication_256x256_512_ASM PROC
 
 ; prologue
  mov         qword ptr [rsp+18h],r8    ; sauver pResultat dans la zone des var locales. [rsp+68h] apres les push
@@ -175,7 +189,7 @@ multiplication_256x256_512_ASM PROC
 ; byte* pNombreB_256  : rdx
 ; byte* pResultat_512 : r8
 ;===========================================================================================
-mult256x256_Modulo_OrdreCourbeSepc256k PROC
+ multiplicationModulo_Ordre_sepc256k_ASM PROC
 
  ;prologue
     ; mov         qword ptr [rsp+20h],rbx  
@@ -285,7 +299,7 @@ multiplicationModulo_ordre_sepc256k_end:
  pop         rbp  
  ret  
 
- mult256x256_Modulo_OrdreCourbeSepc256k ENDP
+ multiplicationModulo_Ordre_sepc256k_ASM ENDP
 
 
  END

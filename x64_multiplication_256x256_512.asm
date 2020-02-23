@@ -17,7 +17,7 @@
 ;  rdx
 ;  C0     C1    C2    C3    C4   C5   C6   c7
 ;  r8    r9    r10   r11   r12  r13  r14  rbx
-multiplication_256x256_512_asm PROC
+multiplication_256x256_512 PROC
 
 ; prologue
  mov         qword ptr [rsp+18h],r8    ; sauver <pResultat> dans la zone réservée par l'appelant. [rsp+58h] apres les push
@@ -152,7 +152,7 @@ multiplication_256x256_512_asm PROC
 
  ret  
 
- multiplication_256x256_512_asm endp
+ multiplication_256x256_512 endp
 
 
  END

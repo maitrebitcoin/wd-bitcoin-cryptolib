@@ -48,7 +48,7 @@ class :
       	Constructeur _Pplus1Sur4(   "0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff0c")
       
       SI EnMode64bits() ALORS
-      	:addrprocMult256x64_256_ASM	= arithmetique.addrprocMult256x32_256_ASM
+      	:addrprocMult256x64_256_ASM	= arithmetique.addrprocMult256x32_256_ASM //@ Utile ???
       	// 256x256 mod P :
       	:addrprocMult256x256Modulo	= pCompileAsm("mult256x256_Modulo_CoordCourbeSepc256k") 
       	// 256x64  mod P :
