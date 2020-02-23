@@ -1,8 +1,7 @@
 ; multiplication de 2 entier 256 bits => 1 entier 512
 ; version  x86 32 bits 
 
-.MODEL FLAT
-
+.MODEL FLAT ; requis par masm
 
 .DATA
 ; index de la matrice 8x8 des entier 32 bits du produit de A*B a prendre pour additioner les partie et créer un résultat 256 bits
@@ -24,9 +23,9 @@ T14         dword	7Fh,   0
 
 
 .CODE
-
+ 
 ;------------------------------------------
-_x86_multiplication256x256_512_ASM PROC 
+_x86_multiplication256x256_512_ASM PROC
 ;void x86_multiplication256x256_512_ASM(byte* pNombreA, byte* pNombreB, OUT byte* pResultat512)
 ;prologue
   push        ebp  
@@ -104,12 +103,10 @@ for_i_0a7:
     lea ebp, [esp+200h]
 
 ;- partie 3 -- addition des multiplications ----
-;
-; esp = tabMult
-; ebp = pResultat512
-; esi = tabIndexAdd
+
  mov edx,[ebp +28]           ; pResultat512
  lea esi,[tabIndexAdd]       ; tabIndexAdd
+
 
  ; affectation resultat  : A0*B0 :
    mov eax,[esp]
