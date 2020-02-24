@@ -12,46 +12,11 @@ multiplication_256x256_512 PROTO C
 _2P256_MoinsP_Ordre qword 402da1732fc9bebfh, 4551231950b75fc4h, 000000000000001h, 000000000000000h
 
 .CODE
- 
-;------------------------------------------
-_mult256x256_Modulo_OrdreCourbeSepc256k PROC
-;void x86_multiplication256x256_512_ASM(byte* pNombreA, byte* pNombreB, OUT byte* pResultat256)
-;prologue
-  push        ebp  
-  push        edi         
-  push        esi    
-  push        ebx
-  mov         ebp,esp  
-  sub         esp,80h    ; reserverve mem var locale
 
-; recu param
-    mov ecx,[ebp +20]  ; pA
-	mov esi,[ebp +24]  ; pB
-;	mov edi,[ebp +28]  ; pResultat256
-
-    ; multiplication A*B => 512 bits
-    lea         eax,[ebp-40h]  ;  temp = &AxB_512 
-    push        eax
-    push        esi             ; B
-    push        ecx             ; A
-    call        multiplication_256x256_512; 
-
-    ; multiplication des 256 bits de poids fort par 2^256 - P => 0x14551231950b75fc4402da1732fc9bebf
-    lea         eax,[ebp-80h]  ;  temp2 = &AxB_512 
-    push        eax
-    lea         eax,[ebp-20h]  ;  &AxB_512.High
-    push        eax
-    lea         eax,[_2P256_MoinsP_Ordre]  ;  2"256-P
-    push        eax
-    call        multiplication_256x256_512; 
-
-    ; calcul de :
-    ; A*B.High*0x14551231950b75fc4402da1732fc9bebf + A*B.Low
-    ; résultat : 256 bits + 32 de "carry"
-	; UI64 C0 = AxB_512.low.v0;
-    lea         edi,[ebp-40h]  ;  temp   = &AxB_512 
-    lea         esi,[ebp-80h]  ;  temp2.Low
-    mov         ebx,[ebp +28]  ;  ebx = pResultat256 
+; somme  de 2 entier 256 bits => 256 bits + Carry Flag
+; edi,src = SRC
+; ebx     = DST
+_add_256_256 PROC
 
     ;+0
     mov         eax,[edi]
@@ -85,7 +50,107 @@ _mult256x256_Modulo_OrdreCourbeSepc256k PROC
     mov         eax,[edi+1Ch]
     adc         eax,[esi+1Ch]
     mov         [ebx+1Ch],eax
+    ; fin
+    ret
+_add_256_256 ENDP
 
+;------------------------------------------
+_mult256x256_Modulo_OrdreCourbeSepc256k PROC
+;void x86_multiplication256x256_512_ASM(byte* pNombreA, byte* pNombreB, OUT byte* pResultat256)
+;prologue
+  push        ebp  
+  push        edi         
+  push        esi    
+  push        ebx
+  mov         ebp,esp  
+  sub         esp,120h    ; reserverve mem var locale : 4 entier 512 bits
+; ebp-40h  ;  AB512
+; ebp-80h  ;  resteModulo512
+; ebp-C0h  ;  resteModulo2_512
+; ebp-100h ;  testDepassement = Resultat + _2P256_MoinsP_Ordre
+
+; recu param
+    mov ecx,[ebp +20]  ; pA
+	mov esi,[ebp +24]  ; pB
+;	mov edi,[ebp +28]  ; pResultat256
+
+    ; multiplication A*B => 512 bits
+    lea         eax,[ebp-40h]   ; AB512 (dest)
+    push        eax
+    push        esi             ; B
+    push        ecx             ; A
+    call        multiplication_256x256_512;  AB512 = A * B
+
+    ; multiplication des 256 bits de poids fort par 2^256 - P => 0x14551231950b75fc4402da1732fc9bebf
+    lea         eax,[ebp-80h]             ;  resteModulo512 (dest)
+    push        eax
+    lea         eax,[ebp-20h]             ;  AxB_512.High
+    push        eax
+    lea         eax,[_2P256_MoinsP_Ordre] ;  2"256-P
+    push        eax
+    call        multiplication_256x256_512; resteModulo512 =  AxB_512.High * 0x14551231950b75fc4402da1732fc9bebf
+
+    ; calcul de :
+    ; A*B.High*0x14551231950b75fc4402da1732fc9bebf + A*B.Low
+    ; résultat : 256 bits + 32 de "carry"
+	; UI64 C0 = AxB_512.low.v0;
+    lea         edi,[ebp-40h]  ;  AxB_512.low 
+    lea         esi,[ebp-80h]  ;  resteModulo512.Low
+    mov         ebx,[ebp +28]  ;  Resultat256 (dest)
+    call  _add_256_256         ;  Resultat256 = AxB_512.low + resteModulo512.Low
+    ; ajout du carry au poids fort de resteModulo512.High, avant mutliplication
+    mov eax,0 ; eax=  0, sans modifier c
+    adc         [esi+20h],eax  ; resteModulo512.High
+    adc         [esi+24h],eax
+    adc         [esi+28h],eax
+    adc         [esi+2Ch],eax
+    adc         [esi+30h],eax
+    adc         [esi+34h],eax
+    adc         [esi+38h],eax
+    adc         [esi+3Ch],eax
+
+    ; multiplication du poids fort de <resteModulo512>
+    lea         eax,[ebp-00C0h]           ;  resteModulo2_512 (dest) 
+    push        eax
+    lea         eax,[_2P256_MoinsP_Ordre] ;  2"256-P
+    push        eax
+    lea         esi,[esi+20h]             ; resteModulo512.High
+    push        esi
+    call        multiplication_256x256_512; resteModulo2_512 =  resteModulo512.High * 0x14551231950b75fc4402da1732fc9bebf
+
+    ; 2eme addiction au résultat
+    ; *pResultat256 = *pResultat256 + temp3.Low
+    mov         edi,[ebp +28]  ;  edi = pResultat256 
+    lea         esi,[ebp-00C0h]; resteModulo2_512.low
+    mov         ebx,[ebp +28]  ;  ebx = pResultat256 (dest)
+    call  _add_256_256         ; pResultat256 = pResultat256 + resteModulo2_512.low
+
+    ; ajout du carry au poids fort de resteModulo512.High, avant mutliplication
+    mov eax,0 ; eax=  0, sans modifier c
+    adc         eax,[esi+20h]  ; resteModulo2_512.High
+    test    eax,eax
+    jz pasDeDepassement  ; si eax = 0, goto pasDeDepassement
+        ; il faut encore ajouter 0x14551231950b75fc4402da1732fc9bebf
+        mov         ebx,[ebp +28]              ; Resultat256 (dest)
+        lea         esi,[_2P256_MoinsP_Ordre]  ; ajoute 0x14551231950b75fc4402da1732fc9bebf
+        mov         edi,[ebp +28]              ; Resultat256 
+        call  _add_256_256         ;  Resultat256 = AxB_512.low + resteModulo512.Low
+
+pasDeDepassement:
+    ; cas ou le résultat est plus grand que P = xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+    ; on fait l'addition pour voir
+    lea         ebx,[ebp + 110h]           ; testDepassement (dest)
+    lea         esi,[_2P256_MoinsP_Ordre]  ; 0x14551231950b75fc4402da1732fc9bebf
+    mov         edi,[ebp +28]              ; Resultat256 
+    call  _add_256_256         ;  testDepassement = Resultat256 +0x14551231950b75fc4402da1732fc9bebf
+    jnc fin  ; si pas de dépassement,  terminé
+        ; on dépasse le modulo
+        mov   ebx,edi          ; testDepassement (dest)
+        call  _add_256_256     ;  Resultat256 = Resultat256 + 0x14551231950b75fc4402da1732fc9bebf
+
+
+
+fin:
 ; epiloqgue
 
  mov         esp,ebp  

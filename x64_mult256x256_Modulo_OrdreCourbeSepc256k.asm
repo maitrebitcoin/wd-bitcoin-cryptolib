@@ -189,7 +189,7 @@ multiplication_256x256_512_ASM PROC
 ; byte* pNombreB_256  : rdx
 ; byte* pResultat_512 : r8
 ;===========================================================================================
- multiplicationModulo_Ordre_sepc256k_ASM PROC
+ mult256x256_Modulo_OrdreCourbeSepc256k PROC
 
  ;prologue
     ; mov         qword ptr [rsp+20h],rbx  
@@ -299,7 +299,7 @@ multiplicationModulo_ordre_sepc256k_end:
  pop         rbp  
  ret  
 
- multiplicationModulo_Ordre_sepc256k_ASM ENDP
+ mult256x256_Modulo_OrdreCourbeSepc256k ENDP
 
 
  END
