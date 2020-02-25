@@ -139,7 +139,7 @@ _mult256x256_Modulo_OrdreCourbeSepc256k PROC
 pasDeDepassement:
     ; cas ou le résultat est plus grand que P = xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
     ; on fait l'addition pour voir
-    lea         ebx,[ebp + 110h]           ; testDepassement (dest)
+    lea         ebx,[ebp-0100h]           ; testDepassement (dest)
     lea         esi,[_2P256_MoinsP_Ordre]  ; 0x14551231950b75fc4402da1732fc9bebf
     mov         edi,[ebp +28]              ; Resultat256 
     call  _add_256_256         ;  testDepassement = Resultat256 +0x14551231950b75fc4402da1732fc9bebf
@@ -158,7 +158,7 @@ fin:
  pop         esi
  pop         edi
  pop         ebp  
- ret  
+ ret         12   ;  3 * 4 octest mis sur la pile par l'appelant
  
 _mult256x256_Modulo_OrdreCourbeSepc256k ENDP
 

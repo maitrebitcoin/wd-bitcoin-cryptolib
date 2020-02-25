@@ -43,8 +43,8 @@ class :
       
       // 256x256 mod P :
       :addrprocMult256x256Modulo	=  pCompileAsm("mult256x256_Modulo_OrdreCourbeSepc256k","multiplication_256x256_512", arithmetique.addrprocMult256x256_512_ASM )
-      // compile une code rapide pour l'inverse modulaire
-       :addrprocInverseModulo     = _pCompileInverseModulo()
+      // 256^256 mod P :
+       addrprocInverseModulo     = _pCompileInverseModulo()
      type : 589824
    -
      name : Destructeur
@@ -123,10 +123,10 @@ class :
       PROCÉDURE virtuelle inverseModulo( nombre entier256 ) : entier256
       
       // rebond version compilé spécialement pour ce modulo
-      resultat est un entier256 = nombre
-      API( addrprocInverseModulo, &resultat  )
+      résultat est un entier256 = nombre
+      API( addrprocInverseModulo, &résultat  )
       
-      renvoyer resultat
+      renvoyer résultat
       
      type : 458752
   procedure_templates : []

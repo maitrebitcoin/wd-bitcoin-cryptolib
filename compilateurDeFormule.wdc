@@ -40,6 +40,10 @@ class :
       	// indique sur quelle adresse les registres pointent apres chaque ligne de code générée
       	tabRegVersVar	est un tableau associatif de chaine
       	tabVarVersReg	est un tableau associatif de chaine
+      	
+      	// taille prise pas un registre
+      	nTaille_REG  est entier // 4 ou = 8
+      
       FIN
       // types de variables gérées
       ETypeVar est une énumération
@@ -86,8 +90,7 @@ class :
       // nom de type gérés
       constant sNomType_POINT32 = "Point3D"
       
-      // taille prise pas un registre
-      CONSTANT nTaille_REG = 8
+      
       
       // Erreur levée si pb
       constant ERR_COMPILATION_FORMULE = 55
@@ -97,10 +100,11 @@ class :
      name : Constructeur
      procedure_id : 2180412298985187054
      type_code : 27
-     code : |1+
+     code : |1-
       PROCEDURE Constructeur()
       
       :bAvecCommentaire = EnModeTest()
+      :nTaille_REG      = EnMode64bits() ? 8 sinon 4
      type : 589824
    -
      name : Destructeur
@@ -214,7 +218,10 @@ class :
      code : |1+
       // <nomRegistre> doit être R12, R13, R14, R15
       procédure declareOptimRegistre( nomVar chaine, nomRegistre chaine )
-      // The registers RBX, RBP, RDI, RSI, RSP, R12, R13, R14, and R15 are considered nonvolatile (callee-saved).[20]
+      
+      si pas EnMode64bits() ALORS
+      	retour // optim sans effet en 32 bits
+      FIN
       
       nomRegistre=Minuscule(nomRegistre)
       tabOptimVarVersReg[nomVar] = nomRegistre
@@ -390,15 +397,7 @@ class :
       fin
       
       // Affection initiale des registre  (pour OPTIM)
-      // en entrée les 4 paramètres d'entrés au max sont dans des registres
-      pour tout stVar de :tabVariables
-      	si stVar.portée = paramètre _et_ stVar.indice<=3 ALORS
-      		// ex: T["param2"] = "rdx"
-      		sReg est chaine =  _sGetNomRegPourParamNum64(stVar.indice+1)
-      		_VarUtiliseRegistre( stVar.nom, sReg )
-      	FIN
-      FIN
-      
+      _declareUtilisationRegistreInitiale()
       
       // 2eme passe : génération du code
       sCodeAsm est chaine
@@ -421,14 +420,12 @@ class :
       	//@Cas particulier "3.X"
       	si stLigneI.bvar1EstLiteral ALORS
       		dbgAssertion(func.nom=".")
-      		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT		
-      		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var2 )		
+      		sCodeAsm += [RC] + _genCodeAsmInitParam(          2, stLigneI.nomVarDest ) // OUT		
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 		  0, stLigneI.var2 )		
       		//@@On inverse P1/P2
-      		sCodeAsm += [RC] + "mov " + _sGetNomRegPourParamNum64(2) + "," +  stLigneI.var1
-      		_VarDissocieRegiste(_sGetNomRegPourParamNum64(2))
-      
+      		sCodeAsm += [RC] + _genCodeAsmInitParam_Imm3264 ( 1, stLigneI.var1 )				
       	sinon
-      		// NB: ordre inverse des paramètres ou maximiser les change de pouvoir réutiliser les registres
+      		// NB: ordre inverse des paramètres ( ordre "normal") de la convention d'appel 32 bits + maximise les chance de réutilisation en 64 bits
       		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT				
       		sCodeAsm += [RC] + _genCodeAsmInitParam( 1, stLigneI.var2 )
       		sCodeAsm += [RC] + _genCodeAsmInitParam( 0, stLigneI.var1 )	
@@ -457,6 +454,30 @@ class :
       dbgAssertion(pResultat<>0,sErr)
       
       renvoyer pResultat
+     type : 458752
+   -
+     name : _declareUtilisationRegistreInitiale
+     procedure_id : 2185582838384713800
+     type_code : 12
+     code : |1+
+      // Affection initiale des registre  (pour OPTIM)
+      procédure _declareUtilisationRegistreInitiale()
+      
+      // que en 64 bits (en 32 bits tout est sur la pile)
+      si pas EnMode64bits() ALORS
+      	retour
+      FIN
+      
+      // en entrée les 4 paramètres d'entrés au max sont dans des registres
+      POUR TOUT stVar DE :tabVariables
+      	SI stVar.portée = paramètre _ET_ stVar.indice<=3 ALORS
+      		// ex: T["param2"] = "rdx"
+      		sReg est chaîne =  _sGetNomRegistrePourParamNum64(stVar.indice+1)
+      		_VarUtiliseRegistre( stVar.nom, sReg )
+      	FIN
+      FIN
+      
+      
      type : 458752
    -
      name : _déclareVariableLocale
@@ -543,28 +564,48 @@ class :
       	RENVOYER (tabOptimVarVersReg[varI.nom], Vrai )
       FIN
       
+      // esp ou rsp (pile) selon 32/64 bits
+      _sNomSP est chaine = EnMode64bits() ? "rsp" sinon "esp"
+      // ebp ou rbp (base var loc) selon 32/64 bits
+      _sNomBP est chaine = EnMode64bits() ? "rbp" sinon "ebp"
+      
       
       bScrParamètre	est un booléen	= varI.portée = paramètre
       SI bScrParamètre ALORS
-      	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
-      	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
-      	// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
-      	nOffset est un entier =  nTaille_REG * _nNbRegPushPrologue()     // prologue 
-      	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
-      	nOffset              += (varI.indice)*nTaille_REG 
-      	varI_location = "[rsp+" + nOffset + "]"
       	
-      	
+      	nOffset est un entier
+      	si EnMode64bits() alors
+      		// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
+      		// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
+      		// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
+      		nOffset  	  =  nTaille_REG * _nNbRegPushPrologue()     // prologue 
+      		nOffset      +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
+      		nOffset      += (varI.indice)*nTaille_REG 
+      		varI_location = "[rsp+" + nOffset + "]"
+      	sinon
+      		// 32 bits :
+      		// ex : [ebp +20]  // param 1
+      		nOffset		  = 20 + (varI.indice)*nTaille_REG 
+      		varI_location = "[ebp+" + nOffset + "]"
+      	fin
       SINON 
       	// variable locale : stoquée a partir de rbp
       	// ex : lea r8, [rbp+8]
       	//@TODO : additionner les offsets
       	nOffset est un entier = (varI.indice)*nTaille_INT256
-      	SI nOffset= 0 ALORS
-      		varI_location = "[rbp]"
-      	SINON
-      		varI_location = "[rbp+" + nOffset +"]"
-      	FIN
+      	SI EnMode64bits() ALORS	
+      	//64 bits
+      		SI nOffset= 0 ALORS
+      			varI_location = "[rbp]"
+      		SINON
+      			varI_location = "[rbp+" + nOffset +"]"
+      		FIN
+      	sinon
+      	// 32 bits, on part du haut de la pile
+      		nOffset -= _nGetTailleAllocaVarLoc()
+      		dbgAssertion(nOffset < 0 )
+      		varI_location = "[ebp-" + abs(nOffset) +"]"
+      	fin
       FIN
       
       
@@ -590,51 +631,37 @@ class :
       bScrRegistre  est un booléen = faux
       bScrParamètre est un booléen = varI.portée = paramètre
       (varI_location, bScrRegistre ) =  _GetLocalisationVariable(varI)
-      //
-      //si bScrParamètre ALORS
-      //	// les paramètre d'entrée sont mis dans [rsp+08h] dans le prologue
-      //	// ensuite RSP est décalé (en négatif) de  (_nGetTailleAllocaVarLoc + push rbp )
-      //	// NB : fonctionne aussi pour les paramètres apres le 4eme, mis par l'appelant dans la pile.
-      //	nOffset est un entier =  8 // prologue
-      //	nOffset              +=  nTaille_REG + _nGetTailleAllocaVarLoc() // push rbp
-      //	nOffset              += (varI.indice)*nTaille_REG 
-      //	varI_location = "[rsp+" + nOffset + "]"
-      //
-      //
-      //sinon 
-      //	// variable locale : stoquée a partir de rbp
-      //	// ex : lea r8, [rbp+8]
-      //	//@TODO : additionner les offsets
-      //	nOffset est un entier = (varI.indice)*nTaille_INT256
-      //	si nOffset= 0 alors
-      //		varI_location = "[rbp]"
-      //	sinon
-      //		varI_location = "[rbp+" + nOffset +"]"
-      //	fin
-      //FIN
-      //// OPTIM : si on a sa valeur dans un registre
-      //SI :tabVarVersReg[nom]..Existe ALORS
-      //	varI_location	= tabVarVersReg[nom]
-      //	bScrRegistre	= Vrai
-      //FIN
-      
       
       sCodeASM est chaine
+      
+      // en mode 32 bits on la convention d'appel met tout sur la pile
+      si pas EnMode64bits() ALORS
+      	
+      FIN
+      
+      
       
       // DEST.
       // ex: "lea rcx," 
       // recup du nom du registre a effecter
-      sNomRegDest est chaine = _sGetNomRegPourParamNum64(numParam + 1)
+      sNomRegDest est chaine = EnMode64bits() ? _sGetNomRegistrePourParamNum64( numParam+1)  ...
+      								   sinon  _sGetNomRegistrePourParamNum32( numParam+1)
       // si la source est un registre
       si bScrRegistre ALORS
-      	// OPTIM si c'est un registre déjà initialisé
-      	// pour ne pas générer "mox rcx,rcx"
-      	si sNomRegDest = varI_location ALORS
-      		renvoyer ""
+      	// OPTIM 32 bits
+      	SI pas EnMode64bits() ALORS
+      		// 32 bits, on doit mettre sur la pile
+      		RENVOYER "push " + varI_location
       	fin
       	
-      	// ex : "mov rcx, r9"
-      	sCodeASM ="mov " + sNomRegDest +"," + varI_location  
+      	// OPTIM si c'est un registre déjà initialisé
+      	// pour ne pas générer "mox rcx,rcx"
+      	si sNomRegDest = varI_location  ALORS
+      		renvoyer ""
+      	sinon
+      		// ex : "mov rcx, r9"
+      		sCodeASM ="mov " + sNomRegDest +"," + varI_location  
+      	fin
       // si la source est une indirection	
       sinon
       	si bScrParamètre ALORS
@@ -653,26 +680,53 @@ class :
       	// ex: "add rcx,32"
       	sCodeASM += RC 
       	sCodeASM += "add " + sNomRegDest + "," + varI.offsetStruct
-      
       FIN
-      
+      // en 32 bits on doit mettre le registre sur la pile
+      si pas EnMode64bits() ALORS
+      	sCodeASM += RC 
+      	sCodeASM += "push " + sNomRegDest
+      FIN
       
       // MAJ utilisation des registres
       _VarUtiliseRegistre( varI.nom , sNomRegDest)
       
-      
-      
       renvoyer sCodeASM
      type : 458752
    -
-     name : _sGetNomRegPourParamNum64
+     name : _genCodeAsmInitParam_Imm3264
+     procedure_id : 2185589817709113022
+     type_code : 12
+     code : |1-
+      // géner le code assembleur pour mettre initialiser un paramètres d'appel "valeur immédiate"
+      // ex: "4" 
+      procédure privée _genCodeAsmInitParam_Imm3264(nummParam est entier, valeuImmediate chaine ) : chaine
+      
+      // récup nom de registe a effecter
+      sNomRegistrePourValImm est chaine = _sGetNomRegistrePourParamNum64(nummParam+1)
+      
+      sCodeAsm est chaine
+      sCodeAsm =  "mov " + sNomRegistrePourValImm + "," + valeuImmediate
+      // en 32 bits on doit mettre le registre sur la pile
+      SI PAS EnMode64bits() ALORS
+      	sCodeAsm += RC 
+      	sCodeAsm += "push " + sNomRegistrePourValImm
+      FIN
+      
+      
+      // MAJ utilisation des registres
+      _VarDissocieRegiste( sNomRegistrePourValImm )
+      renvoyer sCodeAsm
+     type : 458752
+   -
+     name : _sGetNomRegistrePourParamNum64
      procedure_id : 2181478614805738911
      type_code : 12
      code : |1+
       // renvoie le nom du registre utilisé pour mettre un paramètre 
       // convention d'appel des procédure 64 bits  Microsoft : RCX, RDX, R8, R9 
       // <nNumParam>: de 1 a 5
-      procédure privée _sGetNomRegPourParamNum64( nNumParam )
+      procédure privée _sGetNomRegistrePourParamNum64( nNumParam entier )
+      dbgAssertion(EnMode64bits())
       
       selon nNumParam
       	cas 0: dbgAssertion(faux)
@@ -684,6 +738,26 @@ class :
       		dbgAssertion(Faux)
       FIN
       renvoyer "***ERR***" // ne compilera pas.
+     type : 458752
+   -
+     name : _sGetNomRegistrePourParamNum32
+     procedure_id : 2185587270792061526
+     type_code : 12
+     code : |1+
+      // nom du registre utiliser pour récupérer la valeur d'un paramètre avant sa mise sur pile comme paramètre
+      procédure _sGetNomRegistrePourParamNum32( nNumParam entier )
+      dbgAssertion(pas EnMode64bits())
+      
+      // on utilise la valeur dont les registres ne change pas apres un appel (pour optim si possible)
+      SELON nNumParam
+      	CAS 0: dbgAssertion(Faux)
+      	CAS 1: RENVOYER "edi"
+      	CAS 2: RENVOYER "esi"
+      	CAS 3: RENVOYER "ebx"
+      	AUTRE CAS
+      		dbgAssertion(Faux)
+      FIN
+      RENVOYER "***ERR***" // ne compilera pas.
      type : 458752
    -
      name : _nNbRegPushPrologue
@@ -702,7 +776,18 @@ class :
      code : |1+
       procédure privée _genCodeAsm_Prologue() : chaine
       
-      sCodeASM_Prologue est chaine = [
+      sCodeASM_Prologue_x32 est chaine = [
+      ;Prologue
+      	push   ebp  
+        	push   edi         
+        	push   esi    
+        	push   ebx
+        	mov    ebp,esp  
+      	sub    esp,TAILLE_VAR_LOC  ; réserve pour les variables locales 
+      
+      ]
+      
+      sCodeASM_Prologue_x64 est chaine = [
       ; Prologue
       	mov    [rsp+08h],rcx  ; P1 mis dans l'emplacement réservé par l'appelant
       	mov    [rsp+10h],rdx  ; idem P2 
@@ -710,9 +795,16 @@ class :
       	mov    [rsp+20h],r9   ; idem P4 
       	PUSH_OPTIM
       	push   rbp
-      	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variables locale + appel des procédures
+      	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variables locales + appel des procédures
       	lea    rbp,[rsp+20h]        ; rbp pointe sur le debut des variables locales
       ]
+      sCodeASM_Prologue est chaine
+      si EnMode64bits() ALORS
+      	sCodeASM_Prologue = sCodeASM_Prologue_x64
+      sinon
+      	sCodeASM_Prologue = sCodeASM_Prologue_x32
+      FIN
+      
       // calcul taille pile
       nTailleVarLoc est un entier = _nGetTailleAllocaVarLoc()
       sCodeASM est chaine = remplace(sCodeASM_Prologue,"TAILLE_VAR_LOC", ""+nTailleVarLoc )
@@ -746,16 +838,38 @@ class :
      code : |1+
       procédure privée _genCodeAsm_Epilogue() : chaine
       
-      sCodeASM_Epilogue est chaine = [
+      sCodeASM_Epilogue_x32 est chaine = [
+      	 mov  esp,ebp  
+      	 pop  ebx
+      	 pop  esi
+      	 pop  edi
+      	 pop  ebp  
+      	 ret  TAILLE_PUSH
+      ]
+      
+      sCodeASM_Epilogue_64 est chaine = [
       ; Epilogue
       	add    rsp, TAILLE_VAR_LOC
       	pop    rbp
       	POP_OPTIM
       	ret  
       ]
-      // calcul taille pile
+      
+      sCodeASM_Epilogue est chaine
+      si EnMode64bits() ALORS
+      	sCodeASM_Epilogue = sCodeASM_Epilogue_64
+      sinon
+      	sCodeASM_Epilogue = sCodeASM_Epilogue_x32
+      FIN
+      
+      // calcul taille pile pour var locale
       nTailleVarLoc	est un entier	= _nGetTailleAllocaVarLoc()
       sCodeASM		est chaine		= remplace(sCodeASM_Epilogue,"TAILLE_VAR_LOC", ""+nTailleVarLoc )
+      // calcul taille pile mise par l'appelant a nettoyer (convention __cdecl)
+      si pas EnMode64bits() alors
+      	nTailleParamAppel est un entier = :nbParametre*nTaille_REG
+      	sCodeASM		 				= remplace(sCodeASM,		 "TAILLE_PUSH", ""+nTailleParamAppel )
+      fin
       
       sPOP_OPTIM est une chaîne
       POUR TOUT sRegOptim,sNomVar DE :tabOptimVarVersReg
@@ -775,24 +889,24 @@ class :
       // renvoie la taille a allouer pour les variable locale dans la pile
       procédure _nGetTailleAllocaVarLoc()
       
+      nTaille est un entier 
       si EnMode64bits() ALORS
-      	// +32 : convention d'appel de procédure, on doit leur laisse 4 emplacement de 64 bits (toujours).
-      	nTaille est un entier  = 32
-      	// ajout de la taille de variables locales
-      	POUR TOUT var DE :tabVariables
-      		si var.portée = variableLocale ALORS
-      			selon var.type
-      				CAS UI256
-      					nTaille +=nTaille_INT256
-      				autre cas
-      					dbgAssertion(faux)
-      			FIN
+      	// +32 : convention d'appel de procédure 64 bits, on doit leur laisse 4 emplacement de 64 bits (toujours).
+      	nTaille  = 32
+      FIN	
+      // ajout de la taille de variables locales
+      POUR TOUT var DE :tabVariables
+      	si var.portée = variableLocale ALORS
+      		selon var.type
+      			CAS UI256
+      				nTaille +=nTaille_INT256
+      			autre cas
+      				dbgAssertion(faux)
       		FIN
       	FIN
-      	renvoyer nTaille
-      fin
-      dbgAssertion(faux,"TODO")
-      renvoyer 0
+      FIN
+      renvoyer nTaille
+      
      type : 458752
    -
      name : _VarUtiliseRegistre

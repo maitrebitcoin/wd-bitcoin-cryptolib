@@ -299,7 +299,7 @@ procedure_set :
       	Pop edx	
       	Pop	ebx
       	Pop	ebp
-      	ret
+      	ret 12;  4 paramètres DWORD sur la pile
       ]
       // version 64 bits
       sCodeASMx8632_Mult128x128_256_x64 est chaîne = [
@@ -444,7 +444,7 @@ procedure_set :
       	Pop edx	
       	Pop	ebx
       	Pop	ebp
-      	ret
+      	ret 12
       ]
       // Version 64 bits
       sCodeASMx8632_Mult64x64_128_x64 est chaîne = [
@@ -710,7 +710,7 @@ procedure_set :
       	Pop edx	<§cs:2§>
       	Pop	ebx<§cs:2§>
       	Pop	ebp<§cs:2§>
-      	ret<§cs:2§>
+      	ret 12<§cs:2§>
       ]
       // Version 64 bits
       // version 64 bits

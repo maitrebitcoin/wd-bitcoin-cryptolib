@@ -170,7 +170,8 @@ for_k_1a16:
  pop         esi
  pop         edi
  pop         ebp  
- ret  
+ ret         12 ;  3 paramètres DWORD sur la pile
+ ret
  
 _multiplication_256x256_512 ENDP
 
