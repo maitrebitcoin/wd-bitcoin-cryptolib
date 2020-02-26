@@ -690,7 +690,7 @@ class :
       // MAJ utilisation des registres
       _VarUtiliseRegistre( varI.nom , sNomRegDest)
       
-      renvoyer sCodeASM
+      renvoyer sCodeAsm
      type : 458752
    -
      name : _genCodeAsmInitParam_Imm3264
@@ -700,6 +700,12 @@ class :
       // géner le code assembleur pour mettre initialiser un paramètres d'appel "valeur immédiate"
       // ex: "4" 
       procédure privée _genCodeAsmInitParam_Imm3264(nummParam est entier, valeuImmediate chaine ) : chaine
+      
+      // en 32 bits on doit mettre le registre sur la pile
+      SI PAS EnMode64bits() ALORS
+      	renvoyer "push " + valeuImmediate
+      FIN
+      
       
       // récup nom de registe a effecter
       sNomRegistrePourValImm est chaine = _sGetNomRegistrePourParamNum64(nummParam+1)

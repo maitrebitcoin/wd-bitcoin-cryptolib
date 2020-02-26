@@ -55,15 +55,17 @@ class :
       // 256x256 mod P :
       :addrprocMult256x256Modulo	= pCompileAsm("mult256x256_Modulo_CoordCourbeSepc256k", "multiplication_256x256_512", arithmetique.addrprocMult256x256_512_ASM) 
       
+      // 256-256  mod P :
+      :addrprocSoustractionModulo	= pCompileAsm("sub256x256_Modulo_CoordCourbeSepc256k")
+      
       //@@TEMP
       SI PAS EnMode64bits() ALORS
       	RETOUR
       FIN
-      
       // 256x64  mod P :
       :addrprocMult256x64Modulo	= pCompileAsm("mult256x64_Modulo_CoordCourbeSepc256k") 
-      // 256-256  mod P :
-      :addrprocSoustractionModulo	= pCompileAsm("sub256x256_Modulo_CoordCourbeSepc256k")
+      
+      
       // 256+256 mod P:
       //	:addrprocAdditionModulo     =  pCompileAsm("add256x256_Modulo_CoordCourbeSepc256k")
       
@@ -227,22 +229,9 @@ class :
       // renvoie A - B ( mod P )
       PROCÉDURE soustractionModulo( nombreA Entier256, nombreB Entier256) : Entier256
       
-      // si une procédure ASM existe (64 bits)
-      SI addrprocSoustractionModulo<> Null ALORS
-      	resultat	est entier256
-      	API( addrprocSoustractionModulo, &nombreA, &nombreB, &resultat  )
-      	RENVOYER resultat
-      FIN
-      
-      
-      
-      SI nombreA.estSupérieurOuEgalA( nombreB ) ALORS
-      	RENVOYER soustraction(nombreA,nombreB)
-      SINON
-      	moinsR est Entier256 = soustraction ( nombreB, nombreA  )
-      	RENVOYER négationModulo( moinsR )
-      FIN
-      
+      resultat	est entier256
+      API( addrprocSoustractionModulo, &nombreA, &nombreB, &resultat  )
+      RENVOYER resultat
      type : 458752
    -
      name : racineCarréeModulo
