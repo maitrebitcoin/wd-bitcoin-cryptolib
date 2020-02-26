@@ -901,7 +901,8 @@ class :
       			CAS UI256
       				nTaille +=nTaille_INT256
       			autre cas
-      				dbgAssertion(faux)
+      				stop
+      				dbgAssertion(faux, var.type..Nom)
       		FIN
       	FIN
       FIN

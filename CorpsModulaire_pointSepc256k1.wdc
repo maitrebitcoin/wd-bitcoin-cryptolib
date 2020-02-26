@@ -50,13 +50,16 @@ class :
       
       :addrprocMult256x64_256_ASM	= arithmetique.addrprocMult256x32_256_ASM //@ Utile ???
       
-      //@@TEMP
-      si pas EnMode64bits() ALORS
-      	retour
-      FIN
+      
       
       // 256x256 mod P :
-      :addrprocMult256x256Modulo	= pCompileAsm("mult256x256_Modulo_CoordCourbeSepc256k") 
+      :addrprocMult256x256Modulo	= pCompileAsm("mult256x256_Modulo_CoordCourbeSepc256k", "multiplication_256x256_512", arithmetique.addrprocMult256x256_512_ASM) 
+      
+      //@@TEMP
+      SI PAS EnMode64bits() ALORS
+      	RETOUR
+      FIN
+      
       // 256x64  mod P :
       :addrprocMult256x64Modulo	= pCompileAsm("mult256x64_Modulo_CoordCourbeSepc256k") 
       // 256-256  mod P :
