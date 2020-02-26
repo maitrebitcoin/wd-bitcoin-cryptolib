@@ -65,8 +65,8 @@ class :
       // résultat R
       résultat est Entier256
       //si on une routine asm dispo (64 bits)
-      API(addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
-      RENVOYER resultat
+      API(addrprocMult256x256Modulo, &nombreA, &nombreB, &résultat )
+      RENVOYER résultat
      type : 458752
    -
      name : _pCompileInverseModulo
@@ -85,6 +85,7 @@ class :
       	P = X*X
       ]
       // construit le code
+      //i est un entier
       POUR  i = 1 À 255
       	// si bit a 1 on multiplie le résultat par P = nombre^(2^I)
       	SI PMoins2.bit(i) ALORS

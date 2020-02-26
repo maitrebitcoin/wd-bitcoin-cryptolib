@@ -56,7 +56,7 @@ _add_256_256 ENDP
 
 ;------------------------------------------
 _mult256x256_Modulo_OrdreCourbeSepc256k PROC
-;void x86_multiplication256x256_512_ASM(byte* pNombreA, byte* pNombreB, OUT byte* pResultat256)
+;void mult256x256_Modulo_OrdreCourbeSepc256k(byte* pNombreA, byte* pNombreB, OUT byte* pResultat256)
 ;prologue
   push        ebp  
   push        edi         
@@ -130,6 +130,14 @@ _mult256x256_Modulo_OrdreCourbeSepc256k PROC
     adc         eax,[esi+20h]  ; resteModulo2_512.High
     test    eax,eax
     jz pasDeDepassement  ; si eax = 0, goto pasDeDepassement
+        cmp    eax,2    ; 2 cas max possiblle 
+        jne     _x1      ; si eax !2 , goto _x1:
+        ; il faut encore ajouter 0x14551231950b75fc4402da1732fc9bebf *2
+        mov         ebx,[ebp +28]              ; Resultat256 (dest)
+        lea         esi,[_2P256_MoinsP_Ordre]  ; ajoute 0x14551231950b75fc4402da1732fc9bebf
+        mov         edi,[ebp +28]              ; Resultat256 
+        call  _add_256_256         ;  Resultat256 = AxB_512.low + resteModu
+    _x1:
         ; il faut encore ajouter 0x14551231950b75fc4402da1732fc9bebf
         mov         ebx,[ebp +28]              ; Resultat256 (dest)
         lea         esi,[_2P256_MoinsP_Ordre]  ; ajoute 0x14551231950b75fc4402da1732fc9bebf

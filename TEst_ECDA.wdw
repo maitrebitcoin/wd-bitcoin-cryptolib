@@ -261,13 +261,22 @@ window :
      p_codes :
       -
         code : |1+
+         
+         résultat est Entier256 
+         
          //CPL est un compilateurDeFormule
          //:/courbe est CourbeElliptique_secp256k1
          corps est un CorpsModulaire_ordreCourbeSepc256k1 // dynamique <-courbe.corps_ordre
          
          
+         //_A	est Entier256("ffe2e4fb2b2b41bcd292187b7377ab74b44f324c37d7aa25d45afff98aee407c")
+         //_B	est Entier256("ffe2e4fb2b2b41bcd292187b7377ab74b44f324c37d7aa25d45afff98aee407c")
+         //résultat  = corps.multiplicationModulo( _A, _B ) 
+         //Trace("A*B mod P :"+résultat.VersChaineHexa() )
+         //retour
+         
          nombre est Entier256(2)
-         résultat est Entier256 = corps.inverseModulo( nombre ) 
+         résultat  = corps.inverseModulo( nombre ) 
          
          
          trace("1/2 mod P :"+résultat.VersChaineHexa() )

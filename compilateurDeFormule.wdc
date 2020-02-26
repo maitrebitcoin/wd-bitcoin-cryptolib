@@ -950,15 +950,23 @@ class :
       // => on les note comme ne pointant plus sur une var connue
       procédure privée _VarDissocieApresCall()
       
-      // https://en.wikipedia.org/wiki/X86_calling_conventions#Register_preservation: 
-      // The registers RAX, RCX, RDX, R8, R9, R10, R11 are considered volatile (caller-saved).[20]
-      _VarDissocieRegiste("rax")
-      _VarDissocieRegiste("rcx")
-      _VarDissocieRegiste("rdx")
-      _VarDissocieRegiste("r8")
-      _VarDissocieRegiste("r9")
-      _VarDissocieRegiste("r10")
-      _VarDissocieRegiste("r11")
+      si EnMode64bits()
+      	// https://en.wikipedia.org/wiki/X86_calling_conventions#Register_preservation: 
+      	// The registers RAX, RCX, RDX, R8, R9, R10, R11 are considered volatile (caller-saved).[20]
+      	_VarDissocieRegiste("rax")
+      	_VarDissocieRegiste("rcx")
+      	_VarDissocieRegiste("rdx")
+      	_VarDissocieRegiste("r8")
+      	_VarDissocieRegiste("r9")
+      	_VarDissocieRegiste("r10")
+      	_VarDissocieRegiste("r11")
+      sinon
+      	//https://en.wikipedia.org/wiki/X86_calling_conventions#Register_preservation:
+      	// the EAX, EDX, and ECX are to be free for use within a procedure or function, and need not be preserved
+      	_VarDissocieRegiste("eax")
+      	_VarDissocieRegiste("edx")
+      	_VarDissocieRegiste("ecx")
+      fin
      type : 458752
   procedure_templates : []
   property_templates : []
