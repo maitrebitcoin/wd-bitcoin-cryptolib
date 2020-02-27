@@ -37,12 +37,12 @@ procedure_set :
       
      type : 458752
    -
-     name : CréePaireCléPrivéePublique
+     name : créePaireCléPrivéePublique
      procedure_id : 2182374738330719052
      type_code : 15
      code : |1+
       // crée une nouvelle paire de clé : ( clé privée, clé publique )
-      PROCÉDURE CréePaireCléPrivéePublique() : ( Entier256, Point256 )
+      PROCÉDURE créePaireCléPrivéePublique() : ( Entier256, Point256 )
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond 
@@ -50,12 +50,12 @@ procedure_set :
       
      type : 458752
    -
-     name : SigneBuffer
+     name : signeBuffer
      procedure_id : 2182375661748771995
      type_code : 15
      code : |1+
       // signe le buffer <chaineASigner> avec la a clé privée <CléPrivée>
-      PROCÉDURE SigneBuffer( chaineASigner buffer, cléPrivée Entier256 ) : SignatureEcdsa
+      PROCÉDURE signeBuffer( chaineASigner buffer, cléPrivée Entier256 ) : SignatureEcdsa
       _InitSi1ErAppel()
       // rebond 
       RENVOYER m_gpclEDCSA.SigneBuffer(chaineASigner, cléPrivée)
@@ -74,13 +74,13 @@ procedure_set :
       RENVOYER m_gpclEDCSA.vérifieSignatureBuffer( chaineSignée, CléPublique, signature  )
      type : 458752
    -
-     name : DériveCléPubliqueDepuisCléPrivée
+     name : dériveCléPubliqueDepuisCléPrivée
      procedure_id : 2024536833344824486
      type_code : 15
      code : |1+
       // renvoie la clé publique qui correspond a <cléPrivée>
-      // type : point256
-      procédure DériveCléPubliqueDepuisCléPrivée( cléPrivée est Entier256 ) : Point256
+      // utile pour créer un paire de clé a partir de méthodes plus complexes ou pour l'importation
+      procédure dériveCléPubliqueDepuisCléPrivée( cléPrivée est Entier256 ) : Point256
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond

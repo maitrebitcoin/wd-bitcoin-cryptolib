@@ -1,0 +1,322 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Test_Bench
+ major_version : 25
+ minor_version : 0
+ type : 2
+ description : ""
+ subtype : 0
+window :
+ name : Test_Bench
+ identifier : 0x2e581e9700b5c076
+ internal_properties : BQAAAAUAAABGlz3dkff/2mGPbnj1qDDNZiOVi67Yxtt04nwMQAG7HDqsoBZsZdbGPSDZaHaarFdXAFOpAVe8NpPYeBHuHzD0KxecEhx/Uead+1RKTvMa1HDUxrz44jEiDWjpsZGEpais+DHFQ+aVKFxbItVMMEF4vhqhrF1Gq6KbaztM9xN6PAQLo2x539GBVZNDxjZ2qY1Vl3fV3pRQBXpuR0UMKFnZmUY0GZfzfZ0mXO++P2XiSXwDMhZVQ+5II8n8WoDXGm4zzxj18Ebi2oVgcQGoZk9Y8oPYC0/OaL+RY8L9monhmW1cIAdULM7nganPSER1yQlOk77n+b5hc/DL65xJtLIwmHgjZCpM+xTyW3G4EB/GzSlAP22dVBrauyVZrolrRyjmll4opYeo/shxVJSl39Htj2sKs5oTVEacH6YrZtGTBW1ZPIKIHVZEQTHtin51lECLM5XYdlcP4K5gVILevFJDHFSw7M/4MEL0KLQIY3PxFGkHt1aE5nfP0jhFKSQ7KugwhOZ9t/ka2oFpC/nuY66AEebNBA5f8SXks9GmT3dwVpkKiILUkC7mEAoC0Z4w/AjGXSwaNNFvz+budPs5Ty/OpIwqF0D6WpB4SZ5xqZZ32CRyZc6jQsRhtuO/aN+FgTHajRu91R8ZvbDquuRBPlKkhqysXF6ZQtIZYTi6ImuUIfDfWymnrSIPZCib/w8f9Vu+T4B17T1Uxuc/w13pbfYpEJIS2ZvZbFRcz4PpaNhRlZMe9lGjRVhwfCaj/1zgyw+g46JGUoO1Wkvjsg2kKrcYEXcLMwYczWsjo/lZB12QbFnl2MirUJ2x4WTXIOr7ic9fYehu7dFUVfrBiZ3tcM/NhCWnvH8wkAmErA==
+ controls :
+  -
+    name : Bench_ECDSA_VérifieSignature
+    identifier : 0x2e581ea100b7e747
+    internal_properties : BQAAAAUAAADxv2hXhUQSva9HBsczaNgQ9HROZhOdB7KjCD6TOHxAg6vE6SpIn/V6tsx1VW81HbY90KPlj4QArSoS0YFFlVSqwQa/snaAPw/XR+FZ7+guLCcBoO4UUtII4MgWhQfA5/NZt3OUYKUjUgZGJrtfWeJabuM0eVsllAgh5z5Go2ueznSA8ZwCkX8bXTskl2qn6IwUIbSeYQuMLgTqNyf16pcO8kTqweWGvmU1peRMaeRTkXeLuo5cg9Owdzr+bHjFVzylzS2oLPVM5/s839BfULrBfHsXfCJzejwhHF9J4NOobyQNU1dWj9fNqOCWGGO7LfDzQZKiNkfepnltT5xdegjcjeJCXAkccNOJst72wrCUTA8R2gIZePbegaDnPvKXYWXjRCFRpFbzwzAX+MuR+qoV4t9Ey/ekl0zfMm3CXiTEy619uB4I4zTBRfAnHTIDpWz7/TggW9sM7vbyhjOm+jBb8mmnzOyyVfcnWFuc9ayTJup/EP+I55MPWDmoQjoyg1btqO33fcvTHfzBq4mU6QFwLRvMHzTQl7xaijIAU3BL3cK51Stm4zbvYo5/TeSfV34xfo60Q/x6salGeoWQppVUIi/dNATGvhOqv7YmkXwbHW5hpvpGrkCbcLczJUTjr1rSaWhUTF8EaAP7VQYJFpAc1Ug2Hfc6G66av+2vwO45ldjoYeLnOUd3P65O9t68RK8PSq27q/t7LMS1S8Z3dqiqC9Jl9/BkwhOSjlJmjg43WK2hgfIExw9oM5OVCw/MtudmBEEVvQ132TeeyQJ5T4t+aknArInNMb1zOz3/LwvI8xAJh2xuVEgXbH6IJqQ/ghBDmt+aCIXgcQ==
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         
+         // valeur signée
+         sMessage est un buffer = "Message a signer."
+         // signature
+         signature est SignatureEcdsa
+         signature.R.affecteAvecChaineHexa("78fbe793e2e4a75d516e0c57036040e14501435ccc84b60e83e4c9b1a6406472")
+         signature.S.affecteAvecChaineHexa("044285b471baca625d982413892e7d33aa5618523f82e6bf139298e1e0f6b59c")
+         // clé publique
+         // (clé privée : b268cc0de4043c486df8598938abdc5e99d06fd1b92b12f50daaa9224654872c)
+         CléPublique est Point256 
+         CléPublique.x.affecteAvecChaineHexa("55384c8e1a81d0068d0016eb9623032e1ae865e9fb0802d4e6bb84fe8626bc5a")
+         CléPublique.y.affecteAvecChaineHexa("1eb6728bd2c2949eef92acf5375ea08ab65c6cc85b56cb512aeffb00330bcf91")
+         
+         
+         // 1 test a blanc
+         bOK est un booléen =  vérifieSignatureBuffer( sMessage, CléPublique, signature )
+         SI pas bOK ALORS
+         	Trace("***************** FAILED ****************")
+         	RETOUR
+         FIN
+         	
+         // Bench : 1 000 vérifs
+         AvantBench
+         ChronoDébut()
+         pour i = 1 a 1 000
+         	bOK  =  vérifieSignatureBuffer( sMessage, CléPublique, signature )
+         fin
+         nTempMs est un entier = ChronoFin()
+         // terminé
+         AfficheRésultatDuBench(nTempMs ,"vérifieSignatureBuffer")
+         
+         
+         
+         
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : SAI_ResultatBench
+    identifier : 0x2e581eb6012237d8
+    internal_properties : BQAAAAUAAACmCDxFRnHdhrEl8/uw+OovtO4pCB2kJgiHcqrGbY5n56QZD9NwkmCKy+8471kbW5JQF3LBPJBn3i2x1zknrI+9uMxMM7tjiVqiBr+4sUtEIQEQjMnkvhZNUyRqml7czz3mX2l65SHMdY49WG3XKNJqe9FIjIeyRBK9EXuXawxREYEZPWxo5EieYCbJIlTRRi7C1hF/7rVHp4NXrqmruCKeLkFBK62LwNzRNBzLKuKASGsqz7lGD7ugXu6fjZ637LmZDWLMHICcmWfPfQtHYa9PDs87OCHCOLYrvlI7st3UYPUKFIcsrm1xeTz/ud1OFOfdUSQiHDO9d4IxCdPqE0NfoC0V6DaUGW+F4KQr/uT2c+oaB+oUJqv7IzBg5uNVWeJR4rnGArzRvXLMeofvQZPcWjHQvoxML9YE90u19o/UdxdKumui6w1+qRUH/pEMNyFiDv8svR5pMgmkXMA5iDtzk/D97FSRwSsJoXopT/3fj0UNc94mxkK+cphGTPK2NN0nto3uGdV481yTviHZgTbw8pVol1WGXQWwM8AsFk7k1gtoNFURIB8cBi7Zqm8DH86BPoZ2rftQwmJy+fSDKHTOtNslfioROO5CCJM6kIpIPwM8u9RzEAufOZ8C179PCB5Acl9NIYtpIbcVSFApR8jMPmw+0Btx8ouIEH6TbuiH0ET2P0IC1vHy81of9hlsBMhZrAeKPwuvnWda4/c8WHZzXG6Pkpydvf48dVz6347IqH2PVX9WntPYpU9g5GA7vw0lrJymAXlCYRF84n7B/Qvg2wXF9GU96ESvo9jEQ1mlhLetPyoOxW8rk1Jpnt26uTNXB3Akdz08eKy3kxi8zAjvG7AG7PERpRv57hENW4/b93gPgFOBWG19sMAVR6TbgJa1M2e5L3YthZNuLejroCcxX69yqV05V9iGdHX0A6P7MI1A4sfrbthEZlnIjVfzL/X60KdsTlqIWkiHrFTQO9EvImKjfSCW+x82GxpB
+    type : 2
+    code_elements :
+     type_code : 3
+     p_codes :
+      -
+        code : |1+
+         // Version 1
+         // Description 
+         // Saisie de texte
+        type : 14
+      -
+        type : 276
+        enabled : false
+      -
+        type : 277
+        enabled : false
+      -
+        type : 278
+        enabled : false
+  -
+    name : Fermer
+    identifier : 0x2e5820ee015de2e7
+    internal_properties : BQAAAAUAAADeoOhZBZuJL5+OM+l+Evl4kuo6xlBkNuT9lSq4BxyY3S5jTSur14Yf05drXM4tTKjSl/YLLG9y7DNUMAPjRHR+BUjZFqUhh18DBzWbXFOtNUn8uEC0POo0+xB15Ih2yo5VdUOZnu4VmZ0cnr7hLStQnlRLebaD68VVBhhDKleG8mumGG1fTBc4eHbbbdxrH9OQr7Xy59tGdVaMKjPJ9a5fesQCZCJRU6Uu7O0+hditFC3jq2BYmfqpn7pI7PS3Kg9fkJHpqSN9JwNX0FREaZM1/kGSQt7MfDEtli6CT1MV15E2fsdmKBK+REF330Ql3wxVkttTZIwXgtogotWChfZn+3izRmRk9f0A6hgMYzkdh/S9UKZ6B7Tg6tdm/MMlkEGQEd5NzBTZDUebUsijunxV2Yzd7ZE50jUa/tRH+7IwpgUb3B3Rchoiczf+kbtE9D8ZZpmkmV+9dJC8yO6geqkarGR8X6vedDFQmV1wuJNWwgN96UjOFuZiu8tvZcvITaqQ2iTVa0XL8CcNlZNy3nJC6VG3dXVNVo3Abnao+kVBkcdLYa9VxhDugxlJe7E34h/f5GZUUFyIBu6lJ9Itiy7eKSOd13hf+kTmxhCiaUjpmLIsfcVCdS5lp+TqdlUoNat9pC1iunCBqRCMskhQodvNvZyMcnpAm1dFZdYpdTrK6NSo6htJf9fJSXMZZjpiQRPMFKZdvI2WCkFZmAqsxJUFxU0=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         ferme()
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : LIB_Version_32ou64
+    identifier : 0x2e5822680288a871
+    internal_properties : BQAAAAUAAAD8Qcqpv/H0m4E6cJH0RRO+3v+eXldbsqotmEvZ4hwhPuDSDq/TuqpzWn/3JQ2hHnjLUvqkmcp/VdDb/oVbUir5YjHe4kfz0Ljx0MEn7hsHMRp5NFLj7rbMXAsFEkrqpyRlbUvmGDrBo1cruHVEHtqxPjD5FSriOqB/jFJDOU5fnyFdHXeuTa/H9TcurKJL9PaARnNsbWhRqxrpBkfQP3rQcIpAQ3CCUyzkYuOC60Je6YsuUozkatcmmBerxd/5pST0z+Fq0MpgLRCpbAdQ0h7yoAXyC06p8JBjJI4ZwQaEytqCCajVtK64hsrgvzftQ5nPP75klBltFc3x9mIlvpumeCOYbXFYxZxqk/49b4hWE6sECQJqo7W4GrXse+Y9MHfoqHahLpwSXR4UBaaEk0HfJ9+t4zXG7qejpXZj8rtl3QkI658IV7mA16s4d898ylX1Lci8gFEGO+63xqddabFVKhdupLFHGTh56ltU6i7Nfeis8K92owQiFt2KQRDkGOAszrx/fLvS4kXZ2kc+hxwgcmbMGwrLFWLXO7Zp1fXWl31rt7lV1hp7XizzbesnJep8V1LCvBqVejD2iOm56QM=
+    type : 3
+    code_elements :
+     type_code : 2
+     p_codes :
+      -
+        code : |1+
+         // Version 1
+         // Description 
+         // Libellé affichant la version de l'executable courant
+         
+         moimeme = Remplace(moimeme, "[$XXBIT$]",  EnMode64bits() ? "64"  sinon "32"  )
+         
+        type : 14
+      -
+        type : 18
+        enabled : false
+  -
+    name : Bench_ECDSA_VérifieSignature1
+    identifier : 0x2e58230f02a03594
+    internal_properties : BQAAAAUAAACCtbbh70rNiJa7wky0voaqmNTLvXj3x5rX9/PK+Njd6c2eKTCqwfqGW1NAPc5YJhm8PR6rI9N1t69D8CViM2DJlmbik+k0v1ZdhZdtB/wCXVvm8ooUK/Uhw8GbUzDKt6Ol8M6ZMhNTVew2gf9lDrxQ4o1viypGa1IE91Eac2guuXAK8U0/p13Egfk56h8B3iv/6m7qrTxNXhEF88n70XyCCPGackL6Add8bxfKzHolRkGt9yiFHf0dWD6Q1WGA3/5cwF0H/dHmt/M9skt9WMaUWISY/9z0XhgA2Q010dwpHvxWKrUqfo5snVTLlgUzQPtb3VOqVVVGOtpW9qeMudugF6sbvYxy8RmaxDAyN2OqAL6ywRc9hJwYUGYniSWNH5ArvNkMSwJMO0YnrNPCWevpxja2h3lpOia6vYahIWQjRpeUtkPHj1lhliOBRVMnsKZepCj2LhcSyhd0TRHeYzB2e4+aAykCSl89vpQN+cXjGHosCGEhXUSwLa4RVjAqeHFHw66nLJ0G42f11Z1AgvAJxcpgYK2YeewAFIHfTUooEMSa41EOaWn6zMcp6ZZrGGfZxwB4hVVz+HFew+VLytA/cpadejinV56cQQUGyF4WxGomzq3BPv4lW4R9xOAoMYB+vt4IgvI3fb/HWEoukOK/G1EpOgT4C0yFquu65OXxFRlLJxoT7ki2t6ZQA6i1BEBmf4UV71HAp5DRIQRg1qNHGckVHyKRdzmWHZJ9dFwww0uGKevtyDv0CA9cwfbu2MGj024v0qa6YXQz6u99SHGaqIXIdkr0ehV6t5nvsoPJ8v+Clde7KXjTAeQgORcnQXLudLI2MTY6LQaUToYsWZwJJ0p5ESU=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         
+         
+         // clé privée : 
+         cléPrivée est Entier256("b268cc0de4043c486df8598938abdc5e99d06fd1b92b12f50daaa9224654872c")
+         
+         // clé publique (pour texte)
+         CléPubliquePourTest est Point256 //= CrytoLib.DériveCléPubliqueDepuisCléPrivée( ClePrivee )
+         CléPubliquePourTest.x.affecteAvecChaineHexa("55384c8e1a81d0068d0016eb9623032e1ae865e9fb0802d4e6bb84fe8626bc5a")
+         CléPubliquePourTest.y.affecteAvecChaineHexa("1eb6728bd2c2949eef92acf5375ea08ab65c6cc85b56cb512aeffb00330bcf91")
+         
+         
+         // 1 test a blanc et vérif
+         CléPubliqueDérivée est Point256  =  dériveCléPubliqueDepuisCléPrivée( cléPrivée )
+         SI pas CléPubliqueDérivée.PointestEgalA(CléPubliquePourTest)  ALORS
+         	Trace("***************** FAILED ****************")
+         	RETOUR
+         FIN
+         	
+         // Bench : 1 000 vérifs
+         AvantBench()
+         ChronoDébut()
+         pour i = 1 a 1 000
+         	 dériveCléPubliqueDepuisCléPrivée( cléPrivée )
+         fin
+         nTempMs est un entier = ChronoFin()
+         // terminé
+         AfficheRésultatDuBench(nTempMs ,"dériveCléPubliqueDepuisCléPrivée")
+         
+         
+         
+         
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : Bench_ECDSA_VérifieSignature2
+    identifier : 0x2e58251e02aa40e7
+    internal_properties : BQAAAAUAAACW7oBV6yPpdfTzZH2FN8137CyPGT0FTpbg2N2oYEw6cVkkjc5Q6U4P2G6MXNwiHGu3POT5nEEHmokz07BA7tyA+7clZR2OHDmyjgD6svrlvPRzqIc1ZgWx2AjfoE21Aplz3iGFoH5LMCE/l4oGucQSIVhg4F/ra8aF1vOtbcJE0i1UM5g9HdcHj0TO0RFNUVvUBAfp3pxinE5J3ENLB1cEV3NDiePCQb37AarWc29aVSUPBlSgJCuiiJZqVvi6li6EC9+CEdXhp4VaF+AOA0HQ7x07MvWHAr5r7yrYqvFX9h32PyrpclvIGBdc+oKmX+aF3GbFj6jaTIBKuEGNfG6dofKpaEXsoKsFxh+W2J4koVKESDGR6fn6hu91CtvZQy0f+y1OksUDgGILPieQ3leXih1lOow1ITvutxJghfezi0YwCTGXTB0mAsPZL7t0QgmjYGM4+DZQCTHKH9/qTKzVSEM934m3pkiNEjRR++i1H8MkodUdNgoXL7Q7oLpFPBgsxUElnAReOBMNXVU8WXKsFlYTMC+Nk3mKqh+J/c/En+XaLKm41llfzp2/p0g0BJLiJaUsKWZxd9nK0+9x95TgpVBm2tYcQWkKGw+s9n3ch5+AF+mPkVhuCYYT0rxV4RPjJH3UsBvdIrvvTLRyu0qKlLGE62QOF8vlTgO86DhJDA4hbmDZ/9RFIQR6B5K+nnmxPeJ/h0o6jCp3UB0P5FsBu1htZgvDQgevt8ud0PfWdGJh4ZDaNvmZGKXyTTW6sIis+Tl8DGfW4h+GJESml2HSTd5o5drrA754gCiPZ7mmM+R/3NUrq65JnOlKUQ==
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         
+         // une clé privée.
+         cléPrivée est Entier256("b268cc0de4043c486df8598938abdc5e99d06fd1b92b12f50daaa9224654872c")
+         // et sa clé publique
+         CléPublique est Point256 
+         CléPublique.x.affecteAvecChaineHexa("55384c8e1a81d0068d0016eb9623032e1ae865e9fb0802d4e6bb84fe8626bc5a")
+         CléPublique.y.affecteAvecChaineHexa("1eb6728bd2c2949eef92acf5375ea08ab65c6cc85b56cb512aeffb00330bcf91")
+         
+         
+         // Signature
+         sMessage est Buffer = "Message a signer pour le bench"
+         soit signature = signeBuffer( sMessage, cléPrivée )
+         soit (bOK,sErreur) = vérifieSignatureBuffer( sMessage, CléPublique, signature  ) 
+         si pas bOK alors
+         	Erreur(sErreur)
+         	retour
+         FIN
+         	
+         // Bench : 1 000 vérifs
+         AvantBench()
+         ChronoDébut()
+         pour i = 1 a 1 000
+         	 signeBuffer( sMessage, cléPrivée )
+         fin
+         nTempMs est un entier = ChronoFin()
+         // terminé
+         AfficheRésultatDuBench(nTempMs ,"signeBuffer")
+         
+         
+         
+         
+         
+         
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : Image_chrono
+    identifier : 0x2e582873031b451e
+    internal_properties : BQAAAAUAAAA7oXPoRF0ZC/sfXNMa2rn8afNPhObGUAxExqTxJHRTFgrF+MHt1yzdK00idROmAKOPZQbeccp+SRM3GOO98NFcCC1RGsqRWyWyHOoKSjMMoWy9FX/M+WEEp/p5ubdqQX69TJmq8bBJsoQMTILLFMbBGP1tIsXYnVciq7T21LLq1DyiuAJOSR1NBi647ukTTpuMLJZleyzIYhWbixpokLyzxlhL4uqvrSbDZEUBAdCG1vJ+Ou05DMZ9zWmyphjCgBgLvvH0fCQ8HQmUlPwQSdGuWc0itA8QIzjiE4zxtEKZeebSMyqG6ZgVXdjf5Xh7w9nLvqqRldbJViA8178/qoiozWPAspxyoTd0wKzQIfmFPUKD4MlOLY+5b/8lSqWW9PVnuSjIpv7vTjRw+aaJ1ArRx/D9OH5mRrZmUQ5uI4mP+SdX3Uz7hsoVvG0B6FAOiOuxvTaSKv/JwaMu4QO+zrryj+8JrScObpUl3ilt6YwuvL81AjqSSxqPCfahUoYHTtyHEOgU+3PBcfM7coF7zIU1iy16RxlDgOLQAT1BbS2LvyI7qdtY4IdZJ0rXoNHQRboMU8ceKsqBjTNz4KhC1SfCWdGcGt7LvalpPQAnpNquhmtD35Y5OuExJq+QpaeA0Amy0woIB/nSdqGOEyFuUr0uFb/wxmcMeask1WCTLnwBy+3fuLGZp+6lpXz0dkaQsrpu/HKu3g1HUHlv3s0ORCBHHc7vvff4s/hWe8TOpMXLYcIzq6rHqBMSwFtyUrdo4Nr2FOwe1bDGlJJjL4Je78yPBoaoXMoOThKUaE6ikZ3jp7aq01dRvFTYG7JA8zw0fG4T4YzNTtseDxFMZuxRvdHL/qezXMLd
+    type : 8
+    code_elements :
+     type_code : 8
+     p_codes : []
+  -
+    name : LIB_Mode_Tst
+    identifier : 0x2e582a230343db27
+    internal_properties : BQAAAAUAAAAD0m13kTQ+kjT2X6F8n+NRSGb93Lxp8M0K2kph3m5IrHQAlfhPe5/E3q5Q9P0vEWidYPyCBhX3jcI8Y2YOwmMcSPQHJdTv4cslIbOBHZk6vCXgGQ/6pwTAAIEx4xonAgnzs35+5sNijoFBFQKVndUuB1WnQDTIqW1kFqW0wtD4iPn7mutFIuu7Nzm5wxUQ5u5+SH1teMkpF/30gsZ/gZlYik9MnyuqEWzW5KMfDKZuGmRlgO1x5NEtL0UijRR9uNAqA3C1KudWJjowIUn0KyU8BvODzW0/jDZ38t/DDxj8wBXZBAlEWXljTubKtj9riWbBVjq3oQWOFvnkkhiGDdkq6haz/l+Dn/7CC4kISpMbxEqEebkGNow66mS/3sfDYUX7Q0gOfEyto7c7rvq4hw+mMWr0GgMila8/HTTsc88FCaLdref65Q==
+    type : 3
+    code_elements :
+     type_code : 2
+     p_codes :
+      -
+        code : |1+
+         MoiMême..visible = EnModeTest()
+        type : 14
+      -
+        type : 18
+        enabled : false
+  -
+    name : LIB_Version_Processeur
+    identifier : 0x2e582a62034ed2a6
+    internal_properties : BQAAAAUAAACnMGV8thXE5mTbi0iRwjvrClyZEapAzzvbPTwNJMHh5Fh97+soUWHvA89ix6GxrS5I627dIMpMrVBG8VZM7hXsxHHxNSiNoe6XEmSTtzfqa2W1rxq1NTYz0WxnqwO2DreyYV+vv95nUPxrxM5xt0IQ886gVX/KQ7FE0ENI8TdJobTXpwZ9BW6DEo0fLAufIWpJjk8Btojp/A5DWN0ZZv/201JHILii6g3hguop926A0wDrNuCoEVZ0nlkkaT7voXHgjx2uKgV3wVQgiaoWO+tFHFg9wDPkUXlNBq+a9k2nJ3wuDe7zvquHmYclGZReprHp1P9YvfBG3nwpqz4TMHhMS9ZDbxzDgId3XkGWPhHldExX3cNq9ySkC7sxp54njDb1vLJb6WUrfSf8Aj52WXhf0AhljLQzcNd/s9jS56wRp0jr5ZcYwZYCwBUsF8f4yt7j/5Vffbbk3CTU1neZ2veP0SJIeCXDWDUMdkV5QIpImrD1XQqSWsGhCoOrsTfZNWEqwpn/WEM=
+    type : 3
+    code_elements :
+     type_code : 2
+     p_codes :
+      -
+        code : |1+
+         // affiche les caractéristique du processeur 0.
+         
+         moimeme = RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0\" ,"ProcessorNameString")
+         
+        type : 14
+      -
+        type : 18
+        enabled : false
+ menu :
+  name : _Menu
+  identifier : 0x292573e513b5f221
+  internal_properties : BQAAAAUAAABd4biPtdLQOwfUFiqrit8H4xfGqKyz9t6VLxCUnNZRQiLPVs82PZNE+UVdKRzjizyeuKyRur85gNMUfqplpmtNDnQWQla9zo+GH9+1EfUJ6w17Dn/egD/gv+Hhywk8c9unIdzEp7EHgaAqD28w7Agveg4u19PBcKGZtQ==
+  options : []
+ languages :
+  - fr-FR
+ popup_menus : []
+ message_bar :
+  internal_properties : BQAAAAUAAABqPQh6HC8RxAVkp2SqPYLuZrfVhd+1KX4lx22hIT8uqEpE6yP7Sbc2rmVqdmL816EWzXOkEe9ijOtYwchZKAfpy3B1cNqhpJgsnbUs
+ code_elements :
+  type_code : 1
+  p_codes :
+   -
+     code : |1+
+      PROCEDURE MaFenêtre()
+   -
+     type : 230
+     enabled : false
+  procedures :
+   -
+     name : AfficheRésultatDuBench
+     procedure_id : 2186532992462089495
+     type_code : 14
+     code : |1+
+      PROCEDURE AfficheRésultatDuBench( nTempMs entier, sNomFonction chaine )
+      
+      Image_chrono..Visible = faux
+      
+      sRes est chaine
+      sRes =      "Bench de" + gPoliceGras(Vrai) + " "  + sNomFonction + gPoliceGras(faux)
+      sRes += RC
+      sRes += RC+ "Temps total (1 000 appels) : "  +  nTempMs + " ms"
+      sRes += RC+ "Temps pour 1 appel : " + gPoliceGras(Vrai)  + (nTempMs /1000.0) + " ms"
+      SAI_ResultatBench = sRes
+      
+      
+     type : 458752
+   -
+     name : AvantBench
+     procedure_id : 2186540096345025171
+     type_code : 14
+     code : |1+
+      PROCEDURE AvantBench()
+      
+      Image_chrono..Visible = vrai
+      SAI_ResultatBench = "Calcul en cours..."
+      MultitâcheRepeint()
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAAwjDLmDSZ0H1P68nJIeNfqR9EvRjU/K+sVcM1T6rhVNr+VTV1mZ/rmoweYbFDZUhBGcv8UsxlDxVCOnb2U/SQOvlGWzNby3/w/V+ppSymxv+Vh
+  original_name : Modele1
+resources :
+ string_res :
+  identifier : 0x1e581e6b01491513
+  internal_properties : BQAAAAUAAAAa2Zm8J9E/zh+/WIrVvz1fER/So3PB0gjQuxc1xKQVWY4ZDm5lfg==
+custom_note :
+ internal_properties : BQAAAAUAAAC68/W0/adbG0nFCRhrE42B5HRnbDzVHaz86sSQyxlBk7I=
+rad :
+ internal_properties : BQAAAAUAAABoAN7PLpwJW3EiA7WVZdCA5EwrCA1rvutcDHooMWKe

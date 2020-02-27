@@ -45,8 +45,6 @@ class :
       	// corps  pour calcul des signatures. P est le plus petit entier <n> tel que nG = 0.
       	// modulo   : 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
       	corps_ordre est CorpsModulaire_ordreCourbeSepc256k1
-      	// ordre de la courbe : plus petit entier <n> tel que nG = 0.  corps_ordre_secp256k1.K
-      //	Ordre est entier256;
       	
       	// routines ASM pour accélérer le calcul
       	pfPointDouble_Jacobi_ASM   est un entier système
@@ -1077,7 +1075,6 @@ class :
       PointDouble(X, Y, Z)<§cs:2§>
       	XX		= X*X<§cs:2§>
       	YY		= Y*Y<§cs:2§>
-      	ZZ		= Z*Z<§cs:2§>
       	XYY		= X*YY<§cs:2§>
       	S		= 4.XYY<§cs:2§>
       	2S	    = 2.S<§cs:2§>
@@ -1113,7 +1110,6 @@ class :
       // *2<§cs:2§>
       	XX		= X*X<§cs:2§>
       	YY		= Y*Y<§cs:2§>
-      	ZZ		= Z*Z<§cs:2§>
       	XYY		= X*YY<§cs:2§>
       	S		= 4.XYY<§cs:2§>
       	2S	    = 2.S<§cs:2§>
@@ -1130,7 +1126,6 @@ class :
       // *4<§cs:2§>
       	XX		= X*X<§cs:2§>
       	YY		= Y*Y<§cs:2§>
-      	ZZ		= Z*Z<§cs:2§>
       	XYY		= X*YY<§cs:2§>
       	S		= 4.XYY<§cs:2§>
       	2S	  = 2.S<§cs:2§>
@@ -1147,7 +1142,6 @@ class :
       // *8<§cs:2§>
       	XX		= X*X<§cs:2§>
       	YY		= Y*Y<§cs:2§>
-      	ZZ		= Z*Z<§cs:2§>
       	XYY		= X*YY<§cs:2§>
       	S		= 4.XYY<§cs:2§>
       	2S	  = 2.S<§cs:2§>
@@ -1164,7 +1158,6 @@ class :
       // *16<§cs:2§>
       	XX		= X*X<§cs:2§>
       	YY		= Y*Y<§cs:2§>
-      	ZZ		= Z*Z<§cs:2§>
       	XYY		= X*YY<§cs:2§>
       	S		= 4.XYY<§cs:2§>
       	2S	  = 2.S<§cs:2§>
