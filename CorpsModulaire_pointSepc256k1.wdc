@@ -30,8 +30,10 @@ class :
       	// ok que en mode 64 bits + spécialisé modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
       	addrprocMult256x64_256_ASM		est entier système
       	addrprocMult256x256Modulo		est entier système
-      	addrprocMult256x64Modulo		est entier système
       	addrprocSoustractionModulo		est entier système
+      	addrprocMult256x64Modulo		est entier système // null en 32 bits
+      	addrprocMult256x32Modulo		est entier système // null en 64 bits
+      	
       //	addrprocAdditionModulo			est entier système
       FIN
       
@@ -50,22 +52,16 @@ class :
       
       :addrprocMult256x64_256_ASM	= arithmetique.addrprocMult256x32_256_ASM //@ Utile ???
       
-      
-      
       // 256x256 mod P :
       :addrprocMult256x256Modulo	= pCompileAsm("mult256x256_Modulo_CoordCourbeSepc256k", "multiplication_256x256_512", arithmetique.addrprocMult256x256_512_ASM) 
-      
       // 256-256  mod P :
       :addrprocSoustractionModulo	= pCompileAsm("sub256x256_Modulo_CoordCourbeSepc256k")
-      
-      //@@TEMP
-      SI PAS EnMode64bits() ALORS
-      	RETOUR
-      FIN
-      // 256x64  mod P :
-      :addrprocMult256x64Modulo	= pCompileAsm("mult256x64_Modulo_CoordCourbeSepc256k") 
-      
-      
+      // 256x32/65  mod P :
+      si EnMode64bits() alors
+      	:addrprocMult256x64Modulo	= pCompileAsm("mult256x64_Modulo_CoordCourbeSepc256k") 
+      sinon	
+      	:addrprocMult256x32Modulo	= pCompileAsm("mult256x32_Modulo_CoordCourbeSepc256k","multiplication_256x32_512") 
+      fin
       // 256+256 mod P:
       //	:addrprocAdditionModulo     =  pCompileAsm("add256x256_Modulo_CoordCourbeSepc256k")
       
@@ -151,6 +147,26 @@ class :
       FIN
       
       renvoyer resultat
+     type : 458752
+   -
+     name : multiplication_255xx8_Modulo
+     procedure_id : 2186318720826782590
+     type_code : 12
+     code : |1+
+      // petitnombreB doit entre compris entre 1 et 8
+      // fonction pour les tester que la version ADM utilisée dans les formules est correcte
+      procédure multiplication_255xx8_Modulo( nombreA entier256, petitnombreB entier ) : entier256
+      	resultat	est Entier256
+      si EnMode64bits() ALORS
+      	nombre64 est un entier sur 8 octets = petitnombreB
+      	API( addrprocMult256x64Modulo, &nombreA, nombre64, &resultat  )
+      sinon
+      	nombre32 est un entier sur 4 octets = petitnombreB
+      	API( addrprocMult256x32Modulo, &nombreA, nombre32, &resultat  )
+      	
+      fin
+      renvoyer resultat
+      
      type : 458752
    -
      name : multiplicationPar2Modulo
