@@ -149,13 +149,13 @@ class :
       renvoyer resultat
      type : 458752
    -
-     name : multiplication_255xx8_Modulo
+     name : multiplication_255x8_Modulo
      procedure_id : 2186318720826782590
      type_code : 12
      code : |1+
       // petitnombreB doit entre compris entre 1 et 8
       // fonction pour les tester que la version ADM utilisée dans les formules est correcte
-      procédure multiplication_255xx8_Modulo( nombreA entier256, petitnombreB entier ) : entier256
+      procédure multiplication_255x8_Modulo( nombreA entier256, petitnombreB entier ) : entier256
       	resultat	est Entier256
       si EnMode64bits() ALORS
       	nombre64 est un entier sur 8 octets = petitnombreB
@@ -174,16 +174,7 @@ class :
      type_code : 12
      code : |1+
       PROCÉDURE multiplicationPar2Modulo(  nombre Entier256) : Entier256
-      
-      // si une procédure ASM existe (64 bits)
-      SI addrprocMult256x64Modulo<> Null ALORS
-      	resultat	est entier256
-      	API( addrprocMult256x64Modulo, &nombre, 2, &resultat  )
-      	RENVOYER resultat
-      FIN
-      
-      //@A optimiser
-      RENVOYER multiplicationParUI32Modulo( nombre, 2 )
+      RENVOYER multiplication_255x8_Modulo( nombre, 2 )
      type : 458752
    -
      name : MultiplicationPar3Modulo
@@ -191,16 +182,7 @@ class :
      type_code : 12
      code : |1-
       Procédure MultiplicationPar3Modulo( nombre Entier256 ) : entier256
-      
-      // si une procédure ASM existe (64 bits)
-      SI addrprocMult256x64Modulo<> Null ALORS
-      	resultat est entier256
-      	API( addrprocMult256x64Modulo, &nombre, 3, &resultat  )
-      	renvoyer resultat
-      FIN
-      
-      //@A optimiser
-      RENVOYER multiplicationParUI32Modulo( nombre, 3 )
+      RENVOYER multiplication_255x8_Modulo( nombre, 3 )
      type : 458752
    -
      name : multiplicationPar4Modulo
@@ -208,16 +190,7 @@ class :
      type_code : 12
      code : |1-
       PROCÉDURE multiplicationPar4Modulo( nombre Entier256 ) : entier256  
-      
-      // si une procédure ASM existe (64 bits)
-      SI addrprocMult256x64Modulo<> Null ALORS
-      	resultat	est entier256
-      	API( addrprocMult256x64Modulo, &nombre, 4, &resultat  )
-      	RENVOYER resultat
-      FIN
-      
-      //@A optimiser
-      RENVOYER multiplicationParUI32Modulo( nombre, 4 )
+      RENVOYER multiplication_255x8_Modulo( nombre, 4 )
      type : 458752
    -
      name : multiplicationPar8Modulo
@@ -225,17 +198,7 @@ class :
      type_code : 12
      code : |1+
       PROCÉDURE multiplicationPar8Modulo( nombre Entier256 ) : Entier256  
-      
-      // si une procédure ASM existe (64 bits)
-      SI addrprocMult256x64Modulo<> Null ALORS
-      	resultat	est entier256
-      	API( addrprocMult256x64Modulo, &nombre, 8, &resultat  )
-      	RENVOYER resultat
-      FIN
-      
-      //@A optimiser
-      RENVOYER multiplicationParUI32Modulo( nombre, 8 )
-      
+      RENVOYER multiplication_255x8_Modulo( nombre, 8 )
      type : 458752
    -
      name : soustractionModulo
