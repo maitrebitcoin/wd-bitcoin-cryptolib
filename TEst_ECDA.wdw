@@ -713,7 +713,7 @@ window :
   -
     name : Compile_formule_Double_Jacobi1
     identifier : 0x2e54ca9b0087c573
-    internal_properties : BQAAAAUAAACSb3H/uv1F07ov/3BzuJBb0l4L9UM3RxMDY2vEx5FWlxnqdVd4TJEEM3cwXohSzgiHZCKlh2wb53uKVS/D05YuvB+zfBH+Kqnz5qmQ+xg/KgmBBO5v3JWULTDsPslU/AQ2/AEUPzd+OEaNsX6zXUn1Ex7OrMrQxhAVXKU5ZgYAFOBbaG936eizCO+zE9VKTG8PIVjwWpzB5ipjoNcBbt3D30mbXFfGzJ6Kz4/mh+3RdKClFAyy+vqNVqWYz3Lj/X0Qow0OfpRcSeejT0CLboqNjCUaLySqps6ZsxfniQCOVG42zMBOL4+s/esd1zYfOxqS76N30hEUDRWYwHheSuHH325nJizcfGWGGz946o9yrF9CrD57o/Zf15DgqbcEUN0kxWbcwKc2wTKxGusDuxoLf9S1noM2FUmnZOSYd9XspsF7nIQNg0lEZk+chqf5GAe5lm3XswIqPCNSVIkqcZFeHKYCRiNBEfGz47VvHprmnp+zjZXAPX8I6tFjPHe9cfLgLvLqqQ7CAnrziRBwX5peLbU1OkdG7T0+9wvMxZaTYx8Bl2BP26sKBE8DuBaHnWbWOsQpGGnbsMssEOFk2VtH5bJyT+5TFK1apn396NQL3xVMFjk/xSfSTc1vAGEs2x56MGx8C8z37Y9mNTrX927+niXOLfwUGF7LcBdjL3BbQtTB/fjl/tPSB0pxYj8oM4yCNpYEbCOsmzaXq2a8BRoIvIoYaSHiSiBd99EyUiyOgSEmtJqnzETuapWR
+    internal_properties : BQAAAAUAAACMBVttFG+XLQiB0TpNYsoljDTlu5XpSRV5bXXG2ZNQkRPgj2VqXosGMXEyWIpcyAqJeiSriWYd2XG0XyE17eBQzp018otwtDsBMFPqrWr5bEvHdiQhZs/e63q2kFvGbo64QpOiqYHgqqRni+A138tvlZxwElxKSKIrxie74JiK1upBYg2RS8pltjNBYS+06okRQyK+jDYvPBhRppXjKPnrpXsUHiUMhDw0Qw2Y0+Ov1MI9fL6AwIIvIDnyPXJhR7nmx+k8FOqs392rSX5rWHClFu32yWZECmDHy72ludZo6ICedM5oqQNy03sncbJlxVbE//OZmK8836tItgYuhCfnMb7HbC5+YPM4Zz2mqin0KP2eFCilxWLNMWTuh0dd+YRhAHuV2axhYDXQC+QEqC9eGEsG40h/LNjeOz1ByHKRaUp2iU0O8Kyn5Y59x/COzdparXbU+EuBE9KxLerL3iJdAS37+6DiwBzO8hbAL2+TyaS+igZRWqIvncRIMZyWFsWN9dOXPmcZUfV2HkUtgLutRrQu91xvRJyaE3ueESbD88MFT1xDgzOaTFuzLIIvrUbK1G7/Ngt5ztUmGp/aU+HJZzyEvXzNiiPMKP9zZlaJWe+m+MetV7Vg31/xhu++SYjE+qaywRY9s0Go93gVqTzIyM9gm4KOnuRN8qmRHWJpTN7L9/7j+MnICUxzYD0qMY6EMJgCYjW6qQChpWy6BxgKvpQSby+cAFaHoQv4GHbEu/t4Bsh1PrJchH+L
     type : 4
     code_elements :
      type_code : 4
@@ -731,28 +731,32 @@ window :
          //CPL.déclareParamètre("Y" )
          //CPL.déclareParamètre("Z" )
          CPL.déclareOpérateurBinaire("*", corps.addrprocMult256x256Modulo  )
-         CPL.déclareOpérateurBinaire(".", corps.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  ) // 64bits x 258 bits
+         si EnMode64bits()
+         	CPL.déclareOpérateurBinaire(".", corps.addrprocMult256x64Modulo,  compilateurDeFormule.UI8  )
+         sinon
+         	CPL.déclareOpérateurBinaire(".", corps.addrprocMult256x32Modulo,  compilateurDeFormule.UI4  )
+         fin
          CPL.déclareOpérateurBinaire("-", corps.addrprocSoustractionModulo )
          _pf est un entier système
          //The "dbl-1998-cmo-2" doubling formulas
          sCodePoint_Doubling_Jacobi est chaine = [
-         doubleP( P Point3D )
-         	XX	  = P.X*P.X
-         	YY	  = P.Y*P.Y
-         	ZZ    = P.Z*P.Z
-         	XYY   = P.X*YY
-         	S	  = 4.XYY
+         PointDouble(X, Y, Z)
+         	XX		= X*X
+         	YY		= Y*Y
+         	ZZ		= Z*Z
+         	XYY		= X*YY
+         	S		= 4.XYY
          	2S	  = 2.S
-         	M	  = 3.XX 
-         	MM    = M*M
-         	P.X   = MM-2S       // resultat X
-         	S_X   = S-P.X
-         	YYYY  = YY*YY
+         	M		= 3.XX 
+         	MM		= M*M
+         	X		= MM-2S
+         	S_X		= S-X
+         	YYYY	= YY*YY
          	8YYYY = 8.YYYY
-         	MS_X  = M*S_X
-         	YZ	  = P.Y*P.Z	 
-         	P.Y   = MS_X-8YYYY // resultat Y
-         	P.Z	  = 2.YZ	   // resultat Z
+         	MS_X	= M*S_X
+         	YZ		= Y*Z	
+         	Y		= MS_X-8YYYY
+         	Z		= 2.YZ
          ]
          
          _pf = CPL.compileFormule(sCodePoint_Doubling_Jacobi)
@@ -765,60 +769,13 @@ window :
          _X	est Entier256(311)
          _Y	est Entier256(747)
          _Z	est Entier256(1)
-         P est Point256_3D
-         P.x = _X
-         P.Y = _Y
-         P.z = _Z
-         P2 est Point256_3D = courbe.pointDouble_Jacobi(P)
-         Trace("X:"+P2.x.VersChaineHexa() )
-         Trace("Y:"+P2.y.VersChaineHexa() )
-         Trace("Z:"+P2.z.VersChaineHexa() )
-         trace("GO : ---------------------------------")
-         //_Resultat	est Entier256
-         bufVecteur est un buffer sur 96
-         Transfert( &bufVecteur,    &P.x, 32)
-         Transfert( &bufVecteur+32, &P.y, 32)
-         Transfert( &bufVecteur+64, &P.z, 32)
          
-         API( _pf, &bufVecteur) // (3*3)-3 => 6
-         
-         Transfert( &P.x, &bufVecteur,    32)
-         Transfert( &P.y, &bufVecteur+32, 32)
-         Transfert( &P.z, &bufVecteur+64, 32)
-         
-         trace("X:"+P.X.VersChaineHexa() )
-         trace("Y:"+P.Y.VersChaineHexa() )
-         trace("Z:"+P.Z.VersChaineHexa() )
-         
-        type : 18
-      -
-        type : 161
-        enabled : false
-  -
-    name : TERst_mil32
-    identifier : 0x2e576846008897e6
-    internal_properties : BQAAAAUAAACv3YHgKqfHFPqVw5L73ihbBJUHv3hKxJ5DmJy/jdAbwVP2vZ+CSYaLr6B7W4ab5zNZchgmkzVoUcUjtraJHad7zsO4V3fpt0jw9D2cQoclD+weKfPE+7D4m0MCsa+5T65GFtkZ3F2ORHsIhDtxuQi8XUrdWPYNRN2bTcToKHV3uokEPv0g/tw5ZvQU0Ux25lxYJklHuBJw35+AVkSroEx7eb3S1MnDewob5HwEOnSpj4Ok6qp7KTCNszDEVgkbkNDn0+T91kNZMRjvjVoIHf2qjTiU49cSYP/EdSMZ828ewLiFaY2txf1tHG07XqZtw88kiiebR3/DdpOhsP42JG9zAYeAeS/Ky3QS6/mSg+3vaEyTlXrKrdro7lZLQMv0Uc1X1dE0AB8X3Dq/ZnJ4xAQxHAAW2yaZn3XTjzGyvb8RKSHqjzUFFTFM9JvFEpHslJP8IFtRrsswToE1oifI3wPjmbPEBqSqQrtFo9F1jguRF19SBZq099T++731lZr45qTt/H2L2l0gQHM708VLnjHG9MxvYu96HiwDtgiSjkYQZ9Ipn0PHyAmV/sFVTePpcPzncoWZCbSW3pHoZG0h6pO/XSFwWXx/0nADgn35KIstQDeSV916JS0bmx/ERywxQz1KD0JYPIErQEaPC/fQ3VFcrq0qcmARUA6e9T2r+8bwhiJLfrCu1EKlczFt3JwTWXmMbFuyDrp/Y3yiYpCd08kKkZBvF/SL5B++2tIKHHs=
-    type : 4
-    code_elements :
-     type_code : 4
-     p_codes :
-      -
-        code : |1+
-         
-         résultat est Entier256 
-         
-         corps est un CorpsModulaire_pointSepc256k1 // dynamique <-courbe.corps_ordre
+         API(_pf, &_X,&_Y,&_Z)
          
          
-         _A	est Entier256("8AD126BD3D6C8229000000000000000000000000000000000000000000000000")
-         
-         
-         
-         nombre est Entier256(2)
-         résultat  = corps.multiplication_255xx8_Modulo( _A,8  ) 
-         
-         
-         trace("R :"+résultat.VersChaineHexa() )
+         trace("X:"+_X.VersChaineHexa() )
+         trace("Y:"+_Y.VersChaineHexa() )
+         trace("Z:"+_Z.VersChaineHexa() )
          
         type : 18
       -

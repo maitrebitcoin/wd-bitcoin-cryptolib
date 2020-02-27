@@ -51,6 +51,7 @@ class :
       	PST256_XYZ  // pointeur sur une structure de 3 entier 256 bits X,Y,Z (paramètres uniquement)
       	UI256  		// entier 256 bits (var locale uniquement )
       	UI8    	    // entier sur 8
+      	UI4   	    // entier sur 4
       fin
       EPortée est une énumération
       	paramètre
@@ -192,8 +193,8 @@ class :
      code : |1+
       // déclare un opérateur comme "*" ou "+"
       procédure déclareOpérateurBinaire( nom chaine, adresseProcédure entier système, typeParam2 ETypeVar = PUI256 )
-      dbgActiveAssertion(nom<>"")
-      dbgActiveAssertion(adresseProcédure<>0)
+      dbgAssertion(nom<>"")
+      dbgAssertion(adresseProcédure<>0,"adresseProcédure = 0")
       
       newFonc est STFonction
       newFonc.nom = nom
@@ -421,9 +422,11 @@ class :
       	si stLigneI.bvar1EstLiteral ALORS
       		dbgAssertion(func.nom=".")
       		sCodeAsm += [RC] + _genCodeAsmInitParam(          2, stLigneI.nomVarDest ) // OUT		
-      		sCodeAsm += [RC] + _genCodeAsmInitParam( 		  0, stLigneI.var2 )		
       		//@@On inverse P1/P2
-      		sCodeAsm += [RC] + _genCodeAsmInitParam_Imm3264 ( 1, stLigneI.var1 )				
+      		sCodeAsm += [RC] + _genCodeAsmInitParam_Imm3264 ( 1, stLigneI.var1 )	
+      		sCodeAsm += [RC] + _genCodeAsmInitParam( 		  0, stLigneI.var2 )					
+      		//sCodeAsm += [RC] + _genCodeAsmInitParam_Imm3264 ( 1, stLigneI.var1 )				
+      	
       	sinon
       		// NB: ordre inverse des paramètres ( ordre "normal") de la convention d'appel 32 bits + maximise les chance de réutilisation en 64 bits
       		sCodeAsm += [RC] + _genCodeAsmInitParam( 2, stLigneI.nomVarDest ) // OUT				
