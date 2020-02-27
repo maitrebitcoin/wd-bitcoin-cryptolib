@@ -42,7 +42,7 @@ procedure_set :
      type_code : 15
      code : |1+
       // crée une nouvelle paire de clé : ( clé privée, clé publique )
-      PROCÉDURE créePaireCléPrivéePublique() : ( Entier256, Point256 )
+      PROCÉDURE CréePaireCléPrivéePublique() : ( Entier256, Point256 )
       // init de m_gpclEDCSA si c'est 1er appel de l'API
       _InitSi1ErAppel()
       // rebond 
