@@ -15,6 +15,7 @@ procedure_set :
   p_codes :
    -
      code : |1+
+      privé
       // classe de gestion de ECDSA sur laquelle on rebondit.
       // Singleton initialisé au 1er appel.
       m_gpclEDCSA est ECDSA_BTC dynamique
@@ -133,7 +134,7 @@ procedure_set :
      name : additionCléPrivé
      procedure_id : 2149965950342088235
      type_code : 15
-     code : |1-
+     code : |1+
       // renvoie une clé prive addition de 2 autres clés privées.
       // pour construction clés hiérarchiques
       procédure additionCléPrivé( cle1 Entier256, clé2 entier256 ) : entier256
@@ -141,6 +142,19 @@ procedure_set :
       _InitSi1ErAppel()
       
       renvoyer m_gpclEDCSA.corpsOrdre.additionModulo(cle1 , clé2)
+     type : 458752
+   -
+     name : additionCléPlublique
+     procedure_id : 2186679699968239044
+     type_code : 15
+     code : |1-
+      // renvoie une clé publique addition de 2 autres clés publiques
+      // pour construction clés hiérarchiques
+      procédure additionCléPlublique( cléPublique1 Point256, cléPublique2 Point256 ) : Point256
+      // init de m_gpclEDCSA si c'est 1er appel de l'API
+      _InitSi1ErAppel()
+      
+      renvoyer m_gpclEDCSA.courbeBtc.pointPlusPoint(cléPublique1, cléPublique2)
      type : 458752
   procedure_templates : []
   property_templates : []
