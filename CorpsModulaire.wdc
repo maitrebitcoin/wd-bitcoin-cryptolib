@@ -20,12 +20,7 @@ class :
       	// modulo principal utilisé pour Z/PZ. doit doit être premier
       	// ex : "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"
       	P est Entier256
-      	
-      	// OTIMS :
-      	// constantes et tables pour accélérer les calculs
-      	_1 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000001
-      	_0 		  est Entier256  // 0x0000000000000000000000000000000000000000000000000000000000000000
-      	
+      		
       	//  c = 2n −p : pour L’algorithme basé sur la retenue sortante d’Omura 
       	DeuxPuissance256MoinsP est entier256
       	// P - 2 : pour inverse modulaire par algorithme d'Euleur
@@ -41,7 +36,6 @@ class :
      type_code : 27
      code : |1+
       PROCEDURE Constructeur( valeurHexa chaine )
-      	Constructeur _1(1)
       
       // Init P, modulo principal
       p.affecteAvecChaineHexa( valeurHexa )
