@@ -23,7 +23,7 @@ class :
       
       	// constante pour accélérer les calcul
       	//  2^256 mod P  = 2^256-P =  0x14551231950b75fc4402da1732fc9bebf
-      	_2P256_MoinsP est Entier256
+      	//_2P256_MoinsP est Entier256
       	
       	// adresse de procédures en assembleur pour optim des calculs :
       	// ok que en mode 64 bits + spécialisé modulo 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
@@ -39,7 +39,7 @@ class :
      code : |1+
       PROCEDURE Constructeur()
           Constructeur CorpsModulaire("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
-      	Constructeur _2P256_MoinsP(                                "0x14551231950b75fc4402da1732fc9bebf")
+      	//Constructeur _2P256_MoinsP(                                "0x14551231950b75fc4402da1732fc9bebf")
       
       // 256x256 mod P :
       :addrprocMult256x256Modulo	=  pCompileAsm("mult256x256_Modulo_OrdreCourbeSepc256k","multiplication_256x256_512", arithmetique.addrprocMult256x256_512_ASM )

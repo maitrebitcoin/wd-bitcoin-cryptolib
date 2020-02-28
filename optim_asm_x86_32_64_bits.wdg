@@ -11,6 +11,7 @@ procedure_set :
  identifier : 0x1e52a1de0497a7de
  internal_properties : BQAAAAUAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
  code_elements :
+  internal_properties : BQAAAAUAAAC8Sl0pfseidXE9/kBmawagKU2LQSv8bn6/vNDKIJF1LaO5OrXnJBCSprdxyfnkeSCSHo4FglHTPzGvuw==
   type_code : 31
   p_codes : []
   procedures :
@@ -900,18 +901,6 @@ procedure_set :
       fin
       dbgAssertion( PAS ErreurDétectée, ErreurInfo())
       renvoyer procDiv2_ASM
-     type : 458752
-   -
-     name : _NOIMPL_
-     procedure_id : 2184986744160561118
-     type_code : 15
-     code : |1+
-      PROCEDURE _NOIMPL_()
-      
-      STOP
-      FinProgramme("Non implémenté")
-      
-      
      type : 458752
   procedure_templates : []
   property_templates : []
