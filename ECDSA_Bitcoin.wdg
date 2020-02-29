@@ -147,7 +147,7 @@ procedure_set :
      name : additionCléPlublique
      procedure_id : 2186679699968239044
      type_code : 15
-     code : |1-
+     code : |1+
       // renvoie une clé publique addition de 2 autres clés publiques
       // pour construction clés hiérarchiques
       procédure additionCléPlublique( cléPublique1 Point256, cléPublique2 Point256 ) : Point256
@@ -155,6 +155,22 @@ procedure_set :
       _InitSi1ErAppel()
       
       renvoyer m_gpclEDCSA.courbeBtc.pointPlusPoint(cléPublique1, cléPublique2)
+      
+      
+     type : 458752
+   -
+     name : xVersCléPublique
+     procedure_id : 2187088357497435729
+     type_code : 15
+     code : |1+
+      // calcule une clé  publique complète a partir de juste la coordonée X
+      // (pour les clé compressées )
+      PROCÉDURE xVersCléPublique( X entier256,  bYPositif est un booléen  ) : Point256
+      // init de m_gpclEDCSA si c'est 1er appel de l'API
+      _InitSi1ErAppel()
+      
+      RENVOYER m_gpclEDCSA.courbeBtc.xVersCléPublique(X, bYPositif)
+      
      type : 458752
   procedure_templates : []
   property_templates : []
