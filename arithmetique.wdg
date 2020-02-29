@@ -11,10 +11,11 @@ procedure_set :
  identifier : 0x1b39b9ee327fc18f
  internal_properties : BQAAAAUAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
  code_elements :
+  internal_properties : BQAAAAUAAAA4ZNG7gw+GwpVPJMMTsTcrVWVa/LFGyGoNybMcEjY+Pn02RxXMKlrQYDdrSgnqCekDhKSYC/B9ICWFAatLg/d0
   type_code : 31
   p_codes :
    -
-     code : |1-
+     code : |1+
       // opérations +,-,*, etc.. sur les entiers de plus de 64 bits
       
       // OPTIM : récup d'un version en assembleur de ces opérations
@@ -26,10 +27,6 @@ procedure_set :
       addrprocDivPar2_256_ASM     	est entier système = pGetprocDivisePar2_256()
       addrprocMult256x256_512_ASM    	est entier système = pCompileAsm("multiplication_256x256_512")
       
-      
-      _2_Puissance64 est un numérique  (38,0)  = 0x100000000
-      _2_Puissance64  = _2_Puissance64  * _2_Puissance64 
-      
       // constantes 0 et 1 du type entier256
       _0_256 est Entier256(0)
       _1_256 est Entier256(1)
@@ -40,18 +37,6 @@ procedure_set :
       
       // nombre au delas duquel on considère les  poids forts comme négatifs dans l'algorithme HGCD
       constant LIMIT_UI64_POSITIF = 0x7FFFFFFFFFFFFFFF
-      
-      STInfoCache est une structure
-      	U0 est entier sur 8 octets sans signe
-      	U1 est entier sur 8 octets sans signe
-      	V0 est entier SUR 8 octets sans signe
-      	V1 est entier SUR 8 octets sans signe
-      	AReste est entier SUR 8 octets sans signe
-      	BReste est entier SUR 8 octets sans signe
-      	b  est booleen
-      fin
-      tabCache_HGCD32  est un tableau de 256 par 256 STInfoCache 
-      bTabCacheInit est un booléen = faux
      type : 720896
    -
      code : |1-

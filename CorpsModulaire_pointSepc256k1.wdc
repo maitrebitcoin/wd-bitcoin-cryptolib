@@ -11,6 +11,7 @@ class :
  identifier : 0x1e37073f0090859a
  internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
  code_elements :
+  internal_properties : BQAAAAUAAAA2Yk9BMaXoR8fdqlmBQ7vBXb2OosP4OvD+fwWradR8HclM6Ux6gPwHj+ac2ZQPokLcTePZlE/Q84t7dz2lefl6
   type_code : 10
   p_codes :
    -
@@ -22,19 +23,17 @@ class :
       		
       	// constante pour accélérer les calcul
       	//  2^256 mod P  = 2^256-P
-      	_2P256_MoinsP est Entier256
+      	//_2P256_MoinsP est Entier256
       	// (P+1)/4 : pour racine carrée
       	_Pplus1Sur4 est Entier256 // ="0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff0c"
       
-      	// adresse de procédures en assembleur pour optim des calculs :
-      	// ok que en mode 64 bits + spécialisé modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-      	addrprocMult256x64_256_ASM		est entier système
+      	// adresse de procédures en assembleur pour optimisation des calculs :
+      	// opération spécialisées  modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
       	addrprocMult256x256Modulo		est entier système
       	addrprocSoustractionModulo		est entier système
       	addrprocMult256x64Modulo		est entier système // null en 32 bits
       	addrprocMult256x32Modulo		est entier système // null en 64 bits
       	
-      //	addrprocAdditionModulo			est entier système
       FIN
       
      type : 131072
@@ -46,11 +45,9 @@ class :
      code : |1+
       PROCEDURE Constructeur()
       	Constructeur CorpsModulaire("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F")
-      	Constructeur _2P256_MoinsP(                                                       "0x1000003d1F")
+      	//Constructeur _2P256_MoinsP(                                                       "0x1000003d1F")
       	Constructeur _Pplus1Sur4(   "0x3fffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff0c")
       
-      
-      :addrprocMult256x64_256_ASM	= arithmetique.addrprocMult256x32_256_ASM //@ Utile ???
       
       // 256x256 mod P :
       :addrprocMult256x256Modulo	= pCompileAsm("mult256x256_Modulo_CoordCourbeSepc256k", "multiplication_256x256_512", arithmetique.addrprocMult256x256_512_ASM) 
@@ -62,8 +59,6 @@ class :
       sinon	
       	:addrprocMult256x32Modulo	= pCompileAsm("mult256x32_Modulo_CoordCourbeSepc256k","multiplication_256x32_512") 
       fin
-      // 256+256 mod P:
-      //	:addrprocAdditionModulo     =  pCompileAsm("add256x256_Modulo_CoordCourbeSepc256k")
       
      type : 589824
    -
@@ -79,13 +74,11 @@ class :
      type_code : 12
      code : |1+
       // renvoie A*B*C modulo P
-      // <c> doit être entre 1 et 8
+      // <nombreC> doit être entre 1 et 8
       procédure multiplication_255x255x8_Modulo( nombreA Entier256, nombreB Entier256, nombreC entier sur 8)  : Entier256 
       
       // résultat R
       resultat est Entier256
-      //NB on doit avoir un routine asm dispo (64 bits)
-      //arithmetique.addrprocMult256x256Modulo<>0 ALORS
       API(addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
       API(addrprocMult256x64Modulo, &resultat,  nombreC, &resultat )
       RENVOYER resultat
@@ -96,7 +89,7 @@ class :
      type_code : 12
      code : |1-
       // renvoie A*A*C modulo P
-      // <c> doit être entre 1 et 8
+      // <nombreC> doit être entre 1 et 8
       procédure carré_255x255x8_Modulo( nombreA Entier256, nombreC entier sur 8)  : Entier256 
       
       resultat est Entier256
@@ -119,36 +112,6 @@ class :
       RENVOYER resultat
      type : 458752
    -
-     name : multiplicationParUI32Modulo
-     procedure_id : 2177216912031122842
-     type_code : 12
-     code : |1+
-      procédure multiplicationParUI32Modulo( nombre Entier256, UI32 est entier sans signe ) : Entier256
-      
-      resultat est entier256
-      // var de travail temp
-      retenue  est un entier sur 8 sans signe
-      depasseModP  est un Entier256
-      
-      
-      retenue  =	API(addrprocMult256x64_256_ASM, &nombre, &UI32, &resultat )
-      
-      // R = R mop P
-      // application du modulo en soustrayant le nombre de fois ou l'on a dépassé
-      API(arithmetique.addrprocMult64x64_128_ASM, &retenue, &_2P256_MoinsP.val0, &depasseModP)
-      retenue = API(arithmetique.addrprocAddition256p256_256c, &resultat, &depasseModP )
-      SI retenue ALORS
-      	API(arithmetique.addrprocAddition256p256_256c, &resultat, &_2P256_MoinsP )
-      FIN
-      // si on dépasse le modulo :
-      SI resultat.estSupérieurOuEgalA( :P ) ALORS
-      	// OPTIM de : resultat256 = soustraction( resultat256, :P )
-      	resultat = addition( resultat, _2P256_MoinsP )
-      FIN
-      
-      renvoyer resultat
-     type : 458752
-   -
      name : multiplication_255x8_Modulo
      procedure_id : 2186318720826782590
      type_code : 12
@@ -163,7 +126,6 @@ class :
       sinon
       	nombre32 est un entier sur 4 octets = petitnombreB
       	API( addrprocMult256x32Modulo, &nombreA, nombre32, &resultat  )
-      	
       fin
       renvoyer resultat
       

@@ -222,16 +222,6 @@ class :
       // signature valide 						
       RENVOYER (Vrai, "")
      type : 458752
-   -
-     name : xVersCléPublique
-     procedure_id : 2173352751482628164
-     type_code : 12
-     code : |1+
-      // calculé un clé complète a partir de juste la coordonée X
-      procédure xVersCléPublique( X entier256,  bYPositif est un booléen  ) : Point256
-      
-      renvoyer courbeBtc.xVersCléPublique( X,  bYPositif  )
-     type : 458752
   procedure_templates : []
   property_templates : []
  code_parameters :
