@@ -10,7 +10,7 @@ info :
 window :
  name : Test_Bench
  identifier : 0x2e581e9700b5c076
- internal_properties : BQAAAAUAAABGlz3dkff/2mGPbnj1qDDNZiOVi67Yxtt04nwMQAG7HDqsoBZsZdbGPSDZaHaarFdXAFOpAVe8NpPYeBHuHzD0KxecEhx/Uead+1RKTvMa1HDUxrz44jEiDWjpsZGEpais+DHFQ+aVKFxbItVMMEF4vhqhrF1Gq6KbaztM9xN6PAQLo2x539GBVZNDxjZ2qY1Vl3fV3pRQBXpuR0UMKFnZmUY0GZfzfZ0mXO++P2XiSXwDMhZVQ+5II8n8WoDXGm4zzxj18Ebi2oVgcQGoZk9Y8oPYC0/OaL+RY8L9monhmW1cIAdULM7nganPSER1yQlOk77n+b5hc/DL65xJtLIwmHgjZCpM+xTyW3G4EB/GzSlAP22dVBrauyVZrolrRyjmll4opYeo/shxVJSl39Htj2sKs5oTVEacH6YrZtGTBW1ZPIKIHVZEQTHtin51lECLM5XYdlcP4K5gVILevFJDHFSw7M/4MEL0KLQIY3PxFGkHt1aE5nfP0jhFKSQ7KugwhOZ9t/ka2oFpC/nuY66AEebNBA5f8SXks9GmT3dwVpkKiILUkC7mEAoC0Z4w/AjGXSwaNNFvz+budPs5Ty/OpIwqF0D6WpB4SZ5xqZZ32CRyZc6jQsRhtuO/aN+FgTHajRu91R8ZvbDquuRBPlKkhqysXF6ZQtIZYTi6ImuUIfDfWymnrSIPZCib/w8f9Vu+T4B17T1Uxuc/w13pbfYpEJIS2ZvZbFRcz4PpaNhRlZMe9lGjRVhwfCaj/1zgyw+g46JGUoO1Wkvjsg2kKrcYEXcLMwYczWsjo/lZB12QbFnl2MirUJ2x4WTXIOr7ic9fYehu7dFUVfrBiZ3tcM/NhCWnvH8wkAmErA==
+ internal_properties : BQAAAAUAAABYUAOM9KA8UfISUdPnhLfaQJZZpLnj5UciSrixQ0O2w98ecL99AP9W8WcnZdWpetw5wYfxdgS37gLvr9z0FTvB/g3NfwkAKVw4C4798WF+PCAmB50V1h118FxdoFyig+ohdn3/jYL7/jZo67SYGti0P2pUoFtCVvXS5l1gB4lcWj7sXd2aqz4UxeMMwWFb/9tA6ydn8doMwAomH9L52LI+A2fun18MRl79TAZK8JLeMFN2Ps/ZwX4fBNpTtnBk4JSHBxDzumyZ2HK6ijg4bq7Nx7osIObTCGsmnItwxTgw55QWZL0YIzcKJHjcFQmhlusIstey7kmCVZY//AsN0AeAcsfPoiCI1f2DGV9kILkpptWko2Gj9Hq/AHC8OKnI8TQcPhSkPF1ywnjOEYqvV39KGSeT+v9RT091GHLy9I7pSrSu7kIi4DdTCw4lR3f4aug+C+Pb8w47A6uyxxYaVIfcMGc/zOG6ZjQXEo30CTmY2wWyqvAU2oerk6Lwt+QXtTsgO8+ZEYumKsKLRkEuP7sVwwn8whpP66ORqxweMzfHnUWJtQA2WtruR8afzdbca88CIo8SCjdHs2HEoZXFh3QT7FkDcXalYwcE7xhSTLenz5CDzjqjHxEACnINEHbP7gC2xEcosFjslh0W095Gj9N6X6wCI49UaWlpZFZalNa8ha+y+3X99ZzTIlrJatq+c7RQwbvoZR5PjzsOBzCqmCylx1gmmZogP8Vdive0xeFzvW0yvFuNI5zp6NTppjrcmmb6d0INBSbugEL1E8OM0EYVl26ilA+XgnGbss5tR7FfkZ8YFqEjCVLIwzrvWH8rxOMuEQ9+Nnal+EmR1LZ+5aL+Grjkf32A531L03wX
  controls :
   -
     name : Bench_ECDSA_VérifieSignature
@@ -215,7 +215,7 @@ window :
   -
     name : Image_chrono
     identifier : 0x2e582873031b451e
-    internal_properties : BQAAAAUAAAAizoJWsol+57y1u0Vem8Gu2eGSJVXQyiMCP9NFASAr7obKiTOprApsHFzcbOFQ/jcxC/XS5ECADpypoL6iPcOaiy4ufrpCLYoY14l3bW9aoPqwri82yfrMhyE20HYjcnleW5sz7edGEUCnTu9q4GtaGiBRVssmZuBuBKT2KdQk+Pf30JSvhZ4hn/ihz/Vw4ZkXFwTk0xVfN9lcMmwEMKSg2iVH8qA8VyqpBSJOOvcvT92lXcq67mKbJMmuxDZXeba+mRd+NVADr5SeVmK22zW1o7frAA2FRTleu1JHrQ885pXkI4anz4q9FCePtlbCKgo2bdnoPcvKeczxSQgbPjAMTkYrXtdcihTGD2B4Vz+BcO7b2KXYskHVo/0KwHJoiCMlwhg3TqT5J/DJZ9OOTInbmiON3GRQZzekZVfHvV/L4rUXYp+a8g+ZwnfOoT41JZ2J6XwYzy/4M+vavAZuW7F6IR2lhc7yg+lzSLY2jT0r6CeB+l4rkXcZsUriU7ocH2JpFnQcSoF/k+vBc29b4fY5bP/fTY/NvlCmHc7/0PmqvzBOIEIS6OvJN44tU6CqazDBukKZe0P3LmRyYOgnbgAmA9fD7BODfCPpFolpWLSVavE1cRDx172k/u8lHXFG9Z41olOasZHZbjpu7WyHGeO/mMYLqXsR0XCL0D5TozJbOsDdKGX+h9RSt/KEqGblYFoU7WwMCOD/31KsS9x6TnLuRCZWfUt77P+DWYRk/mZXfPfUSJkt+009DzCYquK2lPmzbZcXM5hI0wmjhihtz9sDxC3PnoyZFcpKNqBUFaoS4ZGF0BYJ7NHNb+H6nErHBb/TDb/OLE6xqbgf/Ak7ax7/HHHZBO5Yywo=
+    internal_properties : BQAAAAUAAADq+J3exkzaNvm3VP/5dVfOi2Crviu+klrk9knX+gUvsjXTKoPeWuIR5nBaN4GuxHZhD+EVe6lP8IBqQv3eG2aldlOjseK9vZxglqIGZkYkXk4Nlsf7zdSldRtke/lzsbdH5f4oC0tO0sy3W5dA0PkZRxBmRchVLE09CLIUe4PMC3Jwj3ZXQ/eBzOGOSyWm8Cgi6rTwCyz2uyyw6zdGiePy00sMJAIEj9hiPTOeyYnhqtputDtFH5nNDUVqxqEeUMjwt5WQmm5JbWId6S8YoqzFdf7cL1QZhB0h+w4Mo+N6L3KVqQFdhU9I4Pwb9/jRTgXXz0UxJIiv7nsbkyi2pfNlV/EEzTPq+l1Q7vAvIxPMC/eoBhbcpwZCEkAiRFMBbV07sfnrCmxm/4mCXZPliXShjdzNUFNZTpjdd9t/dZsmw394zgKSotQpsQMOeVU98bj6erSFKFxmUbi4Ci3zFVvmWCMgVy6/sfRLauvzCjnFvc0/tihmL/mk+R86IFtiQawQqCH0mcqtISt/moLNwEdLxbHzdRHemAlM1pHs4YR72uu3BB/e+mEKMc9rr8RA0dZjszYhsKJ54EHjng55CVnTXxAhYkn18X1yZaUN815PlffNLA8ggh6kOET+IddvombEatzUMtDY8RItPmB0RDiCYOJv1WTH3qDGbMsAKTFMbRA4ik3H2X0wuMigNEP3t6Q60Lh6xcl2wXvPyx95XR47IUzrGhItNwrTjMNT7fW0OWX+QG91ZJsFnhTtq+0kvY4fI8YnRHS7Fwpu/hGw7xkl0mw6nobuo+3dAeLJUN5wCCRiSnd8TLkYUm7oS5mkRRRzGYmYp2qaWuzJRX3p
     type : 8
     code_elements :
      type_code : 8
@@ -246,8 +246,12 @@ window :
       -
         code : |1+
          // affiche les caractéristique du processeur 0.
+         <compile si TypeConfiguration=ApplicationWindows>
+         	MoiMême = RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0\" ,"ProcessorNameString")
+         <sinon>
+         	MoiMême = ""
+         <fin>
          
-         moimeme = RegistreLit("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0\" ,"ProcessorNameString")
          
         type : 14
       -
