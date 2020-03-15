@@ -6,20 +6,26 @@
 ; byte* pNombreB  : rdx
 ; byte* pResultat : r8
 
+; defines des paramètres
+param1 equ rcx
+param2 equ rdx
+param3 equ r8
+
 .CODE
 sub256x256_Modulo_CoordCourbeSepc256k PROC
 
 ; prologue
 
+
 ; soustraction 256 bits avec retenue
- mov         r9,qword ptr  [rcx]  
- sub         r9,qword ptr  [rdx]  
- mov         r10,qword ptr [rcx+8]  
- sbb         r10,qword ptr [rdx+8]  
- mov         r11,qword ptr [rcx+10h]  
- sbb         r11,qword ptr [rdx+10h]  
- mov         rcx,qword ptr [rcx+18h]  
- sbb         rcx,qword ptr [rdx+18h]  
+ mov         r9,qword ptr  [param1]  
+ sub         r9,qword ptr  [param2]  
+ mov         r10,qword ptr [param1+8]  
+ sbb         r10,qword ptr [param2+8]  
+ mov         r11,qword ptr [param1+10h]  
+ sbb         r11,qword ptr [param2+10h]  
+ mov         rcx,qword ptr [param1+18h]  
+ sbb         rcx,qword ptr [param2+18h]  
 
 ;	// SI A-B est négatif
 ;	if (carry)
@@ -29,14 +35,14 @@ sub256x256_Modulo_CoordCourbeSepc256k PROC
     sub     r9,rax  
     sbb     r10,0  
     sbb     r11,0  
-    sbb         rcx,0  
+    sbb     rcx,0  
 	
 _endif_debordement:
 ; copie résultat
- mov         qword ptr [r8]    ,r9  
- mov         qword ptr [r8+8]  ,r10  
- mov         qword ptr [r8+10h],r11  
- mov         qword ptr [r8+18h],rcx  
+ mov         qword ptr [param3]    ,r9  
+ mov         qword ptr [param3+8]  ,r10  
+ mov         qword ptr [param3+10h],r11  
+ mov         qword ptr [param3+18h],rcx  
 
 ;Epilogue
  ret  

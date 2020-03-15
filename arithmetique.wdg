@@ -111,22 +111,10 @@ procedure_set :
       
       Resultat est Entier256 = nombreB
       // OPTIM ASM
-      si addrprocSoustraction256p256_256<>0
-      	Resultat = nombreB
-      	//procSoustraction256p256_256( &nombreA, &Resultat)
-      	api( addrprocSoustraction256p256_256,  &nombreA, &Resultat)
-      	renvoyer Resultat
-      fin
       
-      // calcule le complément à 2
-      complement est Entier256
-      // OPTIM :
-      // OUExclusifBinaire(nombre.val0 ,0xFFFFFFFFFFFFFFFF) remplacé par  -1-nombre.val0
-      complement.val0 = -1-nombreB.val0 
-      complement.val1 = -1-nombreB.val1 
-      complement.val2 = -1-nombreB.val2 
-      complement.val3 = -1-nombreB.val3 
-      RENVOYER addition(nombreA,  additionAvecUn(complement))
+      api( addrprocSoustraction256p256_256,  &nombreA, &Resultat)
+      renvoyer Resultat
+      
      type : 458752
    -
      name : addition256_64
@@ -139,11 +127,11 @@ procedure_set :
       resultat est Entier256
       
       // 64 bits poids faible
-      resultat.val0 = nombreA.val0 + petitNombreB
+      Resultat.val0 = nombreA.val0 + petitNombreB
       // 64..128
-      resultat.val1 = nombreA.val1
-      resultat.val2 = nombreA.val2
-      resultat.val3 = nombreA.val3
+      Resultat.val1 = nombreA.val1
+      Resultat.val2 = nombreA.val2
+      Resultat.val3 = nombreA.val3
       // retenue en cascade
       //retenue0 = resultat.val0 < nombreA.val0 _OU_ resultat.val0 < petitNombreB
       si resultat.val0 < nombreA.val0 _OU_ resultat.val0 < petitNombreB
@@ -2343,6 +2331,19 @@ procedure_set :
       
       // renvoyer  u
       renvoyer  (s, t, r, i) // sOld 
+     type : 458752
+   -
+     name : dbgAssertion_TEST
+     procedure_id : 2188191137677978078
+     type_code : 15
+     code : |1+
+      procédure dbgAssertion_TEST( COND , TEXT="")
+      
+      si pas COND ALORS
+      	dbgSortieStandard("****ASSERT**** " )
+      	dbgSortieStandard( TEXT + rc )
+      	FinProgramme(-1)
+      FIN
      type : 458752
   procedure_templates : []
   property_templates : []

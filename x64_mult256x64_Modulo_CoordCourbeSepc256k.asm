@@ -6,6 +6,11 @@
 ; UIN64 nombreB   : rdx
 ; byte* pResultat : r8
 
+; defines des paramètres
+param1 equ rcx
+param2 equ rdx
+param3 equ r8 ; rdx en linux
+
 .CODE
 mult256x64_Modulo_CoordCourbeSepc256k PROC
 
@@ -15,14 +20,17 @@ mult256x64_Modulo_CoordCourbeSepc256k PROC
  push        rcx
  push        rbp  
  push        rsi  
- push        rdi  
  push        r12  
  push        r13  
  push        r14  
  push        r15  
 
 ; récupération  des variables en regitres:
- mov         rdi,rdx  
+IFDEF LINUX
+ mov         rcx, param1 ; mov   rcx,param1 ; car le param1=rdi en linux est ecrasé par param2. NB ; rcx volatile en linux+windows
+ mov         r8,  param3 ; pour linux
+ mov         rdx ,param2 ; car rdx est le pamraètre implicite de mult
+ENDIF
  mov         r10,qword ptr [rcx    ]  ; r10 = A0
  mov         rsi,qword ptr [rcx+8  ]  ; rsi = A1
  mov         rbp,qword ptr [rcx+10h]  ; rbp = A2
@@ -99,7 +107,6 @@ neDepassePas:
  pop         r14  
  pop         r13  
  pop         r12  
- pop         rdi  
  pop         rsi  
  pop         rbp  
  pop         rcx

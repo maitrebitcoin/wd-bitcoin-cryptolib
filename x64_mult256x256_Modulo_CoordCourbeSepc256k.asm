@@ -6,8 +6,17 @@ mult256x256_Modulo_CoordCourbeSepc256k PROC
 ; Proto C :
 ; EXPORT void mult256x256_Modulo_OrdreCourbeSepc256k (byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
 
+; defines des paramètres
+param1 equ rcx
+param2 equ rdx
+param3 equ r8
+
 ; prologue
- mov         qword ptr [rsp+18h],r8    ; sauver pResultat dans la zone des var locales. [rsp+68h] apres les push
+IFDEF LINUX
+ mov         rcx,param1 ; car le param1=rdi en linux est ecrasé par param2. NB ; rcx volatile en linux+windows
+ sub         rsp,38h    ; simule la réserve de pile de la convention windows
+ENDIF
+ mov         qword ptr [rsp+18h],param3    ; sauver pResultat dans la zone des var locales. [rsp+68h] apres les push
  push        rax
  push        rbx
  push        rcx
@@ -20,7 +29,7 @@ mult256x256_Modulo_CoordCourbeSepc256k PROC
  push        r15  
 
 ; récupération  des variables en regitres:
- mov         rdi,rdx  
+ mov         rdi,param2  
  mov         r10,qword ptr [rcx    ]  ; r10 = A0
  mov         rsi,qword ptr [rcx+8  ]  ; rsi = A1
  mov         rbp,qword ptr [rcx+10h]  ; rbp = A2
@@ -193,6 +202,9 @@ neDepassePas:
  pop         rcx
  pop         rbx
  pop         rax
+IFDEF LINUX
+ add         rsp,38h 
+ENDIF
  ret  
 
 mult256x256_Modulo_CoordCourbeSepc256k endp

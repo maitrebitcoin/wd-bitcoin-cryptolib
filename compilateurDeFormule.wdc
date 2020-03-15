@@ -223,6 +223,9 @@ class :
       si pas EnMode64bits() ALORS
       	retour // optim sans effet en 32 bits
       FIN
+      si EnModeLinux() ALORS
+      	retour //@TEST
+      FIN
       
       nomRegistre=Minuscule(nomRegistre)
       tabOptimVarVersReg[nomVar] = nomRegistre
@@ -451,10 +454,10 @@ class :
       pResultat est un entier système
       sErr est chaine
       (pResultat,sErr) = compileAsmX86_API(sCodeFinal)
-      
-      
-      
-      dbgAssertion(pResultat<>0,sErr)
+      // si la compilation a échoué
+      si pResultat = 0  Alors
+      	dbgAssertion(faux,sErr)
+      fin
       
       renvoyer pResultat
      type : 458752
@@ -566,12 +569,6 @@ class :
       	// on renvoie le registre a utiliser
       	RENVOYER (tabOptimVarVersReg[varI.nom], Vrai )
       FIN
-      
-      // esp ou rsp (pile) selon 32/64 bits
-      _sNomSP est chaine = EnMode64bits() ? "rsp" sinon "esp"
-      // ebp ou rbp (base var loc) selon 32/64 bits
-      _sNomBP est chaine = EnMode64bits() ? "rbp" sinon "ebp"
-      
       
       bScrParamètre	est un booléen	= varI.portée = paramètre
       SI bScrParamètre ALORS
@@ -737,15 +734,30 @@ class :
       procédure privée _sGetNomRegistrePourParamNum64( nNumParam entier )
       dbgAssertion(EnMode64bits())
       
-      selon nNumParam
-      	cas 0: dbgAssertion(faux)
-      	cas 1: renvoyer "rcx"
-      	cas 2: renvoyer "rdx"
-      	cas 3: renvoyer "r8"
-      	cas 4: renvoyer "r9"
-      	AUTRE CAS
-      		dbgAssertion(Faux)
-      FIN
+      // convention d'appel différent en linux
+      si EnModeLinux() ALORS
+      	//	 RDI, RSI, RDX, RCX, R8, R9
+      	SELON nNumParam
+      		CAS 0: dbgAssertion(Faux)
+      		CAS 1: RENVOYER "rdi"
+      		CAS 2: RENVOYER "rsi"
+      		CAS 3: RENVOYER "rdx"
+      		CAS 4: RENVOYER "r8"
+      		AUTRE CAS
+      			dbgAssertion(Faux)
+      	FIN
+      sinon
+      // win64 :
+      	selon nNumParam
+      		cas 0: dbgAssertion(faux)
+      		cas 1: renvoyer "rcx"
+      		cas 2: renvoyer "rdx"
+      		cas 3: renvoyer "r8"
+      		cas 4: renvoyer "r9"
+      		AUTRE CAS
+      			dbgAssertion(Faux)
+      	FIN
+      fin
       renvoyer "***ERR***" // ne compilera pas.
      type : 458752
    -
@@ -796,6 +808,8 @@ class :
       
       ]
       
+      // 4 premier paramètres dans 
+      // RCX, RDX, R8, R9
       sCodeASM_Prologue_x64 est chaine = [
       ; Prologue
       	mov    [rsp+08h],rcx  ; P1 mis dans l'emplacement réservé par l'appelant
@@ -807,11 +821,32 @@ class :
       	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variables locales + appel des procédures
       	lea    rbp,[rsp+20h]        ; rbp pointe sur le debut des variables locales
       ]
+      // 6 premier paramètres dans
+      // RDI, RSI, RDX, RCX, R8, R9 
+      sCodeASM_Prologue_x64_Linux est chaine = [
+      	; Prologue
+      	sub    rsp,38h  ; pour laisser la meme place qu'en windows pour au moins 6 paramètres +1 (ret)
+      	mov    [rsp+08h],rdi  ;
+      	mov    [rsp+10h],rsi  ; idem P2 
+      	mov    [rsp+18h],rdx  ; idem P3 
+      	mov    [rsp+20h],rcx  ; idem P4 
+      	mov    [rsp+28h],r8   ; idem P5
+      	mov    [rsp+30h],r9   ; idem P6 
+      	PUSH_OPTIM
+      	push   rbp
+      	sub    rsp, TAILLE_VAR_LOC  ; réserve pour les variables locales + appel des procédures
+      	lea    rbp,[rsp+20h]        ; rbp pointe sur le debut des variables locales
+      ]
+      
       sCodeASM_Prologue est chaine
       si EnMode64bits() ALORS
-      	sCodeASM_Prologue = sCodeASM_Prologue_x64
+      	si EnModeLinux() ALORS
+      		sCodeASM_Prologue = sCodeASM_Prologue_x64_Linux
+      	sinon
+      		sCodeASM_Prologue = sCodeASM_Prologue_x64
+      	fin
       sinon
-      	sCodeASM_Prologue = sCodeASM_Prologue_x32
+      		sCodeASM_Prologue = sCodeASM_Prologue_x32
       FIN
       
       // calcul taille pile
@@ -863,10 +898,22 @@ class :
       	POP_OPTIM
       	ret  
       ]
+      sCodeASM_Epilogue_64_linux est chaîne = [
+      	; Epilogue
+      	add    rsp, TAILLE_VAR_LOC
+      	pop    rbp
+      	POP_OPTIM
+      	add    rsp, 38h
+      	ret
+      ]
       
       sCodeASM_Epilogue est chaine
       si EnMode64bits() ALORS
-      	sCodeASM_Epilogue = sCodeASM_Epilogue_64
+      	si EnModeLinux() ALORS
+      		sCodeASM_Epilogue = sCodeASM_Epilogue_64_linux
+      	sinon
+      		sCodeASM_Epilogue = sCodeASM_Epilogue_64
+      	fin
       sinon
       	sCodeASM_Epilogue = sCodeASM_Epilogue_x32
       FIN
@@ -970,6 +1017,11 @@ class :
       	_VarDissocieRegiste("r9")
       	_VarDissocieRegiste("r10")
       	_VarDissocieRegiste("r11")
+      	si EnModeLinux() ALORS
+      		// convention d'appel "System V AMD64"
+      		_VarDissocieRegiste("rdi")	// paramètres d'entrée
+      		_VarDissocieRegiste("rsi")	
+      	FIN
       sinon
       	//https://en.wikipedia.org/wiki/X86_calling_conventions#Register_preservation:
       	// the EAX, EDX, and ECX are to be free for use within a procedure or function, and need not be preserved

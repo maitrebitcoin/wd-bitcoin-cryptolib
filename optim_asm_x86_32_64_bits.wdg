@@ -68,22 +68,24 @@ procedure_set :
       ]
       // Code ASM  64 bits
       sCodeASMx8632_Addition256_x64 est chaîne = [
-      	// proto add256( INTOU int256 *A, int256 *B)  OUT BOOL retenue
+      	// proto add256( INTOUT int256 *A, int256 *B)  OUT BOOL retenue
       	//	; P1 : rcx
       	//	; P2 : rdx
+      	param1 equ rcx
+      	param2 equ rdx
       	
       	//  bit 0 a 63
-      	mov rax,[rdx]
-      	Add  [rcx],rax ; // A += B
+      	mov rax,[param2]
+      	Add  [param1],rax ; // A += B
       	// bits 64 a 127
-      	mov rax,[rdx+8]
-      	adc [rcx+8],rax ; // A += B + retenue	
+      	mov rax,[param2+8]
+      	adc [param1+8],rax ; // A += B + retenue	
       	// bits 128 a 195
-      	mov rax,[rdx+16]
-      	adc [rcx+16],rax ; // A += B + retenue	
+      	mov rax,[param2+16]
+      	adc [param1+16],rax ; // A += B + retenue	
       	// bits 196 a 255
-      	mov rax,[rdx+24]
-      	adc [rcx+24],rax ; // A += B + retenue	
+      	mov rax,[param2+24]
+      	adc [param1+24],rax ; // A += B + retenue	
       	
       	// valeur de retour = retenue
       	mov rax,0 // et pas xor rax,rax car raz C 
@@ -91,15 +93,7 @@ procedure_set :
       	ret
       ]
       // compile le code ASM 64 ou 32
-      procAddition_ASM est une  entier système 
-      si EnMode64bits() ALORS
-      	procAddition_ASM = compileAsmX86_API( sCodeASMx8632_Addition256_x64 )
-      sinon
-      	procAddition_ASM = compileAsmX86_API( sCodeASMx8632_Addition256_x86 )
-      fin
-      dbgAssertion( procAddition_ASM<>0, ErreurInfo())
-      dbgAssertion( PAS ErreurDétectée, ErreurInfo())
-      renvoyer procAddition_ASM
+      RENVOYER _pCompimeAsmVarStr( sCodeASMx8632_Addition256_x86, sCodeASMx8632_Addition256_x64 )
       
      type : 458752
    -
@@ -309,13 +303,19 @@ procedure_set :
       	//	; P2 = B : rdx
       	//	; P3 = C : r8
       	// C = A * B = A0*B0 + B1*B0 + A1*B0 + A1*B1
-      	
+      	param1 equ rcx
+      	param2 equ rdx ; rsi en linux
+      	param3 equ r8  ; rdx en linux
       	
       	// proloque
       	Push rbx
       	Push rdx
       	Push r9
-      	mov r9,rdx; // B dans R0, car rdx est utilisé comme résultat de poids fort par mul
+      	mov r9,param2;  // B dans R0, car rdx est utilisé comme résultat de poids fort par mul
+      IFDEF LINUX
+      	mov r8,param3 ; // car rdx est utilisé comme résultat de mul
+      	mov rcx,param1 
+      ENDIF
       	
       	//A0*B0
       	mov rax,[rcx]  // A0
@@ -356,16 +356,7 @@ procedure_set :
       	ret
       ]
       
-      
-      procMult128x128_256_ASM est une  entier système
-      SI EnMode64bits() ALORS
-      	procMult128x128_256_ASM = compileAsmX86_API( sCodeASMx8632_Mult128x128_256_x64 )
-      sinon
-      	procMult128x128_256_ASM = compileAsmX86_API( sCodeASMx8632_Mult128x128_256_x86 )
-      fin
-      dbgAssertion( procMult128x128_256_ASM<>0, ErreurInfo())
-      dbgAssertion( PAS ErreurDétectée, ErreurInfo())
-      renvoyer  procMult128x128_256_ASM
+      RENVOYER _pCompimeAsmVarStr( sCodeASMx8632_Mult128x128_256_x86, sCodeASMx8632_Mult128x128_256_x64 )
      type : 458752
    -
      name : pGetprocMult64x64_128_ASM
@@ -454,14 +445,20 @@ procedure_set :
       	//	; P2 = B : rdx
       	//	; P3 = C : r8
       	// C = A * B 
+      	param1 equ rcx
+      	param2 equ rdx
+      	param3 equ r8	; rdx en linux
       	
       	// proloque
       	Push rbx
       	Push rdx
+      IFDEF LINUX
+      	mov  r8,param3 ;  param3=rdx en linux, utilisé par mul
+      ENDIF
       	
       	//A0*B0
-      	mov rax,[rcx]  // A0
-      	mov rbx,[rdx]   // B0
+      	mov rax,[param1]  // A0
+      	mov rbx,[param2]  // B0
       	mul rbx		   // (rdx,rax) = rax * rbx
       	mov [r8]   ,rax
       	mov [r8+8] ,rdx
@@ -472,16 +469,7 @@ procedure_set :
       	ret
       ]
       
-      procMult64x64_128_ASM est une entier système
-      SI EnMode64bits() ALORS
-      	procMult64x64_128_ASM = compileAsmX86_API( sCodeASMx8632_Mult64x64_128_x64 )
-      sinon
-      	procMult64x64_128_ASM = compileAsmX86_API( sCodeASMx8632_Mult64x64_128_x86 )
-      fin
-      dbgAssertion( PAS ErreurDétectée, ErreurInfo())
-      dbgAssertion(procMult64x64_128_ASM<>0, ErreurInfo())
-      
-      renvoyer procMult64x64_128_ASM
+      RENVOYER _pCompimeAsmVarStr( sCodeASMx8632_Mult64x64_128_x86, sCodeASMx8632_Mult64x64_128_x64 )
      type : 458752
    -
      name : pGetprocSoustraction256p256_256_ASM
@@ -588,23 +576,50 @@ procedure_set :
       	<§cs:2§>
       	ret<§cs:2§>
       ]
+      // code ASM 64 bits
+      sCodeASMx8632_Soustraction256_x64_linux est chaîne = [
+      	// proto sub256( IN int256 *A,INOUT  int256 *B)  
+      	//	; P1 : RDI
+      	//	; P2 : RSI
+      	
+      	; soustraction 256 bits avec retenue
+      	 mov         r9,qword ptr  [rdi]  
+      	 sub         r9,qword ptr  [rsi]  
+      	 mov         r10,qword ptr [rdi+8]  
+      	 sbb         r10,qword ptr [rsi+8]  
+      	 mov         r11,qword ptr [rdi+10h]  
+      	 sbb         r11,qword ptr [rsi+10h]  
+      	 mov         rcx,qword ptr [rdi+18h]  
+      	 sbb         rcx,qword ptr [rsi+18h]  	
+      	; copie résultat
+       	mov         qword ptr [rsi]    ,r9  
+       	mov         qword ptr [rsi+8]  ,r10  
+       	mov         qword ptr [rsi+10h],r11  
+       	mov         qword ptr [rsi+18h],rcx  
+       	
+      	ret
+      ]
       
       //procAddition_ASM est une Procédure
       pAddrCode_ASM  est entier système
       SI EnMode64bits() ALORS
-      	//procAddition_ASM = compileAsmX86( sCodeASMx8632_Soustraction256_x64)
-      	pAddrCode_ASM    =  compileAsmX86_API( sCodeASMx8632_Soustraction256_x64 )
+      	si EnModeLinux() ALORS
+      		pAddrCode_ASM    =  compileAsmX86_API( sCodeASMx8632_Soustraction256_x64_linux )
+      	sinon
+      		pAddrCode_ASM    =  compileAsmX86_API( sCodeASMx8632_Soustraction256_x64 )
+      	fin
       sinon
       	//procAddition_ASM = compileAsmX86( sCodeASMx8632_Soustraction256_x86 )
       	pAddrCode_ASM    =  compileAsmX86_API( sCodeASMx8632_Soustraction256_x64 )
       fin
+      dbgAssertion( pAddrCode_ASM<>0, ErreurInfo())
       dbgAssertion( PAS ErreurDétectée, ErreurInfo())
       renvoyer pAddrCode_ASM
       
      type : 458752
    -
      name : pGetprocMult256x32_256_ASM
-     internal_properties : BQAAAAUAAACBd60Z/QmUSGSHs+5nMSAotrmVY9R0fjfG1ua2PNMeCyii/qMOOqq+yDmkFVlBi6oK6hv6/jpxbsNGeaSiOjqx4h8q+3QXQ7UhJL2eE5LLTCHy3ad81WYZoRIYIGKzwz4K9Xn5X35OXQ20DwoA5Oe2kYP8l3Th2t26EwcZJc2d9AAeC7uZGnuCKpuqQE4qMRgUC1JvIbeRLPL/fsoQsw==
+     internal_properties : BQAAAAUAAACBd60Z/QmUSGSHs+5nMSBoNjmV49R0/rdGVuY2vFMeiyiifqOOuqq+yDkkFVlBC6qKaht6/jrx7kPGeSQiujox4h+q+/SXQ7UhJD2eE5JLDGGynWc8FabZ4dLYYKJzg/5KtTm5H76OHU10z0pApKd20UO8VzQhGp3608dZZY1dtEDey3tZWrtCaltqgI7qMRgUC1JvIbeRLPL/fsoQsw==
      procedure_id : 2184986744160298974
      type_code : 15
      code : |1+
@@ -713,67 +728,114 @@ procedure_set :
       	Pop	ebp<§cs:2§>
       	ret 12<§cs:2§>
       ]
-      // Version 64 bits
       // version 64 bits
       sCodeASMx8632_Mult256x32_256_x64 est chaîne = [
-      	// proto  multiply256x32_256(int256 *À, int32 *B, OUT int256 *C);<§cs:2§>
-      	//	; P1 = A : rcx<§cs:2§>
-      	//	; P2 = B : rdx<§cs:2§>
-      	//	; P3 = C : r8<§cs:2§>
-      	// C = A * B = A0*B + A1*B + A2*B + A3*B<§cs:2§>
-      	<§cs:2§>
-      	// proloque<§cs:2§>
-      	Push rbx<§cs:2§>
-      	Push rdx<§cs:2§>
-      	Push r9<§cs:2§>
-      	mov r9,rdx; // B dans R0, car rdx est utilisé comme résultat de poids fort par mul<§cs:2§>
-      	<§cs:2§>
-      	//A0*B0<§cs:2§>
-      	mov rax,[rcx]  // A0<§cs:2§>
-      	mov rbx,[r9]   // B0<§cs:2§>
-      	mul rbx		   // (rdx,rax) = rax * rbx<§cs:2§>
-      	mov [r8]   ,rax<§cs:2§>
-      	mov [r8+8] ,rdx<§cs:2§>
-      	//+A1*B0<§cs:2§>
-      	mov rax,[rcx+8]   // A0<§cs:2§>
-      	mul rbx		   // (rdx,rax) = rax * rbx<§cs:2§>
-      	Add [r8+8]  ,rax<§cs:2§>
-      	adc [r8+16] ,rdx<§cs:2§>
-      	mov rax,0<§cs:2§>
-      	adc [r8+24] ,rax // +C<§cs:2§>
-      	//+A2*B0<§cs:2§>
-      	mov rax,[rcx+16]   // A0<§cs:2§>
-      	mul rbx		   // (rdx,rax) = rax * rbx<§cs:2§>
-      	Add [r8+16] ,rax<§cs:2§>
-      	adc [r8+24] ,rdx<§cs:2§>
-      	mov rax,0<§cs:2§>
-      	adc [r8+32] ,rax // +C<§cs:2§>
-      	//+A3*B0<§cs:2§>
-      	mov rax,[rcx+24]   // A0<§cs:2§>
-      	mul rbx		   // (rdx,rax) = rax * rbx<§cs:2§>
-      	Add [r8+24] ,rax<§cs:2§>
-      	//NB : retenue dans RAX = valeur de retour<§cs:2§>
-      	adc rdx,0<§cs:2§>
-      	mov rax,rdx<§cs:2§>
-      	<§cs:2§>
-      	// epilogue et retour<§cs:2§>
-      	Pop r9<§cs:2§>
-      	Pop rdx<§cs:2§>
-      	Pop rbx<§cs:2§>
-      	ret<§cs:2§>
+      	// proto  multiply256x32_256(int256 *À, int32 *B, OUT int256 *C);
+      	//	; P1 = A : rcx
+      	//	; P2 = B : rdx
+      	//	; P3 = C : r8
+      	// C = A * B = A0*B + A1*B + A2*B + A3*B
+      	param1 equ rcx
+      	param2 equ rdx
+      	param3 equ r8
+      	// prologue
+      	Push rbx
+      	Push rdx
+      	Push r9
+      	mov r9,param2; // B dans R0, car rdx est utilisé comme résultat de poids fort par mul
+      IFDEF LINUX
+      	mov  rcx,param1 ;//  idem pour linux
+      	mov  r8, param3  
+      ENDIF
+      
+      	//A0*B0
+      	mov rax,[rcx]  // A0
+      	mov rbx,[r9]   // B0
+      	mul rbx		   // (rdx,rax) = rax * rbx
+      	mov [r8]   ,rax
+      	mov [r8+8] ,rdx
+      	//+A1*B0
+      	mov rax,[rcx+8]   // A0
+      	mul rbx		   // (rdx,rax) = rax * rbx
+      	Add [r8+8]  ,rax
+      	adc [r8+16] ,rdx
+      	mov rax,0
+      	adc [r8+24] ,rax // +C
+      	//+A2*B0
+      	mov rax,[rcx+16]   // A0
+      	mul rbx		   // (rdx,rax) = rax * rbx
+      	Add [r8+16] ,rax
+      	adc [r8+24] ,rdx
+      	mov rax,0
+      	adc [r8+32] ,rax // +C
+      	//+A3*B0
+      	mov rax,[rcx+24]   // A0
+      	mul rbx		   // (rdx,rax) = rax * rbx
+      	Add [r8+24] ,rax
+      	//NB : retenue dans RAX = valeur de retour
+      	adc rdx,0
+      	mov rax,rdx
+      	
+      	// epilogue et retour
+      	Pop r9
+      	Pop rdx
+      	Pop rbx
+      	ret
       ]
       
+      renvoyer _pCompimeAsmVarStr( sCodeASMx8632_Mult256x32_256, sCodeASMx8632_Mult256x32_256_x64 )
+     type : 458752
+   -
+     name : _changeDefineSiConventionAppelLinux
+     procedure_id : 2190256385632913062
+     type_code : 15
+     code : |1+
+      // gestion convention d'appel linux, les n° de registres sont différents de microsoft
+      // => modifie les macro dans <sCodeASM> si on compile pour linux64
+      procédure _changeDefineSiConventionAppelLinux( sCodeASM est chaine, tabSymboleExterne  )
+      dbgAssertion(EnMode64bits())
       
-      procMult64x64_128_ASM est une entier système
+      SI EnModeLinux() ALORS
+      	sCodeASM    = Remplace(sCodeASM, TAB," ")
+      	// RDI, RSI, RDX, RCX, R8, R9 pour les 6 premiers paramètres
+      	sCodeASM	= Remplace(sCodeASM,"param1 equ rcx","param1 equ rdi")
+      	sCodeASM	= Remplace(sCodeASM,"param2 equ rdx","param2 equ rsi")
+      	sCodeASM	= Remplace(sCodeASM,"param3 equ r8" ,"param3 equ rdx")
+      	
+      	// pour les IFDEF LINUX
+      	tabSymboleExterne["LINUX"] = 1	
+      FIN
+     type : 458752
+   -
+     name : _pCompimeAsmVarStr
+     procedure_id : 2190257137252299232
+     type_code : 15
+     code : |1+
+      // compile une chaine assembleur qui contient une procédure 
+      procédure privée _pCompimeAsmVarStr( sCode32bits chaine, sCode64Bits chaine ) : entier système
+      
+      // gestion des symboles externes
+      tabSymboleExterne est un tableau associatif d'entiers système
+      
+      // chargement sur source dans la WDL :
+      sCodeASM est chaine
       SI EnMode64bits() ALORS
-      	procMult64x64_128_ASM = compileAsmX86_API( sCodeASMx8632_Mult256x32_256_x64)
-      sinon
-      	procMult64x64_128_ASM = compileAsmX86_API( sCodeASMx8632_Mult256x32_256 )
-      fin
-      dbgAssertion( PAS ErreurDétectée, ErreurInfo())
-      dbgAssertion( procMult64x64_128_ASM<>0, ErreurInfo())
-      renvoyer procMult64x64_128_ASM
+      	// 64 bits
+      	sCodeASM =  sCode64Bits
+      	// gestion convention d'appel Linux, le n° de registres sont différents de la convention Microsoft
+      	_changeDefineSiConventionAppelLinux(sCodeASM, tabSymboleExterne)
+      SINON
+      	// 32 bits
+      	sCodeASM = sCode32bits
+      FIN
+      dbgAssertion(sCodeASM<>"",ErreurInfo())
       
+      // compilation en ASM
+      sErreur			est chaine
+      procédureAsm	est un entier système 
+      (procédureAsm, sErreur ) =  compileAsmX86_API_AvecSymboles( sCodeASM , "", tabSymboleExterne) 
+      dbgAssertion( procédureAsm<>0, sErreur )
+      RENVOYER procédureAsm 
      type : 458752
    -
      name : pCompileAsm
@@ -784,12 +846,17 @@ procedure_set :
       // il doit se trouver dans <autres> sous le nom "x86_<sNomProcAsm>.asm" et ""x64_<sNomProcAsm>.asm" "
       procédure pCompileAsm(  snomProcPointDEntrée est chaine,  nomSymbole chaine = "", valSymbole entiers système=0  ) : entier système
       
+      // pour gestion des symboles externes
+      tabSymboleExterne est un tableau associatif d'entiers système
+      
       // chargement sur source dans la WDL :
       sCodeASM est chaine
       SI EnMode64bits() ALORS
       // 64 bits
       	sNomFichierSourceSourceAsm_64bits est chaine =  "x64_"+ snomProcPointDEntrée + ".asm"
       	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_64bits) 
+      	// gestion convention d'appel Linux, le n° de registres sont différents de la convention Microsoft
+      	_changeDefineSiConventionAppelLinux(sCodeASM, tabSymboleExterne)
       SINON
       // 32 bits
       	sNomFichierSourceSourceAsm_32bits est chaine = "x86_"+ snomProcPointDEntrée + ".asm"
@@ -798,13 +865,10 @@ procedure_set :
       	si snomProcPointDEntrée<>"" alors
       		snomProcPointDEntrée = "_" + snomProcPointDEntrée
       	fin
-      //	si nomSymbole<>"" ALORS
-      //		nomSymbole = "_" + nomSymbole
-      //	FIN
       FIN
       dbgAssertion(sCodeASM<>"",erreurInfo())
-      // gestion des symboles externes
-      tabSymboleExterne est un tableau associatif d'entiers système
+      
+      // symboles externe en plus
       si nomSymbole<>"" ALORS
       	tabSymboleExterne[nomSymbole] = valSymbole
       FIN

@@ -6,9 +6,15 @@
 ; Proto C :
 ; EXPORT void multiplication_256x256_512_ASM (byte* pNombreA_256, byte* pNombreB_256, OUT byte* pResultat_512)
 ; Microsoft x64 calling convention : RCX, RDX, R8, R9 pours les 4 premiers parametres. soit :
-; byte* pNombreA_256  : rcx
-; byte* pNombreB_256  : rdx
-; byte* pResultat_512 : r8
+; byte* pNombreA_256  : rcx ( linux rdi )
+; byte* pNombreB_256  : rdx ( linux rsi )
+; byte* pResultat_512 : r8  ( linux rdx )
+
+; defines
+param1 equ rcx ; RDI en linux
+param2 equ rdx ; RSI en linux
+param3 equ r8  ; RDX en linux
+
 ; --------------
 ; utilisation des registres 
 ;  A0    A1    A2    A3
@@ -20,7 +26,11 @@
 multiplication_256x256_512 PROC
 
 ; prologue
- mov         qword ptr [rsp+18h],r8    ; sauver <pResultat> dans la zone réservée par l'appelant. [rsp+58h] apres les push
+IFDEF LINUX
+ mov         rcx,param1 ; car le param1=rdi en linux est ecrasé par param2. NB ; rcx volatile en linux+windows
+ sub         rsp,38h    ; simule la réserve de pile de la convention windows
+ENDIF
+ mov         qword ptr [rsp+18h],param3    ; sauver <pResultat> dans la zone réservée par l'appelant. [rsp+58h] apres les push
  push        rbx
  push        rbp  
  push        rsi  
@@ -31,11 +41,13 @@ multiplication_256x256_512 PROC
  push        r15  
  
 ; récupération des variables A0..A3 en regitres:
- mov         rdi,rdx  
+
+ mov         rdi,param2  
  mov         rbx,qword ptr [rcx    ]  ; rbx = A0
  mov         rsi,qword ptr [rcx+8  ]  ; rsi = A1
  mov         rbp,qword ptr [rcx+10h]  ; rbp = A2
  mov         r15,qword ptr [rcx+18h]  ; r15 = A3
+
  
 ;	//-------------------------------------------
 ;	// calcul de A * B0 :
@@ -148,8 +160,9 @@ multiplication_256x256_512 PROC
  pop         rsi  
  pop         rbp  
  pop         rbx
-
-
+IFDEF LINUX
+ add         rsp,38h ; LINUX
+ENDIF
  ret  
 
  multiplication_256x256_512 endp

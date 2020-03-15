@@ -112,6 +112,9 @@ class :
       // renvoie l'adresse la routine. 
       // a utiliser avec API( _pf, param1, param2, ...)
       dbgAssertion(_pf<>0,ErreurInfo())
+      
+      
+      
       RENVOYER _pf
       
      type : 458752

@@ -768,7 +768,6 @@ class :
       // précalcul de 2*P,3*P, ..., 15*P
       _MultiplesDeP1 est un tableau de 15  Point256_3D
       _MultiplesDeP1[1] = P1
-      //_MultiplesDeP1[2] = pointDouble_Jacobi(P1)
       pour i = 2 a  15
       	si EstPair(i) ALORS
       		// P = P[I/2] * 2

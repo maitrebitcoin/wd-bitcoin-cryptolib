@@ -35,7 +35,6 @@ procedure_set :
       si m_gpclEDCSA = null ALORS
       	m_gpclEDCSA = allouer un ECDSA_BTC
       FIN
-      
      type : 458752
    -
      name : créePaireCléPrivéePublique

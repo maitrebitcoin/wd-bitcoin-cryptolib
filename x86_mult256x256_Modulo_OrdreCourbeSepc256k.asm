@@ -3,6 +3,7 @@
 
 .MODEL FLAT ; requis par masm
 
+; déclaration de l'existence d'une fonction externe 
 multiplication_256x256_512 PROTO C
 
 .DATA
