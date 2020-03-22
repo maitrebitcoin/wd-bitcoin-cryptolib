@@ -1,7 +1,6 @@
 ; multiplication de 2 entier 256 bits => 1 entier 512
 
 
-.CODE
 
 ; Proto C :
 ; EXPORT void multiplication_256x256_512_ASM (byte* pNombreA_256, byte* pNombreB_256, OUT byte* pResultat_512)
@@ -11,161 +10,147 @@
 ; byte* pResultat_512 : r8  ( linux rdx )
 
 ; defines
-param1 equ rcx ; RDI en linux
-param2 equ rdx ; RSI en linux
-param3 equ r8  ; RDX en linux
+param1 equ rcx
+param2 equ rdx
+param3 equ r8
 
-; --------------
-; utilisation des registres 
-;  A0    A1    A2    A3
-;  rbx  rsi   rbp   r15
-;  B0 = > B3
-;  rdx
-;  C0     C1    C2    C3    C4   C5   C6   c7
-;  r8    r9    r10   r11   r12  r13  r14  rbx
+
+.DATA
+; index de la matrice 8x8 des entier 32 bits du produit de A*B a prendre pour additioner les partie et créer un résultat 256 bits
+tabIndexAdd qword 	01h,  08h, 02h, 0
+T1          qword 	0Ah,  09h, 03h,	10h, 04h , 0	
+T2          qword	0Bh,  11h, 18h, 12h, 05h, 0Ch,	06h, 0
+T3          qword	14h,  1Ah, 19h,	13h, 0Eh, 0Dh,  07h, 0
+T4          qword	15h,  1Ch, 16h,	1Bh, 0Fh, 0		
+T5          qword   1Eh,  1Dh, 17h, 0			
+T6          qword   1Fh, 0		
+
+.CODE
+
 multiplication_256x256_512 PROC
 
 ; prologue
-IFDEF LINUX
- mov         rcx,param1 ; car le param1=rdi en linux est ecrasé par param2. NB ; rcx volatile en linux+windows
- sub         rsp,38h    ; simule la réserve de pile de la convention windows
-ENDIF
- mov         qword ptr [rsp+18h],param3    ; sauver <pResultat> dans la zone réservée par l'appelant. [rsp+58h] apres les push
  push        rbx
  push        rbp  
  push        rsi  
  push        rdi
  push        r12  
  push        r13  
- push        r14  
- push        r15  
+ ; sub         esp,100h    ; reserverve mem var locale : non fait car on remplis la pile avec 16 push 64 bits
  
+ ; sauve rsp car il va bouger durant le calcule des multiplications 2 a 2
+ mov          rbp, rsp
+
 ; récupération des variables A0..A3 en regitres:
 
- mov         rdi,param2  
- mov         rbx,qword ptr [rcx    ]  ; rbx = A0
- mov         rsi,qword ptr [rcx+8  ]  ; rsi = A1
- mov         rbp,qword ptr [rcx+10h]  ; rbp = A2
- mov         r15,qword ptr [rcx+18h]  ; r15 = A3
+ ; rsi = A0..A3
+ lea         rsi,[param1+18h] ; rsi = A3
+ mov         r9 ,qword ptr [param2    ]  ; r9  = B0
+ mov         r10,qword ptr [param2+8  ]  ; r10 = B1
+ mov         r11,qword ptr [param2+10h]  ; r11 = B2
+ mov         r12,qword ptr [param2+18h]  ; r12 = B3
 
+;-------------------------------------------------------------------
+;- partie 1 -- multiplications 2 a 2 de toutes les parties 64 bits -
+
+; compteur de boucle : rdi
+ mov         rdi,4
+; on commence a la fin
+for_i_0a4:
+     mov         r13,qword ptr [rsi]     ; r13 = A3, ..., A0
+     ; Bloc 3
+     mov         rax,r13    ; rax = A3, ..., A0
+     mov         rbx,r12                 ; rbx = B3
+     mul         r12                     ; [rdx,rax] = rax*rbx : A3*B3
+     push        rdx                     ; 
+     push        rax                     ; 
+     ; Bloc 2
+     mov         rax,r13                 ; rax = A0
+     mul         r11                     ; [rdx,rax] = rax*rbx : A3*B2 
+     push        rdx                     ;
+     push        rax                     ; 
+     ; Bloc 1
+     mov         rax,r13                 ; rax = A0
+     mul         r10                     ; [rdx,rax] = rax*rbx  : A3*B1
+     push        rdx                     ;                  ; 
+     push        rax                     ; 
+     ; Bloc 0
+     mov         rax,r13                 ; rax = A0
+     mul         r9                      ; [rdx,rax] = rax*ecx  : A3*B1
+     push        rdx                     ; 
+     push        rax                     ; 
+     ; A3->A2,
+     lea rsi,[rsi-8] ; rsi -= 8
+     ; fin de boucle
+     dec  rdi                            ; i--
+     jne   for_i_0a4                     ; if (i != 0) goto for_i_0a7 
+; fin for (i=0 a 4)
  
-;	//-------------------------------------------
-;	// calcul de A * B0 :
-;	//          [ A3 ] [ A2 ] [ A1 ] [ A0 ]
-;	// *                             [ B0 ] 
-;	// ------------------------------------------
-;	//						  [ C1 ] [ C0 ]
-;	//				   [ C2 ] [ L_ ]		
-;	//          [ C3 ] [ L _]
-;	//   [ C4 ] [ L _]
-;	//-------------------------------------------
-;	// = [ C4 ] [ C3 ] [ C2 ] [ C1 ] [ C0 ]
-;
-
- mov         rdx,qword ptr [rdi]  ; rdx = B0
- mulx        r10,rax,rsi          ; (r10,rax) = rsi * rdx   (C2,L_)	= A1*B0 
- mulx        r9, r8, rbx          ; (r9, r8)  = rbx * rdx   (C1,C0)	= A0*B0
- add         r9, rax              ;                         (c ,C1) = C1 + L_ + c
- mulx        r11,rax,rbp          ; (r11,rax) = rbp * rdx   (C3,L_) = A2*B0
- adc         r10,rax              ;                         (c ,C2) = C2 + L_ + c
- mulx        r12,rax,r15          ; (r12,rax) = r14 * rdx   (C4,L_) = A3*B0
- adc         r11,rax              ;                         (c ,C3) = C3 + L_ + c
- adc         r12,0                ;                          C4 = C4 + c
-
-;//*B1
-;	//-----------------------------------------------------
-;	// calcul de (A * B0) + ( A * B1 ) :
-;	//                 [ A3 ] [ A2 ] [ A1 ] [ A0 ]
-;	// *                             [ B1 ]  
-;	// -----------------------------------------------
-;	//					   	  [ H  ] [ L  ]
-;	//                 [ H  ] [ L  ]
-;	//          [ H  ] [ L  ]
-;   //   [ C5 ] [ L  ]
-;	// +        [ C4 ] [ C3 ] [ C2 ] [ C1 ] [ C0 ]  ( A * B0 , �tage pr�c�dent )
-;	//---------------------------------------------------
-;	// = [ C5 ] [ C4 ] [ C3 ] [ C2 ] [ C1 ] [ C0 ]
-
- xor         rdx,rdx                 ; RAZ c et of
- mov         rdx,qword ptr [rdi+8]   ; rdx = B1  
- mulx        rcx,rax,rbx             ; (rcx,rax) = rbx * rdx   (H_,L_) = A0*B1
- adox        r9 ,rax                 ;                         (of,C1) = C1 + L_
- adox        r10,rcx                 ;                         (of,C2) = C2 + H_ + of
- mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B1                         
- adcx        r10,rax                 ;                         (c, C2) = C2 + L_ 
- adox        r11,rcx                 ;                         (of,C3) = C3 + H_ + of
- mulx        rcx,rax,rbp             ; (rcx,rax) = rbp * rdx   (H_,L_) = A2*B1
- adcx        r11,rax                 ;                         (c, C3) = C3 + L_ 
- mulx        r13,rax,r15             ; (r13,rax) = r14 * rdx   (C5,L_) = A3*B1
- adox        r12,rcx                 ;                         (of,C4) = C4 + H_ + of
- adcx        r12,rax                 ;                         (c, C4) = C4 + L_ 
- mov         rdx,0                   ; pas xor pour conserver c et of
- adox        r13,rdx                 ; rdx=0                   C5 += of
- adcx        r13,rdx                 ; rdx=0                   C5 += c
-                                     
- ; *B2
- xor         rdx,rdx                 ; RAZ c et of
- mov         rdx,qword ptr [rdi+10h] ; rdx = B2
- mulx        rcx,rax,rbx             ; (rcx,rax) = rbx * rdx   (H_,L_) = A0*B2
- adox        r10,rax                 ;                         (of,C2) = C2 + L_          
- adox        r11,rcx                 ;                         (of,C3) = C2 + H_ + of
- mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B2     
- adcx        r11,rax                 ;                         (c, C3) = C3 + L_ 
- adox        r12,rcx                 ;                         (of,C4) = C4 + H_ + of
- mulx        rcx,rax,rbp             ; (rcx,rax) = rbp * rdx   (H_,L_) = A2*B2
- adcx        r12,rax                 ;                         (c, C4) = C4 + L_ 
- mulx        r14,rax,r15             ; (r15,rax) = r14 * rdx   (C6,L_) = A3*B2
- adox        r13,rcx                 ;                         (of,C5) = C5 + H_ + of
- adcx        r13,rax                 ;                         (c, C5) = C5 + L_ 
- mov         rdx,0                   ; pas xor pour conserver c et of
- adox        r14,rdx                 ; rdx=0                   C6 += of
- adcx        r14,rdx                 ; rdx=0                   C6 += c
- 
- ; *B3
- xor         rdx,rdx                 ; RAZ c et of
- mov         rdx,qword ptr [rdi+18h] ; rdx = B3
- mulx        rcx,rax,rbx             ; (rcx,rax) = rbx * rdx   (H_,L_) = A0*B3
- adox        r11,rax                 ;                         (of,C3) = C3 + L_
- adox        r12,rcx                 ;                         (of,C4) = C4 + H_ + of
- mulx        rcx,rax,rsi             ; (rcx,rax) = rsi * rdx   (H_,L_) = A1*B3
- adcx        r12,rax                 ;                         (c, C4) = C4 + L_ 
- adox        r13,rcx                 ;                         (of,C5) = C5 + H_ + of
- mulx        rcx,rax,rbp             ; (rcx,rax) = rbp * rdx   (H_,L_) = A2*B3
- adcx        r13,rax                 ;                         (c, C5) = C5 + L_ 
- adox        r14,rcx                 ;                         (of,C6) = C6 + H  + of
- mulx        rbx,rax,r15             ; (rbx,rax) = r14 * rdx   (C7,L_) = A3*B3
- adcx        r14,rax                 ;                         (c, C6) = C6 + L_
- mov         rdx,0                   ; pas xor pour conserver c et of
- adox        rbx,rdx                 ; rdx=0                   C7 += of
- adcx        rbx,rdx                 ; rdx=0                   C7 += c
 
 
-; affectation du resultat dans <pResultat_512>
- mov         rax,qword ptr [rsp+58h] ;  rax = [pResultat]
- mov         qword ptr [rax    ],r8  ;  C0  = r8  
- mov         qword ptr [rax+8  ],r9  ;  C1  = r9
- mov         qword ptr [rax+10h],r10 ;  C2  = r10
- mov         qword ptr [rax+18h],r11 ;  C3  = r11
- mov         qword ptr [rax+20h],r12 ;  C4  = r12
- mov         qword ptr [rax+28h],r13 ;  C5  = r13
- mov         qword ptr [rax+30h],r14 ;  C6  = r14
- mov         qword ptr [rax+38h],rbx ;  C7  = rbx
+;-------------------------------------------------------------------
+;- partie 2 -- addition des multiplications                        -
 
+ mov rdx,param3              ; rdx = pResultat512
+ lea rsi,[tabIndexAdd]       ; rsi = tabIndexAdd
+
+ ; affectation resultat  : A0*B0 :
+   mov rax,[rsp]
+   mov [rdx],rax
+   lea rdx,[rdx+8] ; rdx = rdx + 8
+
+;	for (int k = 1; k <=7; k++) // parcourt des lignes T1 a T6
+ mov    rdi,7  
+ xor    rcx,rcx ; rcx = 0
+  
+for_k_1a7:
+      mov   rbx,[rsi] ; index
+      add   rsi,8
+      mov   rax,[rsp + rbx*8] ;  accumulateur = tabMult[nIndex]
+      ; ajout retenue de l'étage précédent
+      adc  rax,rcx
+      mov  rcx,0 ; // carry = 0
+      adc  rcx,0 ; carry += c
+
+      __while_1:
+         ; bloc 0 (pair)
+          mov   rbx,[rsi]    ; index
+          lea   rsi,[rsi+8]  ; rsi += 8 => suivant
+          test  rbx,rbx      ; if (index= 0)
+          je    __break_while_1;
+              add   rax,[rsp + rbx*8] ; accumulateur += tabMult[nIndex]
+              adc   rcx,0             ; carry += c
+         ; bloc 1 , par de test car marque de fin que sur les positions paires
+          mov   rbx,[rsi]    ; index
+          lea   rsi,[rsi+8]  ; rsi += 8 => suivant
+          add   rax,[rsp + rbx*8] ; accumulateur += tabMult[nIndex]
+          adc   rcx,0             ; carry += c
+
+
+          jmp __while_1;
+      __break_while_1:
+      ; affectation au poids faible , puis au on passe au poids fort suivant
+      mov [rdx],rax
+      lea rdx,[rdx+8] ; rdx += 8
+
+
+      dec  edi   ; i-
+     jne   for_k_1a7
+;for_k_1a7:
+
+; restaure rsp
+mov          rsp, rbp 
 ;Epilogue
- pop         r15  
- pop         r14  
- pop         r13 
+ pop         r13
  pop         r12
  pop         rdi  
  pop         rsi  
  pop         rbp  
  pop         rbx
-IFDEF LINUX
- add         rsp,38h ; LINUX
-ENDIF
  ret  
 
  multiplication_256x256_512 endp
 
 
  END
+ 

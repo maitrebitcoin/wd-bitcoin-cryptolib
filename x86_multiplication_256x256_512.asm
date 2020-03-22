@@ -33,7 +33,7 @@ _multiplication_256x256_512 PROC
   push        esi    
   push        ebx
   mov         ebp,esp  
-; sub         esp,200h    ; reserverve mem var locale
+; sub         esp,200h    ; reserverve mem var locale : non fait car on remplis la pile avec 64 push 32 bits
 
 ; recu param
     mov ecx,[ebp +20]  ; pA
@@ -113,7 +113,7 @@ for_i_0a7:
    mov [edx],eax
    lea edx,[edx+4] ; edx = edx + 4
 
-;	for (int k = 1; k < 16; k++)
+;	for (int k = 1; k <= 15; k++)
  mov    edi,15  
  xor    ecx,ecx
   

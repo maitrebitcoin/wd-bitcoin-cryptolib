@@ -602,8 +602,8 @@ class :
       	FIN
       FIN
       // le point devrait être sur la courbe, sinon erreur de calcul
-      dbgAssertion( pointEstSurLaCourbe( pointRésultat ), "pointEstSurLaCourbe FAILED")
-      RENVOYER pointRésultat
+      dbgAssertion( pointEstSurLaCourbe( PointRésultat ), "pointEstSurLaCourbe FAILED")
+      RENVOYER PointRésultat
      type : 458752
    -
      name : MultiplicationScalairePointGenérateur
@@ -1071,22 +1071,22 @@ class :
       // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-2007-bl
       //  The "dbl-1998-cmo-2" doubling formulas
       sCodePoint_Doubling_Jacobi	est chaine	= [
-      PointDouble(X, Y, Z)<§cs:2§>
-      	XX		= X*X<§cs:2§>
-      	YY		= Y*Y<§cs:2§>
-      	XYY		= X*YY<§cs:2§>
-      	S		= 4.XYY<§cs:2§>
-      	2S	    = 2.S<§cs:2§>
-      	M		= 3.XX <§cs:2§>
-      	MM		= M*M<§cs:2§>
-      	X		= MM-2S<§cs:2§>
-      	S_X		= S-X<§cs:2§>
-      	YYYY	= YY*YY<§cs:2§>
-      	8YYYY = 8.YYYY<§cs:2§>
-      	MS_X	= M*S_X<§cs:2§>
-      	YZ		= Y*Z	<§cs:2§>
-      	Y		= MS_X-8YYYY<§cs:2§>
-      	Z		= 2.YZ<§cs:2§>
+      PointDouble(X, Y, Z)<§cs:5§>
+      	XX		= X*X<§cs:5§>
+      	YY		= Y*Y<§cs:5§>
+      	XYY		= X*YY<§cs:5§>
+      	S		= 4.XYY<§cs:5§>
+      	2S	    = 2.S<§cs:5§>
+      	M		= 3.XX <§cs:5§>
+      	MM		= M*M<§cs:5§>
+      	X		= MM-2S<§cs:5§>
+      	S_X		= S-X<§cs:5§>
+      	YYYY	= YY*YY<§cs:5§>
+      	8YYYY = 8.YYYY<§cs:5§>
+      	MS_X	= M*S_X<§cs:5§>
+      	YZ		= Y*Z	<§cs:5§>
+      	Y		= MS_X-8YYYY<§cs:5§>
+      	Z		= 2.YZ<§cs:5§>
       ]
       RENVOYER _pCompileFormule( sCodePoint_Doubling_Jacobi )
      type : 458752
@@ -1105,71 +1105,71 @@ class :
       // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#doubling-dbl-2007-bl
       //  The "dbl-1998-cmo-2" doubling formulas
       sCodePoint_Doubling_Jacobi	est chaine	= [
-      	PointFois16(X, Y, Z)<§cs:2§>
-      // *2<§cs:2§>
-      	XX		= X*X<§cs:2§>
-      	YY		= Y*Y<§cs:2§>
-      	XYY		= X*YY<§cs:2§>
-      	S		= 4.XYY<§cs:2§>
-      	2S	    = 2.S<§cs:2§>
-      	M		= 3.XX <§cs:2§>
-      	MM		= M*M<§cs:2§>
-      	X		= MM-2S<§cs:2§>
-      	S_X		= S-X<§cs:2§>
-      	YYYY	= YY*YY<§cs:2§>
-      	8YYYY = 8.YYYY<§cs:2§>
-      	MS_X	= M*S_X<§cs:2§>
-      	YZ		= Y*Z	<§cs:2§>
-      	Y		= MS_X-8YYYY<§cs:2§>
-      	Z		= 2.YZ<§cs:2§>
-      // *4<§cs:2§>
-      	XX		= X*X<§cs:2§>
-      	YY		= Y*Y<§cs:2§>
-      	XYY		= X*YY<§cs:2§>
-      	S		= 4.XYY<§cs:2§>
-      	2S	  = 2.S<§cs:2§>
-      	M		= 3.XX <§cs:2§>
-      	MM		= M*M<§cs:2§>
-      	X		= MM-2S<§cs:2§>
-      	S_X		= S-X<§cs:2§>
-      	YYYY	= YY*YY<§cs:2§>
-      	8YYYY = 8.YYYY<§cs:2§>
-      	MS_X	= M*S_X<§cs:2§>
-      	YZ		= Y*Z	<§cs:2§>
-      	Y		= MS_X-8YYYY<§cs:2§>
-      	Z		= 2.YZ<§cs:2§>
-      // *8<§cs:2§>
-      	XX		= X*X<§cs:2§>
-      	YY		= Y*Y<§cs:2§>
-      	XYY		= X*YY<§cs:2§>
-      	S		= 4.XYY<§cs:2§>
-      	2S	  = 2.S<§cs:2§>
-      	M		= 3.XX <§cs:2§>
-      	MM		= M*M<§cs:2§>
-      	X		= MM-2S<§cs:2§>
-      	S_X		= S-X<§cs:2§>
-      	YYYY	= YY*YY<§cs:2§>
-      	8YYYY = 8.YYYY<§cs:2§>
-      	MS_X	= M*S_X<§cs:2§>
-      	YZ		= Y*Z	<§cs:2§>
-      	Y		= MS_X-8YYYY<§cs:2§>
-      	Z		= 2.YZ<§cs:2§>
-      // *16<§cs:2§>
-      	XX		= X*X<§cs:2§>
-      	YY		= Y*Y<§cs:2§>
-      	XYY		= X*YY<§cs:2§>
-      	S		= 4.XYY<§cs:2§>
-      	2S	  = 2.S<§cs:2§>
-      	M		= 3.XX <§cs:2§>
-      	MM		= M*M<§cs:2§>
-      	X		= MM-2S<§cs:2§>
-      	S_X		= S-X<§cs:2§>
-      	YYYY	= YY*YY<§cs:2§>
-      	8YYYY = 8.YYYY<§cs:2§>
-      	MS_X	= M*S_X<§cs:2§>
-      	YZ		= Y*Z	<§cs:2§>
-      	Y		= MS_X-8YYYY<§cs:2§>
-      	Z		= 2.YZ<§cs:2§>
+      	PointFois16(X, Y, Z)<§cs:5§>
+      // *2<§cs:5§>
+      	XX		= X*X<§cs:5§>
+      	YY		= Y*Y<§cs:5§>
+      	XYY		= X*YY<§cs:5§>
+      	S		= 4.XYY<§cs:5§>
+      	2S	    = 2.S<§cs:5§>
+      	M		= 3.XX <§cs:5§>
+      	MM		= M*M<§cs:5§>
+      	X		= MM-2S<§cs:5§>
+      	S_X		= S-X<§cs:5§>
+      	YYYY	= YY*YY<§cs:5§>
+      	8YYYY = 8.YYYY<§cs:5§>
+      	MS_X	= M*S_X<§cs:5§>
+      	YZ		= Y*Z	<§cs:5§>
+      	Y		= MS_X-8YYYY<§cs:5§>
+      	Z		= 2.YZ<§cs:5§>
+      // *4<§cs:5§>
+      	XX		= X*X<§cs:5§>
+      	YY		= Y*Y<§cs:5§>
+      	XYY		= X*YY<§cs:5§>
+      	S		= 4.XYY<§cs:5§>
+      	2S	  = 2.S<§cs:5§>
+      	M		= 3.XX <§cs:5§>
+      	MM		= M*M<§cs:5§>
+      	X		= MM-2S<§cs:5§>
+      	S_X		= S-X<§cs:5§>
+      	YYYY	= YY*YY<§cs:5§>
+      	8YYYY = 8.YYYY<§cs:5§>
+      	MS_X	= M*S_X<§cs:5§>
+      	YZ		= Y*Z	<§cs:5§>
+      	Y		= MS_X-8YYYY<§cs:5§>
+      	Z		= 2.YZ<§cs:5§>
+      // *8<§cs:5§>
+      	XX		= X*X<§cs:5§>
+      	YY		= Y*Y<§cs:5§>
+      	XYY		= X*YY<§cs:5§>
+      	S		= 4.XYY<§cs:5§>
+      	2S	  = 2.S<§cs:5§>
+      	M		= 3.XX <§cs:5§>
+      	MM		= M*M<§cs:5§>
+      	X		= MM-2S<§cs:5§>
+      	S_X		= S-X<§cs:5§>
+      	YYYY	= YY*YY<§cs:5§>
+      	8YYYY = 8.YYYY<§cs:5§>
+      	MS_X	= M*S_X<§cs:5§>
+      	YZ		= Y*Z	<§cs:5§>
+      	Y		= MS_X-8YYYY<§cs:5§>
+      	Z		= 2.YZ<§cs:5§>
+      // *16<§cs:5§>
+      	XX		= X*X<§cs:5§>
+      	YY		= Y*Y<§cs:5§>
+      	XYY		= X*YY<§cs:5§>
+      	S		= 4.XYY<§cs:5§>
+      	2S	  = 2.S<§cs:5§>
+      	M		= 3.XX <§cs:5§>
+      	MM		= M*M<§cs:5§>
+      	X		= MM-2S<§cs:5§>
+      	S_X		= S-X<§cs:5§>
+      	YYYY	= YY*YY<§cs:5§>
+      	8YYYY = 8.YYYY<§cs:5§>
+      	MS_X	= M*S_X<§cs:5§>
+      	YZ		= Y*Z	<§cs:5§>
+      	Y		= MS_X-8YYYY<§cs:5§>
+      	Z		= 2.YZ<§cs:5§>
       ]
       RENVOYER _pCompileFormule( sCodePoint_Doubling_Jacobi )
       
@@ -1190,35 +1190,35 @@ class :
       // http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian.html#addition-add-2007-bl
       //  "add-1998-cmo-2"
       sCodePoint_Addition_Jacobi est chaine = [
-      PointPlusPoint(X1,Y1,Z1, X2,Y2,Z2)<§cs:2§>
-      	Z1Z1	= Z1*Z1<§cs:2§>
-      	Z2Z2	= Z2*Z2<§cs:2§>
-      	U1		= X1*Z2Z2<§cs:2§>
-      	U2		= X2*Z1Z1<§cs:2§>
-      	//S1 = Y1*Z2*Z2Z2	<§cs:2§>
-      	Y1Z2	= Y1*Z2<§cs:2§>
-      	S1		= Y1Z2*Z2Z2<§cs:2§>
-      	//S2 = Y2*Z1*Z1Z1	<§cs:2§>
-      	Y2Z1	= Y2*Z1<§cs:2§>
-      	S2		= Y2Z1*Z1Z1<§cs:2§>
-      	H		= U2-U1<§cs:2§>
-      	HH		= H*H<§cs:2§>
-      	HHH		= HH*H<§cs:2§>
-      	r		= S2-S1<§cs:2§>
-      	V		= U1*HH<§cs:2§>
-      	// X' = r^2-HHH-2*V<§cs:2§>
-      	rr		= r*r<§cs:2§>
-      	2V    = 2.V<§cs:2§>
-      	temp	= rr-HHH<§cs:2§>
-      	X1		= temp-2V<§cs:2§>
-      	//	Y' = r*(V-X')-S1*HHH<§cs:2§>
-      	V_X		= V-X1<§cs:2§>
-      	rV_X	= r*V_X<§cs:2§>
-      	S1HHH	= S1*HHH<§cs:2§>
-      	Y1		= rV_X-S1HHH<§cs:2§>
-      	//  Z' = Z1*Z2*H<§cs:2§>
-      	Z1Z2	= Z1*Z2<§cs:2§>
-      	Z1		= Z1Z2*H<§cs:2§>
+      PointPlusPoint(X1,Y1,Z1, X2,Y2,Z2)<§cs:5§>
+      	Z1Z1	= Z1*Z1<§cs:5§>
+      	Z2Z2	= Z2*Z2<§cs:5§>
+      	U1		= X1*Z2Z2<§cs:5§>
+      	U2		= X2*Z1Z1<§cs:5§>
+      	//S1 = Y1*Z2*Z2Z2	<§cs:5§>
+      	Y1Z2	= Y1*Z2<§cs:5§>
+      	S1		= Y1Z2*Z2Z2<§cs:5§>
+      	//S2 = Y2*Z1*Z1Z1	<§cs:5§>
+      	Y2Z1	= Y2*Z1<§cs:5§>
+      	S2		= Y2Z1*Z1Z1<§cs:5§>
+      	H		= U2-U1<§cs:5§>
+      	HH		= H*H<§cs:5§>
+      	HHH		= HH*H<§cs:5§>
+      	r		= S2-S1<§cs:5§>
+      	V		= U1*HH<§cs:5§>
+      	// X' = r^2-HHH-2*V<§cs:5§>
+      	rr		= r*r<§cs:5§>
+      	2V    = 2.V<§cs:5§>
+      	temp	= rr-HHH<§cs:5§>
+      	X1		= temp-2V<§cs:5§>
+      	//	Y' = r*(V-X')-S1*HHH<§cs:5§>
+      	V_X		= V-X1<§cs:5§>
+      	rV_X	= r*V_X<§cs:5§>
+      	S1HHH	= S1*HHH<§cs:5§>
+      	Y1		= rV_X-S1HHH<§cs:5§>
+      	//  Z' = Z1*Z2*H<§cs:5§>
+      	Z1Z2	= Z1*Z2<§cs:5§>
+      	Z1		= Z1Z2*H<§cs:5§>
       ]
       renvoyer _pCompileFormule( sCodePoint_Addition_Jacobi )
      type : 458752

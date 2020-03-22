@@ -690,7 +690,7 @@ class :
       // MAJ utilisation des registres
       _VarUtiliseRegistre( varI.nom , sNomRegDest)
       
-      renvoyer sCodeAsm
+      renvoyer sCodeASM
      type : 458752
    -
      name : _genCodeAsmInitParam_Imm3264

@@ -127,11 +127,11 @@ procedure_set :
       resultat est Entier256
       
       // 64 bits poids faible
-      Resultat.val0 = nombreA.val0 + petitNombreB
+      resultat.val0 = nombreA.val0 + petitNombreB
       // 64..128
-      Resultat.val1 = nombreA.val1
-      Resultat.val2 = nombreA.val2
-      Resultat.val3 = nombreA.val3
+      resultat.val1 = nombreA.val1
+      resultat.val2 = nombreA.val2
+      resultat.val3 = nombreA.val3
       // retenue en cascade
       //retenue0 = resultat.val0 < nombreA.val0 _OU_ resultat.val0 < petitNombreB
       si resultat.val0 < nombreA.val0 _OU_ resultat.val0 < petitNombreB

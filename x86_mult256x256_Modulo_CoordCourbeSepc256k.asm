@@ -15,7 +15,7 @@ _2P256_MoinsP_Ordre qword 00000001000003d1h, 000000000000000h, 000000000000000h,
 ; somme  de 2 entier 256 bits => 256 bits + Carry Flag
 ; edi,src = SRC
 ; ebx     = DST
-_add_256_256 PROC
+add_256_256c PROC
 
     ;+0
     mov         eax,[edi]
@@ -51,7 +51,7 @@ _add_256_256 PROC
     mov         [ebx+1Ch],eax
     ; fin
     ret
-_add_256_256 ENDP
+add_256_256c ENDP
 
 ; ------------------------------------------------------------------------------------------------------
 _mult256x256_Modulo_CoordCourbeSepc256k PROC
@@ -98,7 +98,7 @@ _mult256x256_Modulo_CoordCourbeSepc256k PROC
     lea         edi,[ebp-40h]  ;  AxB_512.low 
     lea         esi,[ebp-80h]  ;  resteModulo512.Low
     mov         ebx,[ebp +28]  ;  Resultat256 (dest)
-    call  _add_256_256         ;  Resultat256 = AxB_512.low + resteModulo512.Low
+    call  add_256_256c         ;  Resultat256 = AxB_512.low + resteModulo512.Low
     ; ajout du carry au poids fort de resteModulo512.High, avant mutliplication
     mov eax,0 ; eax=  0, sans modifier c
     adc         [esi+20h],eax  ; resteModulo512.High
@@ -124,7 +124,7 @@ _mult256x256_Modulo_CoordCourbeSepc256k PROC
     mov         edi,[ebp +28]  ;  edi = pResultat256 
     lea         esi,[ebp-00C0h]; resteModulo2_512.low
     mov         ebx,[ebp +28]  ;  ebx = pResultat256 (dest)
-    call  _add_256_256         ; pResultat256 = pResultat256 + resteModulo2_512.low
+    call  add_256_256c         ; pResultat256 = pResultat256 + resteModulo2_512.low
 
 
     ; cas ou le résultat est plus grand que P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
@@ -132,11 +132,11 @@ _mult256x256_Modulo_CoordCourbeSepc256k PROC
     lea         ebx,[ebp-0100h]           ; testDepassement (dest)
     lea         esi,[_2P256_MoinsP_Ordre]  ; 0x1000003d1
     mov         edi,[ebp +28]              ; Resultat256 
-    call  _add_256_256         ;  testDepassement = Resultat256 + 0x1000003d1
+    call  add_256_256c         ;  testDepassement = Resultat256 + 0x1000003d1
     jnc fin  ; si pas de dépassement,  terminé
         ; on dépasse le modulo
         mov   ebx,edi          ; testDepassement (dest)
-        call  _add_256_256     ;  Resultat256 = Resultat256 + 0x1000003d1
+        call  add_256_256c     ;  Resultat256 = Resultat256 + 0x1000003d1
 
 fin:
 ; epiloqgue
