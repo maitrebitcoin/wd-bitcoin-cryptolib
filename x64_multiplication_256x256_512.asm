@@ -10,6 +10,7 @@
 ; byte* pResultat_512 : r8  ( linux rdx )
 
 ; defines
+; en linux il sont remplacé par  RDI, RSI, RDX
 param1 equ rcx
 param2 equ rdx
 param3 equ r8
@@ -42,7 +43,9 @@ multiplication_256x256_512 PROC
  mov          rbp, rsp
 
 ; récupération des variables A0..A3 en regitres:
-
+IFDEF LINUX
+ mov         r8,param3 ; car le param1=rdx en linux est ecrasé par "mul"
+ENDIF
  ; rsi = A0..A3
  lea         rsi,[param1+18h] ; rsi = A3
  mov         r9 ,qword ptr [param2    ]  ; r9  = B0
@@ -60,23 +63,22 @@ for_i_0a4:
      mov         r13,qword ptr [rsi]     ; r13 = A3, ..., A0
      ; Bloc 3
      mov         rax,r13    ; rax = A3, ..., A0
-     mov         rbx,r12                 ; rbx = B3
-     mul         r12                     ; [rdx,rax] = rax*rbx : A3*B3
+     mul         r12                     ; [rdx,rax] = rax*r12 : A3*B3
      push        rdx                     ; 
      push        rax                     ; 
      ; Bloc 2
      mov         rax,r13                 ; rax = A0
-     mul         r11                     ; [rdx,rax] = rax*rbx : A3*B2 
+     mul         r11                     ; [rdx,rax] = rax*r11 : A3*B2 
      push        rdx                     ;
      push        rax                     ; 
      ; Bloc 1
      mov         rax,r13                 ; rax = A0
-     mul         r10                     ; [rdx,rax] = rax*rbx  : A3*B1
+     mul         r10                     ; [rdx,rax] = rax*r10  : A3*B1
      push        rdx                     ;                  ; 
      push        rax                     ; 
      ; Bloc 0
      mov         rax,r13                 ; rax = A0
-     mul         r9                      ; [rdx,rax] = rax*ecx  : A3*B1
+     mul         r9                      ; [rdx,rax] = rax*r9  : A3*B1
      push        rdx                     ; 
      push        rax                     ; 
      ; A3->A2,
@@ -91,7 +93,7 @@ for_i_0a4:
 ;-------------------------------------------------------------------
 ;- partie 2 -- addition des multiplications                        -
 
- mov rdx,param3              ; rdx = pResultat512
+ mov rdx,r8                 ;  rdx = pResultat512 (param 3)
  lea rsi,[tabIndexAdd]       ; rsi = tabIndexAdd
 
  ; affectation resultat  : A0*B0 :

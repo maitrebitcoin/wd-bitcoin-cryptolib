@@ -1,6 +1,6 @@
 ; multiplication de 1 entier 256 bits par un entire 64 bits modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 ; Proto C :
-; EXPORT void multiplicationModulo_256x64_sepc256k (byte* pNombreA, UINT64 nombreB, OUT byte* pResultat)
+; EXPORT void mult256x64_Modulo_CoordCourbeSepc256k(byte* pNombreA, UINT64 nombreB, OUT byte* pResultat)
 ; calling convention : RCX, RDX, R8, R9 pours les 4 premiers paramètres. soit :
 ; byte* pNombreA  : rcx
 ; UIN64 nombreB   : rdx
@@ -55,24 +55,55 @@ ENDIF
 ;  C0     C1    C2    C3   C4
 ;  r11    r12   r13   r14  r15
 
- mulx        r13,rax,rsi          ; (r13,rax) = rsi * rdx   (C2,L_)	= A1*B0 
- mulx        r12,r11,r10          ; (r12,r11) = r10 * rdx   (C1,C0)	= A0*B0
- add         r12,rax              ;                         (c ,C1) = C1 + L_ + c
- mulx        r14,rax,rbp          ; (r12,rax) = rbp * rdx   (C3,L_) = A2*B0
- adc         r13,rax              ;                         (c ,C2) = C2 + L_ + c
- mulx        r15,rax,r9           ; (r15,rax) = r14 * rdx   (C4,L_) = A3*B0
- adc         r14,rax              ;                         (c ,C3) = C3 + L_ + c
- adc         r15,0                ;                              C4 = C4 + c
-
+IFDEF MULX_SUPPORTED
+; code si l'instruction mulx est disponible sur le processeur : Intel ADX (Multi-Precision Add-Carry Instruction Extensions)
+  mulx        r13,rax,rsi          ; (r13,rax) = rsi * rdx   (C2,L_)	= A1*B0 
+  mulx        r12,r11,r10          ; (r12,r11) = r10 * rdx   (C1,C0)	= A0*B0
+  add         r12,rax              ;                         (c ,C1) = C1 + L_ + c
+  mulx        r14,rax,rbp          ; (r12,rax) = rbp * rdx   (C3,L_) = A2*B0
+  adc         r13,rax              ;                         (c ,C2) = C2 + L_ + c
+  mulx        r15,rax,r9           ; (r15,rax) = r14 * rdx   (C4,L_) = A3*B0
+ELSE ;MULX_SUPPORTED
+  ; emule < mulx        r13,rax,rsi >
+  mov         rax, rdx             ; rdx est le 4em paramète implicite de mulx. mais dans mul c'est rax
+  push        rax                  ; car rax/rdx modifé par MUL
+  mul         rsi                  ; (rdx,rax) = rsi*rax
+  mov         r13,rdx              ; r13 =rdx , ie  (r13,rax) = rsi * rdx   (C2,L_)	= A1*B0 
+  mov         rbx,rax              ; copie rax qui va petre modifé
+  pop         rax
+  ; emule < mulx        r12,r11,r10 >
+  push        rax                  ; car modifé par MUL
+  mul         r10                  ; (rdx,rax) = r10*rdx
+  mov         r12,rdx              
+  mov         r11,rax              
+  add         r12,rbx              ;                         (c ,C1) = C1 + L_ + c
+  mov         rbx,0
+  adc         rbx,0                ; rbx = carry
+  pop         rax
+  ; emule <mulx        r14,rax,rbp>
+  push        rax                  ; car modifé par MUL
+  mul         rbp                  ; (rdx,rax) = rbp*rdx
+  mov         r14,rdx              
+  add         r13,rax              ;                         (  ,C2) = C2 + L_ 
+  adc         r13,rbx              ;                         (c ,C2) = C2 + + c
+  pop         rax
+  ; emule <mulx        r15,rax,r9>
+  pushf
+  mul         r9                  ; (rdx,rax) = r9*rdx
+  popf
+  mov         r15,rdx              
+ENDIF ;!MULX_SUPPORTED
+  adc         r14,rax              ;                         (c ,C3) = C3 + L_ + c
+  adc         r15,0                ;                          C4 = C4 + c
 ; Multiplication de partie dépasse ( C4 ) par 2^256 modulo P :  0x1000003d1
 ; et ajout au résultat
  xor         rsi,rsi                 ; RAZ c et of + rsi = 0
- mov         rdx,1000003D1h          ; 
- mulx        rcx,rax,r15             ; (rcx,rax) = 15 * rdx   (H_,L_) = C4 * 0x1000003d1
- adcx        r11,rax                 ; (c ,C0)  = C0 + L_
- adcx        r12,rcx                 ; (c ,C1)  = C1 + H  + c
- adcx        r13,rsi                 ; (c ,C2)  = C2 + c 
- adcx        r14,rsi                 ; (c ,C3)  = C3 + c
+ mov         rax,1000003D1h   ; pour mulx c'est le paramtère 4
+ mul         r15;                    ; (rd, rax) = 15 * rdx 
+ add         r11,rax                 ; (c ,C0)  = C0 + L_
+ adc         r12,rdx                 ; (c ,C1)  = C1 + H  + c
+ adc         r13,rsi                 ; (c ,C2)  = C2 + c 
+ adc         r14,rsi                 ; (c ,C3)  = C3 + c
  
 ; si on dépasse P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 ; on doit soustraire P, équivalent a ajouter -P (ie P complémenté a 2) = _2pow256_mod
