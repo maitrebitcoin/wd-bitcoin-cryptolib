@@ -1,10 +1,13 @@
 ; multiplication de 2 entier 256 bits modulo 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 ; version 64 bits
 
+; déclaration de l'existence d'une fonction externe 
+multiplication_256x256_512 PROTO C
+
 .CODE
 mult256x256_Modulo_CoordCourbeSepc256k PROC
 ; Proto C :
-; EXPORT void mult256x256_Modulo_OrdreCourbeSepc256k (byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
+; EXPORT void mult256x256_Modulo_CoordCourbeSepc256k (byte* pNombreA, byte* pNombreB, OUT byte* pResultat)
 
 ; defines des paramètres
 param1 equ rcx
@@ -26,8 +29,10 @@ ENDIF
  push        r12  
  push        r13  
  push        r14  
- push        r15  
+ push        r15       
 
+IFDEF MULX_SUPPORTED ;-------------------------------------------------------------------------------------
+; code si l'instruction mulx est disponible sur le processeur : Intel ADX (Multi-Precision Add-Carry Instruction Extensions)
 ; récupération  des variables en regitres:
  mov         rdi,param2  
  mov         r10,qword ptr [rcx    ]  ; r10 = A0
@@ -55,6 +60,7 @@ ENDIF
 ;  r13    r9    r11   r12  r15
 
  mov         rdx,qword ptr [rdi]  ; rdx = B0
+
  mulx        r11,rax,rsi          ; (r11,rax) = rsi * rdx   (C2,L_)	= A1*B0 
  mulx        r9, r13,r10          ; (r9, r13) = r10 * rdx   (C1,C0)	= A0*B0
  add         r9,rax               ;                         (c ,C1) = C1 + L_ + c
@@ -153,7 +159,7 @@ ENDIF
  adcx        r8,rsi                  ;                              C4 += c
  adox        r8,rsi                  ;                              C4 += of
 
-; si C4 * 0
+; si C4 != 0
 ; on doit ajouter encore H x _2pow256_mod . toujours fait pour éviter des effets de side-channel
  xor         rsi,rsi    ; RAZ c et of
  mulx        rcx,rax,r8  ; (rcx,rax) = r8 * rdx   (H_,L_) = C4 * 0x1000003d1
@@ -161,6 +167,75 @@ ENDIF
  adcx        rdi,rcx     ; (c ,C1)  = C1 + H  + c
  adcx        rbx,rsi     ; (c ,C2)  = C2 + c 
  adcx        r12,rsi     ; (c ,C3)  = C3 + c
+
+ELSE ;MULX_SUPPORTED -------------------------------------------------------------------------------------
+; version si l'instruction mulx n'est pas dispo
+    sub         rsp, 78h  ; reserve pour var localed : +00h..+3Fh : AxB_512, +40h..77h: convention d'appel
+	; multiplication A*B => 512 bits
+	; UI512 AxB_512;
+	; multiplication_256x256_512_ASM(pNombreA, pNombreB, (PBYTE)&AxB_512);
+    lea         param3,[rsp]  ;  r8 = &AxB_512 
+    call        multiplication_256x256_512    ; (rcx,rdx,r8)
+    
+ 	; multiplication des 256 bits de poids fort par 2^256 - P => 0x1000003d1
+    ; C1
+    mov         rbx, 1000003d1h
+    mov         rax, rbx
+    mov         rcx,[rsp+20h]  ; AxB_512.high.C0 
+    mul         rcx            ; (rdx,rax) = rcx*rax
+    mov         r13, rax       ; C0 = rax
+    mov         r9 , rdx       ; C1 = rdx
+    ; 1
+    mov         rcx,[rsp+28h]  ; AxB_512.high.C1 
+    mov         rax, rbx
+    mul         rcx            ; (rdx,rax) = rcx*rax
+    add         r9,  rax       ; C1 += rax
+    mov         r11, rdx       ; C2 =  rdx
+    ;2
+    mov         rcx,[rsp+30h]  ; AxB_512.high.C2
+    pushf
+    mov         rax, rbx
+    mul         rcx            ; (rdx,rax) = rcx*rax
+    popf 
+    adc         r11, rax       ; C2 += rax + carry
+    mov         r12, rdx       ; C3 =  rdx
+    ; 3
+    mov         rcx,[rsp+38h]  ; AxB_512.high.C2
+    pushf
+    mov         rax, rbx
+    mul         rcx            ; (rdx,rax) = rcx*rax
+    popf    
+    adc         r12, rax       ; C3 += rax + carry
+    mov         r15, rdx       ; C5 =  rdx 
+    adc         r15, 0         ; C5 += carry
+
+    ; récup en registre et addition pour revernir dans le meme code que la version avec mulx
+    ; + AxB_512.low
+    add r13, [rsp]      ; +C0
+    adc r9,  [rsp+08h]  ; +C1
+    adc r11, [rsp+10h]  ; +C2
+    adc r12, [rsp+18h]  ; +C3
+    adc r15, 0          ; C5 += carry
+
+    ; si C4 != 0
+    ; on doit ajouter encore H x _2pow256_mod . toujours fait pour éviter des effets de side-channel
+     xor         rsi,rsi    ; RAZ c et of
+     mov         r8, 1000003d1h
+     mov         rax, r15
+     mul         r8  ; (rdx,rax) = r8 * rax   (H_,L_) = C4 * 0x1000003d1
+     add        r13,rax     ; (c ,C0)  = C0 + L_
+     adc        r9, rdx     ; (c ,C1)  = C1 + H  + c
+     adc        r11,rsi     ; (c ,C2)  = C2 + c 
+     adc        r12,rsi     ; (c ,C3)  = C3 + c
+     ; restaure la pile
+     add         rsp,78h  
+     ; memes registres que dans le cas mulx dispo
+     mov rdi,r9  ; C1
+     mov rbx,r11 ; C2
+     mov rdx,r8  ;  1000003d1h
+ENDIF ;!MULX_SUPPORTED-------------------------------------------------------------------------------------
+
+
  
 ; si on dépasse P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 ; on doit soustraire P, équivalent a ajouter -P (ie P complémenté a 2) = _2pow256_mod

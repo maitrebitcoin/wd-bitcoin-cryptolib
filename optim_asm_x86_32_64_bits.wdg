@@ -479,102 +479,102 @@ procedure_set :
       Procédure pGetprocSoustraction256p256_256_ASM() :  entier système
       
       sCodeASMx8632_Soustraction256_x86 est chaîne = [
-      	// proto add256( IN int256 *A, INOUT int256 *B) <§cs:5§>
-      	// prologue<§cs:5§>
-      	Push edx<§cs:5§>
-      	Push ecx<§cs:5§>
-      	<§cs:5§>
-      stopME:	<§cs:5§>
-      	;;jmp stopME<§cs:5§>
-      	<§cs:5§>
-      	// récup adresses<§cs:5§>
-      	mov edx,[ESP+12] // P1 = A dans EBX<§cs:5§>
-      	mov ecx,[ESP+16] // P2 = B dans ECX<§cs:5§>
-      	<§cs:5§>
-      	// complement a 1 de [P2], ie -P2<§cs:5§>
-      	xor [ecx],   0xFFFFFFFF<§cs:5§>
-      	xor [ecx+4], 0xFFFFFFFF<§cs:5§>
-      	xor [ecx+8], 0xFFFFFFFF<§cs:5§>
-      	xor [ecx+12],0xFFFFFFFF<§cs:5§>
-      	xor [ecx+16],0xFFFFFFFF<§cs:5§>
-      	xor [ecx+20],0xFFFFFFFF<§cs:5§>
-      	xor [ecx+24],0xFFFFFFFF<§cs:5§>
-      	xor [ecx+28],0xFFFFFFFF<§cs:5§>
-      	mov eax,1<§cs:5§>
-      	add [ecx],eax<§cs:5§>
-      	mov eax,0<§cs:5§>
-      	adc [ecx+4],eax<§cs:5§>
-      	adc [ecx+8],eax<§cs:5§>
-      	adc [ecx+12],eax<§cs:5§>
-      	adc [ecx+16],eax<§cs:5§>
-      	adc [ecx+20],eax<§cs:5§>
-      	adc [ecx+24],eax<§cs:5§>
-      	adc [ecx+28],eax<§cs:5§>
-      			<§cs:5§>
-      	//  bit 0 a 31<§cs:5§>
-      	mov eax,[edx]<§cs:5§>
-      	Add [ecx],eax ; // A += B<§cs:5§>
-      	// bits 32 a 63<§cs:5§>
-      	mov eax,[edx+4]<§cs:5§>
-      	adc [ecx+4],eax ; // A += B + retenue<§cs:5§>
-      	// bits 64 a 95<§cs:5§>
-      	mov eax,[edx+8]<§cs:5§>
-      	adc [ecx+8],eax ; // A += B + retenue	<§cs:5§>
-      	// bits 96 a 127<§cs:5§>
-      	mov eax,[edx+12]<§cs:5§>
-      	adc [ecx+12],eax ; // A += B + retenue	<§cs:5§>
-      	<§cs:5§>
-      	// bits 128 a 159<§cs:5§>
-      	mov eax,[edx+16]<§cs:5§>
-      	Adc [ecx+16],eax ; // A += B + retenue<§cs:5§>
-      	// etc ....<§cs:5§>
-      	mov eax,[edx+20]<§cs:5§>
-      	adc [ecx+20],eax ; // A += B + retenue<§cs:5§>
-      	mov eax,[edx+24]<§cs:5§>
-      	adc [ecx+24],eax ; // A += B + retenue	<§cs:5§>
-      	mov eax,[edx+28]<§cs:5§>
-      	adc [ecx+28],eax ; // A += B + retenue	<§cs:5§>
-      		<§cs:5§>
-      	// epilogue<§cs:5§>
-      	Pop ecx<§cs:5§>
-      	Pop edx<§cs:5§>
-      	ret 8	// 2 paramètres de 4 octets<§cs:5§>
+      	// proto add256( IN int256 *A, INOUT int256 *B) <§cs:2§>
+      	// prologue<§cs:2§>
+      	Push edx<§cs:2§>
+      	Push ecx<§cs:2§>
+      	<§cs:2§>
+      stopME:	<§cs:2§>
+      	;;jmp stopME<§cs:2§>
+      	<§cs:2§>
+      	// récup adresses<§cs:2§>
+      	mov edx,[ESP+12] // P1 = A dans EBX<§cs:2§>
+      	mov ecx,[ESP+16] // P2 = B dans ECX<§cs:2§>
+      	<§cs:2§>
+      	// complement a 1 de [P2], ie -P2<§cs:2§>
+      	xor [ecx],   0xFFFFFFFF<§cs:2§>
+      	xor [ecx+4], 0xFFFFFFFF<§cs:2§>
+      	xor [ecx+8], 0xFFFFFFFF<§cs:2§>
+      	xor [ecx+12],0xFFFFFFFF<§cs:2§>
+      	xor [ecx+16],0xFFFFFFFF<§cs:2§>
+      	xor [ecx+20],0xFFFFFFFF<§cs:2§>
+      	xor [ecx+24],0xFFFFFFFF<§cs:2§>
+      	xor [ecx+28],0xFFFFFFFF<§cs:2§>
+      	mov eax,1<§cs:2§>
+      	add [ecx],eax<§cs:2§>
+      	mov eax,0<§cs:2§>
+      	adc [ecx+4],eax<§cs:2§>
+      	adc [ecx+8],eax<§cs:2§>
+      	adc [ecx+12],eax<§cs:2§>
+      	adc [ecx+16],eax<§cs:2§>
+      	adc [ecx+20],eax<§cs:2§>
+      	adc [ecx+24],eax<§cs:2§>
+      	adc [ecx+28],eax<§cs:2§>
+      			<§cs:2§>
+      	//  bit 0 a 31<§cs:2§>
+      	mov eax,[edx]<§cs:2§>
+      	Add [ecx],eax ; // A += B<§cs:2§>
+      	// bits 32 a 63<§cs:2§>
+      	mov eax,[edx+4]<§cs:2§>
+      	adc [ecx+4],eax ; // A += B + retenue<§cs:2§>
+      	// bits 64 a 95<§cs:2§>
+      	mov eax,[edx+8]<§cs:2§>
+      	adc [ecx+8],eax ; // A += B + retenue	<§cs:2§>
+      	// bits 96 a 127<§cs:2§>
+      	mov eax,[edx+12]<§cs:2§>
+      	adc [ecx+12],eax ; // A += B + retenue	<§cs:2§>
+      	<§cs:2§>
+      	// bits 128 a 159<§cs:2§>
+      	mov eax,[edx+16]<§cs:2§>
+      	Adc [ecx+16],eax ; // A += B + retenue<§cs:2§>
+      	// etc ....<§cs:2§>
+      	mov eax,[edx+20]<§cs:2§>
+      	adc [ecx+20],eax ; // A += B + retenue<§cs:2§>
+      	mov eax,[edx+24]<§cs:2§>
+      	adc [ecx+24],eax ; // A += B + retenue	<§cs:2§>
+      	mov eax,[edx+28]<§cs:2§>
+      	adc [ecx+28],eax ; // A += B + retenue	<§cs:2§>
+      		<§cs:2§>
+      	// epilogue<§cs:2§>
+      	Pop ecx<§cs:2§>
+      	Pop edx<§cs:2§>
+      	ret 8	// 2 paramètres de 4 octets<§cs:2§>
       ]
       // code ASM 64 bits
       sCodeASMx8632_Soustraction256_x64 est chaîne = [
-      	// proto sub256( IN int256 *A,INOUT  int256 *B)  <§cs:5§>
-      	//	; P1 : circ<§cs:5§>
-      	//	; P2 : rdx<§cs:5§>
-      	<§cs:5§>
-      	// complement a 1 de [P2], ie -P2<§cs:5§>
-      	mov rax,-1<§cs:5§>
-      	xor qword ptr [rdx],    rax<§cs:5§>
-      	xor qword ptr [rdx+8],  rax<§cs:5§>
-      	xor qword ptr [rdx+16], rax<§cs:5§>
-      	xor qword ptr [rdx+24], rax<§cs:5§>
-      	mov rax,1<§cs:5§>
-      	Add [rdx],rax<§cs:5§>
-      	mov rax,0<§cs:5§>
-      	adc [rdx+8],rax<§cs:5§>
-      	adc [rdx+16],rax<§cs:5§>
-      	adc [rdx+24],rax<§cs:5§>
-      	<§cs:5§>
-      	// B +=A :<§cs:5§>
-      	<§cs:5§>
-      	//  bit 0 a 63<§cs:5§>
-      	mov rax,[rcx]<§cs:5§>
-      	Add  [rdx],rax ; // A += B<§cs:5§>
-      	// bits 64 a 127<§cs:5§>
-      	mov rax,[rcx+8]<§cs:5§>
-      	adc [rdx+8],rax ; // A += B + retenue	<§cs:5§>
-      	// bits 128 a 195<§cs:5§>
-      	mov rax,[rcx+16]<§cs:5§>
-      	adc [rdx+16],rax ; // A += B + retenue	<§cs:5§>
-      	// bits 196 a 255<§cs:5§>
-      	mov rax,[rcx+24]<§cs:5§>
-      	adc [rdx+24],rax ; // A += B + retenue	<§cs:5§>
-      	<§cs:5§>
-      	ret<§cs:5§>
+      	// proto sub256( IN int256 *A,INOUT  int256 *B)  <§cs:2§>
+      	//	; P1 : circ<§cs:2§>
+      	//	; P2 : rdx<§cs:2§>
+      	<§cs:2§>
+      	// complement a 1 de [P2], ie -P2<§cs:2§>
+      	mov rax,-1<§cs:2§>
+      	xor qword ptr [rdx],    rax<§cs:2§>
+      	xor qword ptr [rdx+8],  rax<§cs:2§>
+      	xor qword ptr [rdx+16], rax<§cs:2§>
+      	xor qword ptr [rdx+24], rax<§cs:2§>
+      	mov rax,1<§cs:2§>
+      	Add [rdx],rax<§cs:2§>
+      	mov rax,0<§cs:2§>
+      	adc [rdx+8],rax<§cs:2§>
+      	adc [rdx+16],rax<§cs:2§>
+      	adc [rdx+24],rax<§cs:2§>
+      	<§cs:2§>
+      	// B +=A :<§cs:2§>
+      	<§cs:2§>
+      	//  bit 0 a 63<§cs:2§>
+      	mov rax,[rcx]<§cs:2§>
+      	Add  [rdx],rax ; // A += B<§cs:2§>
+      	// bits 64 a 127<§cs:2§>
+      	mov rax,[rcx+8]<§cs:2§>
+      	adc [rdx+8],rax ; // A += B + retenue	<§cs:2§>
+      	// bits 128 a 195<§cs:2§>
+      	mov rax,[rcx+16]<§cs:2§>
+      	adc [rdx+16],rax ; // A += B + retenue	<§cs:2§>
+      	// bits 196 a 255<§cs:2§>
+      	mov rax,[rcx+24]<§cs:2§>
+      	adc [rdx+24],rax ; // A += B + retenue	<§cs:2§>
+      	<§cs:2§>
+      	ret<§cs:2§>
       ]
       // code ASM 64 bits
       sCodeASMx8632_Soustraction256_x64_linux est chaîne = [
@@ -628,106 +628,106 @@ procedure_set :
       PROCÉDURE pGetprocMult256x32_256_ASM() : entier système
       
       sCodeASMx8632_Mult256x32_256 est chaîne = [
-      	; Proto C :<§cs:5§>
-      	;  void multiply256x32_256(int256 *À, int32 *B, OUT int256 *C);<§cs:5§>
-      	; calcule C = À * B<§cs:5§>
-      	; AVEC <§cs:5§>
-      	;	   edi = *À<§cs:5§>
-      	;	   ESI = *B<§cs:5§>
-      	;	   ECX = *C (dest)<§cs:5§>
-      	;<§cs:5§>
-      	; À en big endian :<§cs:5§>
-      	; 0				+4			+8			 +12<§cs:5§>
-      	; poids faible						 poids fort<§cs:5§>
-      	<§cs:5§>
-      	; prolohue<§cs:5§>
-      	Push    ebp<§cs:5§>
-      	mov     ebp, ESP   <§cs:5§>
-      	Push	ebx<§cs:5§>
-      	Push 	edx<§cs:5§>
-      	Push    ecx<§cs:5§>
-      	Push 	edi<§cs:5§>
-      	Push 	esi<§cs:5§>
-      	<§cs:5§>
-      	; recu param<§cs:5§>
-      	mov edi,[ebp +8]<§cs:5§>
-      	mov esi,[ebp+12]<§cs:5§>
-      	mov ecx,[ebp+16]<§cs:5§>
-      	// B<§cs:5§>
-      	mov ebx,[esi+0]<§cs:5§>
-      	<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A0 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A0 * B0<§cs:5§>
-      	mov eax,[edi+0]<§cs:5§>
-      //	mov ebx,[esi+0]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	mov [ecx+ 0],eax<§cs:5§>
-      	mov [ecx+ 4],edx<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A1 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A1 * B0<§cs:5§>
-      	mov eax,[edi+4]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	Add [ecx+ 4],eax  // addition au resultat AVEC propagation de la retenue<§cs:5§>
-      	adc [ecx+ 8],edx<§cs:5§>
-      	mov eax,0      ; eax = 0<§cs:5§>
-      	adc [ecx+ 12],eax ; //+0+c<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A2 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A2 * B<§cs:5§>
-      	mov eax,[edi+8]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	Add [ecx+ 8],eax  // addition au resultat AVEC propagation de la retenue<§cs:5§>
-      	adc [ecx+ 12],edx<§cs:5§>
-      	mov eax,0      ; eax = 0<§cs:5§>
-      	adc [ecx+ 16],eax ; //+0+c<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A3 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A3 * B<§cs:5§>
-      	mov eax,[edi+12]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	Add [ecx+ 12],eax  // addition au resultat AVEC propagation de la retenue<§cs:5§>
-      	adc [ecx+ 16],edx<§cs:5§>
-      	mov eax,0      ; eax = 0<§cs:5§>
-      	adc [ecx+ 20],eax ; //+0+c<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A4 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A4 * B<§cs:5§>
-      	mov eax,[edi+16]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	Add [ecx+ 16],eax  // addition au resultat AVEC propagation de la retenue<§cs:5§>
-      	adc [ecx+ 20],edx<§cs:5§>
-      	mov eax,0      ; eax = 0<§cs:5§>
-      	adc [ecx+ 24],eax ; //+0+c<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A5 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A5 * B<§cs:5§>
-      	mov eax,[edi+20]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	Add [ecx+ 20],eax  // addition au resultat AVEC propagation de la retenue<§cs:5§>
-      	adc [ecx+ 24],edx<§cs:5§>
-      	mov eax,0      ; eax = 0<§cs:5§>
-      	adc [ecx+ 28],eax ; //+0+c	<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A6 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A6 * B<§cs:5§>
-      	mov eax,[edi+24]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	Add [ecx+ 24],eax  // addition au resultat AVEC propagation de la retenue<§cs:5§>
-      	adc [ecx+ 28],edx<§cs:5§>
-      	mov eax,0      ; eax = 0<§cs:5§>
-      	//adc [ecx+ 32],eax ; //+0+c	=> débordement<§cs:5§>
-      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A7 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:5§>
-      	;; A7 * B<§cs:5§>
-      	mov eax,[edi+28]<§cs:5§>
-      	mul ebx		; (edx,eax) = eax * ebx<§cs:5§>
-      	Add [ecx+ 28],eax  // addition au resultat AVEC propagation de la retenue<§cs:5§>
-      	; retenue avec carry<§cs:5§>
-      	adc edx, 0 <§cs:5§>
-      	mov eax, edx<§cs:5§>
-      <§cs:5§>
-      	; epilogue<§cs:5§>
-      	Pop esi<§cs:5§>
-      	Pop edi<§cs:5§>
-      	Pop ecx<§cs:5§>
-      	Pop edx	<§cs:5§>
-      	Pop	ebx<§cs:5§>
-      	Pop	ebp<§cs:5§>
-      	ret 12<§cs:5§>
+      	; Proto C :<§cs:2§>
+      	;  void multiply256x32_256(int256 *À, int32 *B, OUT int256 *C);<§cs:2§>
+      	; calcule C = À * B<§cs:2§>
+      	; AVEC <§cs:2§>
+      	;	   edi = *À<§cs:2§>
+      	;	   ESI = *B<§cs:2§>
+      	;	   ECX = *C (dest)<§cs:2§>
+      	;<§cs:2§>
+      	; À en big endian :<§cs:2§>
+      	; 0				+4			+8			 +12<§cs:2§>
+      	; poids faible						 poids fort<§cs:2§>
+      	<§cs:2§>
+      	; prolohue<§cs:2§>
+      	Push    ebp<§cs:2§>
+      	mov     ebp, ESP   <§cs:2§>
+      	Push	ebx<§cs:2§>
+      	Push 	edx<§cs:2§>
+      	Push    ecx<§cs:2§>
+      	Push 	edi<§cs:2§>
+      	Push 	esi<§cs:2§>
+      	<§cs:2§>
+      	; recu param<§cs:2§>
+      	mov edi,[ebp +8]<§cs:2§>
+      	mov esi,[ebp+12]<§cs:2§>
+      	mov ecx,[ebp+16]<§cs:2§>
+      	// B<§cs:2§>
+      	mov ebx,[esi+0]<§cs:2§>
+      	<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A0 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A0 * B0<§cs:2§>
+      	mov eax,[edi+0]<§cs:2§>
+      //	mov ebx,[esi+0]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	mov [ecx+ 0],eax<§cs:2§>
+      	mov [ecx+ 4],edx<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A1 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A1 * B0<§cs:2§>
+      	mov eax,[edi+4]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	Add [ecx+ 4],eax  // addition au resultat AVEC propagation de la retenue<§cs:2§>
+      	adc [ecx+ 8],edx<§cs:2§>
+      	mov eax,0      ; eax = 0<§cs:2§>
+      	adc [ecx+ 12],eax ; //+0+c<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A2 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A2 * B<§cs:2§>
+      	mov eax,[edi+8]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	Add [ecx+ 8],eax  // addition au resultat AVEC propagation de la retenue<§cs:2§>
+      	adc [ecx+ 12],edx<§cs:2§>
+      	mov eax,0      ; eax = 0<§cs:2§>
+      	adc [ecx+ 16],eax ; //+0+c<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A3 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A3 * B<§cs:2§>
+      	mov eax,[edi+12]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	Add [ecx+ 12],eax  // addition au resultat AVEC propagation de la retenue<§cs:2§>
+      	adc [ecx+ 16],edx<§cs:2§>
+      	mov eax,0      ; eax = 0<§cs:2§>
+      	adc [ecx+ 20],eax ; //+0+c<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A4 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A4 * B<§cs:2§>
+      	mov eax,[edi+16]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	Add [ecx+ 16],eax  // addition au resultat AVEC propagation de la retenue<§cs:2§>
+      	adc [ecx+ 20],edx<§cs:2§>
+      	mov eax,0      ; eax = 0<§cs:2§>
+      	adc [ecx+ 24],eax ; //+0+c<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A5 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A5 * B<§cs:2§>
+      	mov eax,[edi+20]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	Add [ecx+ 20],eax  // addition au resultat AVEC propagation de la retenue<§cs:2§>
+      	adc [ecx+ 24],edx<§cs:2§>
+      	mov eax,0      ; eax = 0<§cs:2§>
+      	adc [ecx+ 28],eax ; //+0+c	<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A6 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A6 * B<§cs:2§>
+      	mov eax,[edi+24]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	Add [ecx+ 24],eax  // addition au resultat AVEC propagation de la retenue<§cs:2§>
+      	adc [ecx+ 28],edx<§cs:2§>
+      	mov eax,0      ; eax = 0<§cs:2§>
+      	//adc [ecx+ 32],eax ; //+0+c	=> débordement<§cs:2§>
+      	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; A7 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;<§cs:2§>
+      	;; A7 * B<§cs:2§>
+      	mov eax,[edi+28]<§cs:2§>
+      	mul ebx		; (edx,eax) = eax * ebx<§cs:2§>
+      	Add [ecx+ 28],eax  // addition au resultat AVEC propagation de la retenue<§cs:2§>
+      	; retenue avec carry<§cs:2§>
+      	adc edx, 0 <§cs:2§>
+      	mov eax, edx<§cs:2§>
+      <§cs:2§>
+      	; epilogue<§cs:2§>
+      	Pop esi<§cs:2§>
+      	Pop edi<§cs:2§>
+      	Pop ecx<§cs:2§>
+      	Pop edx	<§cs:2§>
+      	Pop	ebx<§cs:2§>
+      	Pop	ebp<§cs:2§>
+      	ret 12<§cs:2§>
       ]
       // version 64 bits
       sCodeASMx8632_Mult256x32_256_x64 est chaîne = [
@@ -806,6 +806,9 @@ procedure_set :
       	// pour les IFDEF LINUX
       	tabSymboleExterne["LINUX"] = 1	
       FIN
+      
+      //@TEST
+      //tabSymboleExterne["MULX_SUPPORTED"] = 1	
      type : 458752
    -
      name : _pCompimeAsmVarStr
@@ -889,71 +892,71 @@ procedure_set :
       Procédure pGetprocDivisePar2_256() : entier système 
       
       sCodeASMx8632_DivPar2_256 est chaîne = [
-      	// proto div2_256( INTOU int256 *A) <§cs:5§>
-      	// prologue<§cs:5§>
-      	Push edi<§cs:5§>
-      	<§cs:5§>
-      	// récup adresse A<§cs:5§>
-      	mov edi,[ESP+8]<§cs:5§>
-      	<§cs:5§>
-      	// mets CF a 0<§cs:5§>
-      	clc;  cf = 0<§cs:5§>
-      	xor eax,eax<§cs:5§>
-      	<§cs:5§>
-      	// rotation de 1 bit a droite sur 33 bits avec CF<§cs:5§>
-      	// devrait etre rcr	DWORD PTRE [edi+0],1 ; mais pas supporté par l'assembleur<§cs:5§>
-      	mov  eax,[edi+28]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi+28],eax<§cs:5§>
-      	<§cs:5§>
-      	mov  eax,[edi+24]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi+24],eax<§cs:5§>
-      	<§cs:5§>
-      	mov  eax,[edi+20]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi+20],eax<§cs:5§>
-      <§cs:5§>
-      	mov  eax,[edi+16]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi+16],eax	<§cs:5§>
-      <§cs:5§>
-      	mov  eax,[edi+12]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi+12],eax	<§cs:5§>
-      <§cs:5§>
-      	mov  eax,[edi+8]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi+8],eax	<§cs:5§>
-      <§cs:5§>
-      	mov  eax,[edi+4]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi+4],eax	<§cs:5§>
-      <§cs:5§>
-      	mov  eax,[edi]<§cs:5§>
-      	rcr	 eax,1<§cs:5§>
-      	mov  [edi],eax		<§cs:5§>
-      	<§cs:5§>
-      	// epilogue<§cs:5§>
-      	Pop edi<§cs:5§>
-      	ret 4	// 1 paramètres de 4 octets<§cs:5§>
+      	// proto div2_256( INTOU int256 *A) <§cs:2§>
+      	// prologue<§cs:2§>
+      	Push edi<§cs:2§>
+      	<§cs:2§>
+      	// récup adresse A<§cs:2§>
+      	mov edi,[ESP+8]<§cs:2§>
+      	<§cs:2§>
+      	// mets CF a 0<§cs:2§>
+      	clc;  cf = 0<§cs:2§>
+      	xor eax,eax<§cs:2§>
+      	<§cs:2§>
+      	// rotation de 1 bit a droite sur 33 bits avec CF<§cs:2§>
+      	// devrait etre rcr	DWORD PTRE [edi+0],1 ; mais pas supporté par l'assembleur<§cs:2§>
+      	mov  eax,[edi+28]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi+28],eax<§cs:2§>
+      	<§cs:2§>
+      	mov  eax,[edi+24]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi+24],eax<§cs:2§>
+      	<§cs:2§>
+      	mov  eax,[edi+20]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi+20],eax<§cs:2§>
+      <§cs:2§>
+      	mov  eax,[edi+16]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi+16],eax	<§cs:2§>
+      <§cs:2§>
+      	mov  eax,[edi+12]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi+12],eax	<§cs:2§>
+      <§cs:2§>
+      	mov  eax,[edi+8]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi+8],eax	<§cs:2§>
+      <§cs:2§>
+      	mov  eax,[edi+4]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi+4],eax	<§cs:2§>
+      <§cs:2§>
+      	mov  eax,[edi]<§cs:2§>
+      	rcr	 eax,1<§cs:2§>
+      	mov  [edi],eax		<§cs:2§>
+      	<§cs:2§>
+      	// epilogue<§cs:2§>
+      	Pop edi<§cs:2§>
+      	ret 4	// 1 paramètres de 4 octets<§cs:2§>
       ]
       // coda ASM 64 bits
       sCodeASMx8632_DivPar2_256_x64 est chaîne = [
-      // proto div2_256( INTOUT int256 *A) <§cs:5§>
-      //	; P1 : rcx<§cs:5§>
-      <§cs:5§>
-      // mets CF a 0<§cs:5§>
-      clc;  cf = 0<§cs:5§>
-      xor rax,rax<§cs:5§>
-      <§cs:5§>
-      // rotation de 1 bit a droite sur 33 bits avec CF<§cs:5§>
-      rcr	qword ptr [rcx+24],1 <§cs:5§>
-      rcr	qword ptr [rcx+16],1 <§cs:5§>
-      rcr	qword ptr [rcx+8],1 <§cs:5§>
-      rcr	qword ptr [rcx],1 <§cs:5§>
-      // retour	<§cs:5§>
-      ret<§cs:5§>
+      // proto div2_256( INTOUT int256 *A) <§cs:2§>
+      //	; P1 : rcx<§cs:2§>
+      <§cs:2§>
+      // mets CF a 0<§cs:2§>
+      clc;  cf = 0<§cs:2§>
+      xor rax,rax<§cs:2§>
+      <§cs:2§>
+      // rotation de 1 bit a droite sur 33 bits avec CF<§cs:2§>
+      rcr	qword ptr [rcx+24],1 <§cs:2§>
+      rcr	qword ptr [rcx+16],1 <§cs:2§>
+      rcr	qword ptr [rcx+8],1 <§cs:2§>
+      rcr	qword ptr [rcx],1 <§cs:2§>
+      // retour	<§cs:2§>
+      ret<§cs:2§>
       ]
       
       

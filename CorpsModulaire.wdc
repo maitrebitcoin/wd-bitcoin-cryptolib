@@ -309,7 +309,7 @@ class :
       		_valTest =  multiplicationModulo( nombre, inverseMod )
       		SI pas _valTest.estEgalA1() ALORS
       			// Pb
-      			dbgAssertion(faux,"nombre*inverseMod <>1."+rc+"nombre = "+nombre.VersChaineHexa())
+      			dbgAssertion(faux,"nombre*inverseMod <>1."+rc+"nombre = "+nombre.VersChaineHexa()+rc+inverseMod.VersChaineHexa() )
       			// calcul par le théorème d’Euler :
       			//  inverse(A) = A ^ (P-2)
       			inverseMod  = puissanceModulo( nombre, PMoins2 )
