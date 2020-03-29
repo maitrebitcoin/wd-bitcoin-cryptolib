@@ -198,18 +198,25 @@ window :
          SI SAI_Signature=""      ALORS RETOUR
          SI SAI_MessageASigner="" ALORS RETOUR
          
+         // séparateur RC selon la plateforme
+         RC_PLATEFROME est chaine = RC
+         SI EnModeLinux() ALORS
+         	RC_PLATEFROME = Caract(10)
+         FIN
+         
          // récup du message a vérifier
          sMessage est buffer = SAI_MessageASigner
          
          // récup clé publique
          cléPublique est Point256
-         cléPublique.X.affecteAvecChaineHexa( ExtraitChaîne(SAI_CléPublique, 1,rc))
-         cléPublique.Y.affecteAvecChaineHexa( ExtraitChaîne(SAI_CléPublique, 2,rc))
+         sCléPrivee est chaine = SAI_CléPublique
+         cléPublique.X.affecteAvecChaineHexa( ExtraitChaîne(sCléPrivee, 1,RC_PLATEFROME))
+         cléPublique.Y.affecteAvecChaineHexa( ExtraitChaîne(sCléPrivee, 2,RC_PLATEFROME))
          
          // récup signature
          signature est SignatureEcdsa
-         signature.R.affecteAvecChaineHexa( ExtraitChaîne(SAI_Signature, 1,RC))
-         signature.S.affecteAvecChaineHexa( ExtraitChaîne(SAI_Signature, 2,RC))
+         signature.R.affecteAvecChaineHexa( ExtraitChaîne(SAI_Signature, 1,RC_PLATEFROME))
+         signature.S.affecteAvecChaineHexa( ExtraitChaîne(SAI_Signature, 2,RC_PLATEFROME))
          
          // vérification
          soit (ok, sErreur) = ECDSA_Bitcoin.vérifieSignatureBuffer( sMessage, cléPublique, signature)
