@@ -807,8 +807,33 @@ procedure_set :
       	tabSymboleExterne["LINUX"] = 1	
       FIN
       
-      //@TEST
-      //tabSymboleExterne["MULX_SUPPORTED"] = 1	
+      
+     type : 458752
+   -
+     name : _InitDefineEtConventionSelonPlateforme
+     procedure_id : 2197991690328066099
+     type_code : 15
+     code : |1-
+      procédure globale _InitDefineEtConventionSelonPlateforme(sCodeASM est chaine, tabSymboleExterne )
+      
+      // que en mode 64 bits
+      dbgAssertion(EnMode64bits())
+      
+      SI EnModeLinux() ALORS
+      	sCodeASM					= Remplace(sCodeASM, TAB," ")
+      	// RDI, RSI, RDX, RCX, R8, R9 pour les 6 premiers paramètres
+      	sCodeASM					= Remplace(sCodeASM,"param1 equ rcx","param1 equ rdi")
+      	sCodeASM					= Remplace(sCodeASM,"param2 equ rdx","param2 equ rsi")
+      	sCodeASM					= Remplace(sCodeASM,"param3 equ r8" ,"param3 equ rdx")
+      	
+      	// pour les IFDEF LINUX
+      	tabSymboleExterne["LINUX"]	= 1	
+      FIN
+      
+      // si ADX est dispo sur le processeur on défini un symbole pour compile le code qui utilise MULX/ADX
+      SI arithmetique.gbADX_Supporté ALORS
+      	tabSymboleExterne["MULX_SUPPORTED"] = 1	
+      FIN
      type : 458752
    -
      name : _pCompimeAsmVarStr
@@ -827,7 +852,7 @@ procedure_set :
       	// 64 bits
       	sCodeASM =  sCode64Bits
       	// gestion convention d'appel Linux, le n° de registres sont différents de la convention Microsoft
-      	_changeDefineSiConventionAppelLinux(sCodeASM, tabSymboleExterne)
+      	_InitDefineEtConventionSelonPlateforme(sCodeASM, tabSymboleExterne)
       SINON
       	// 32 bits
       	sCodeASM = sCode32bits
@@ -860,7 +885,7 @@ procedure_set :
       	sNomFichierSourceSourceAsm_64bits est chaine =  "x64_"+ snomProcPointDEntrée + ".asm"
       	sCodeASM = fChargeRessourceTexte(sNomFichierSourceSourceAsm_64bits) 
       	// gestion convention d'appel Linux, le n° de registres sont différents de la convention Microsoft
-      	_changeDefineSiConventionAppelLinux(sCodeASM, tabSymboleExterne)
+      	_InitDefineEtConventionSelonPlateforme(sCodeASM, tabSymboleExterne)
       SINON
       // 32 bits
       	sNomFichierSourceSourceAsm_32bits est chaine = "x86_"+ snomProcPointDEntrée + ".asm"

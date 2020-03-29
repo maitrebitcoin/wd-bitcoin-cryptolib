@@ -18,6 +18,9 @@ procedure_set :
      code : |1+
       // opérations +,-,*, etc.. sur les entiers de plus de 64 bits
       
+      // on note si ADX est support pour utiliser MULX/ADDX pour optim si possible
+      gbADX_Supporté est un booléen = _bTest_ADX_Dispo()
+      
       // OPTIM : récup d'un version en assembleur de ces opérations
       addrprocAddition256p256_256c    est entier systeme = pGetprocAddition256p256_256c_ASM()
       addrprocSoustraction256p256_256 est entier systeme = pGetprocSoustraction256p256_256_ASM()
@@ -2344,6 +2347,43 @@ procedure_set :
       	dbgSortieStandard( TEXT + rc )
       	FinProgramme(-1)
       FIN
+      
+     type : 458752
+   -
+     name : _bTest_ADX_Dispo
+     procedure_id : 2197990272988266744
+     type_code : 15
+     code : |1-
+      // indique l'extension ADX est disponible sur le processeur courant
+      procédure _bTest_ADX_Dispo()
+      
+      si pas EnMode64bits() ALORS
+      	renvoyer faux
+      FIN
+      
+      // code ASM pour demande au processeur si il supporte ADX
+      // voir https://en.wikipedia.org/wiki/CPUID
+      sCodeASM est chaine =[
+      	mov rax, 7
+      	mov rcx,0
+      	CPUID  
+      	mov rax, rbx
+      	ret
+      ]
+      // compilisation du code ASM
+      soit (p, err ) =  compileAsmX86_API(sCodeASM)
+      SI p=0 ALORS
+      	dbgAssertion(faux, err)
+      	RENVOYER Faux
+      FIN
+      // Appel du code  ASM
+      bits est entier = API(p)
+      SI ETBinaire(bits, 0x100000) ALORS
+      	// ADX supporté
+      	renvoyer Vrai
+      FIN
+      // non supporté
+      renvoyer faux
      type : 458752
   procedure_templates : []
   property_templates : []

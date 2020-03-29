@@ -113,7 +113,7 @@ procedure_set :
       sLigneOrigine est chaine = ExtraitChaîne( dbgInfo(dbgPile),1,rc,DepuisFin)
       
       <COMPILE SI Configuration<>"Exécutable Linux 64 bits">
-      //nombreB est Entier256( nB )
+      nombreB est Entier256( nB )
       //ERR
       TestVérifie( faux, ...
       	"Erreur de calcul. On devrait trouver X et on a Y"  ...
@@ -178,6 +178,11 @@ procedure_set :
       FIN
       
       _LOG("Auto tests...")
+      si arithmetique.gbADX_Supporté ALORS
+      	_LOG("avec ADX")
+      SINON
+      	_LOG("sans ADX")
+      FIN
       
       courbeTemp est un CourbeElliptique_secp256k1
       

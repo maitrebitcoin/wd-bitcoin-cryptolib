@@ -15,7 +15,7 @@ window :
   -
     name : Fermer
     identifier : 0x2b8390ec00c21e47
-    internal_properties : BQAAAAUAAACXGQ8SvHS7ciCwHGv6gCH0JxJCyCTEmd1EqolmQpG2TR+kSVv2jzWEWnT3XzSmM++93NSioT3RaOqBuCaL5v3BSFsipLnEl/Sjigt4V7G6mUkULGtBnHpLqviAZsx2jdoB4dilnYzuyy549ejFdVTJ74p2JkM/Lu0hWN/8Je8t8tcIer6R8GvJnjnx6g3RakQDlEEZZFWw/b9onU4ToTC+oDn1WZlx+oKFkAx4U/So/rAFT5tK1RaD/2nRwx+jPnF0zlTDOkbMyiLXzzQm+GBYkHNfMwgkmltvq8Ba1NDlbwlsC9Gu0PuSQlYlfSsh1qMH8kaovijigPk2ThL/cZP2INYIVNassoc/Q2SkjdQIa8NujmOuZutrIqQf/6t1nPqsQkBUYLLEAzAT2Cli3zsKt9tnDbbeugZ3td332djqUJbf+m9dIlx5VoMl0Y2VE6yn0zhTrLgHn+UrGLBCishWLlA7sIxZuXD5LXuenpCePabB3qAYFP+rVd2dmNrdTW2aUUz/MGxFZ3vtFfqn2YpND5eoqjH7b/8BLE6v8zDmQPVVWjmpllEbqdzOI+JGVH7OvKulXC0jvY4YhAT3aTSsYZCTkiEFa1Wm7jkTtQ1HJKtJXl94HrvrqJ+LGorI/fd/lMGOgptDx7q5nd5O6iRQA1rCcWPj0f/sfc2XAkvHjtkPo+ZkDWaDNLISvhicpaBzIB0FcyjLDxhdDF1X9ktsafx6TQ==
+    internal_properties : BQAAAAUAAADPwUfK5ExjqhH6kAEgQgNGuTCwYHAoTVV64Okk4COw173OF7O+t92kzHZXDQKYwT2jzmaW0UU11DT7BJRpwHMvVuVQ/IH8/1zNzMPe9SOol9ee0ktBDLIL3PokPLpAezCrfwJh+fCWg3xelVbLf17C2whFWtcDQklz+rOK89X/PB3CnIZllA/p0HuBpDcTKALBPhuZQLEEnZGKdUiN84oYwt+POZF5dgK34nT28UK+1Br7yWv6dY7zUbt1Gc3NjDc2nB6L7kpAGqBV/x7AGmI6yrm522DMLqulWTCUin5/yQdWrXkKbG9OgMy569nzeL0N3JDAmhQi9GuAlkS1ry04NuA+MMpILm8FmQBit9aiBcFgL5CRS+SanTswlNJW05NdiwFx+09NihsyeW5hyGbHcGS0Zq0nBxUG2HIYRIV91R8ghyBMg7ncZW6epmRmZiE8QJU041GM4mjy3em9Txs7t9lMrYcmmlt01BA/oV05uisWkwGfjXReuDgCWZ0SFLbDsi2ck0EuhirYakv6tt3CAGDd8/g8rLrMe39cgvklISp6C/b086LicAfn2LGX+5f/pEmTzayePt+djzvk1G1ruLcSxRaY+iIDe1QauggkF6akyUa5Xe7kYYwChRMfhl7Gs+AZ107ydLcGyNVbtb3PHl2B1Ojm4JThTpA2T140WRzCxsXF7EHUJdfd/aXv2msi50hsBE8O0EkWeyUfPoMkobSilQ==
     type : 4
     code_elements :
      type_code : 4
@@ -298,6 +298,44 @@ window :
       -
         code : |1+
          mini_auto_test()
+        type : 18
+      -
+        type : 161
+        enabled : false
+  -
+    name : Bouton1
+    identifier : 0x2e80d0e300d39cbb
+    internal_properties : BQAAAAUAAACHmINt0WyS94MLeM+pfLygwSMIkHlThaZxQ40HCYzvG8WliMlatXAIP8WQr24XkDECeCQuNyI2kF4KNBUA8rEuZkM84ru5hnCY0koTd3AuwNm//bfpgKQOMA1IXcJngJ1Rua4hocge1S/0O7jxJySdgox4O0mf8rUExyUvq6qYmEm2jC8aIAzVa4GfgYwd6XXC0T2bNBBb0+YQ7sStZAeYoP/e4XkLzQavN3iWMl3QTgJg1qz4wOwUGdxe2kEQbvg0R13HcW2gbMudDmVTDavijvCXaagG0n7jjh9rFPGB3Lf6OL6kCc0E9QZQLWZjkIeQNlVQczzjffIJlaO+npCgtpCMo3uc186fX3nUZw+OUwD0jwUJODpRt6OeGidlcev01NNnx/SqzXaZcLlRT46vj0zlK0V+Td5/jOrmCjap12giuIC9u6RnVjuiWPGFXx3mvwglOOslsLFGBSvWpY47WhrYt/IDT4LzNyFi8mp74T3F5YNrTCbjLicgM3bQ3YJsAkXGA0Agnn3BceCg6uBoMIutAmvf0T+UEdHIIfnYJSeVxFXEmIsCf7wLKGPs+T7xxmAzMo0GZ+hCc4x1uHJqkQqmSCr011DtoxtJ+hBT6bGW1QEtWh8a7ei/qTvt/YVhTXVGa74t6vPQCQ2QD7YeEH6oAXC/KQNIWWdLwGMkGnXgvZ7kD/Lo/RwnqUO8rlrf7U/rSTJITR1chbzHHmeQonZW9WD3+cDNjoY=
+    type : 4
+    code_elements :
+     type_code : 4
+     p_codes :
+      -
+        code : |1+
+         
+         // voir https://en.wikipedia.org/wiki/CPUID
+         sCodeASM est chaine =[
+         	mov rax, 7
+         	mov rcx,0
+         	CPUID  
+         	mov rax, rbx
+         	ret
+         ]
+         
+         soit (p, err ) =  compileAsmX86_API(sCodeASM)
+         SI p=0 ALORS
+         	Erreur(err)
+         	RETOUR
+         FIN
+         // Appel ASM
+         bits est entier = API(p)
+         Trace( EntierVersHexa(bits) )
+         SI ETBinaire(bits, 0x100000) ALORS
+         	Trace("ADX supporté")
+         FIN
+         
+         
+         
         type : 18
       -
         type : 161
