@@ -148,44 +148,6 @@ class :
      code : |1+
       // renvoie A * B ( mod P )
       procédure  abstraite  multiplicationModulo(  nombreA entier256, nombreB entier256) : Entier256 
-      //dbgAssertion( P.val0 <> 0xFFFFFFFEFFFFFC2F, "ne devrait pas être appelé dans le corps sepc256k1" ) // car dérivée 
-      // cas particulier de la multiplication par 1 (fractions)
-      //si nombreA.EstEgalA1() ALORS
-      //	renvoyer nombreB
-      //FIN 
-      //SI nombreB.estEgalA1() ALORS
-      //	RENVOYER nombreA
-      //FIN 
-      //
-      //resultat est un entier256
-      //// calcul d'un cache des valeur de A * K pour K de 0 a 255
-      //si TabCacheA..Occurrence>0 _et_ PAS TabCacheA[1].estEgalA(nombreA)
-      //	TabCacheA.SupprimeTout()
-      //fin
-      //si TabCacheA.Occurrence()=0 ALORS
-      //	nCur est Entier256 = nombreA
-      //	pour i = 1 a 256
-      //		TabCacheA.Ajoute( nCur )
-      //		nCur = additionModulo( nCur, nombreA )
-      //	FIN
-      //FIN
-      //
-      //pour i = 31 a 0 pas -1
-      //	// r = r * 256
-      //	resultat = multiplicationPar256Modulo(resultat)
-      //	// r = r + k * A
-      //	kB est entier = nombreB._8Bits( i ) 
-      //	si kB<>0 alors
-      //		// récup de A * K en cache
-      //		AMultK est un Entier256 = TabCacheA[kB]
-      //		resultat = additionModulo(resultat, AMultK)
-      //	fin
-      //
-      //
-      //FIN
-      //
-      //
-      //renvoyer resultat
      type : 458752
    -
      name : carréModulo

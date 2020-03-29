@@ -9,7 +9,7 @@
 ; defines des paramètres
 param1 equ rcx
 param2 equ rdx
-param3 equ r8
+param3 equ r8     ; rdx en linux
 ; déclaration de l'existence d'une fonction externe 
 multiplication_256x256_512 PROTO C
 

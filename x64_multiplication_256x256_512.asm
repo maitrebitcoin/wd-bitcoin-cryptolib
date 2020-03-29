@@ -11,9 +11,9 @@
 
 ; defines
 ; en linux il sont remplacé par  RDI, RSI, RDX
-param1 equ rcx
-param2 equ rdx
-param3 equ r8
+param1 equ rcx  ; rdi en linux
+param2 equ rdx  ; rsi en linux
+param3 equ r8   ; rdx en linux
 
 
 .DATA
@@ -47,11 +47,11 @@ IFDEF LINUX
  mov         r8,param3 ; car le param1=rdx en linux est ecrasé par "mul"
 ENDIF
  ; rsi = A0..A3
- lea         rsi,[param1+18h] ; rsi = A3
  mov         r9 ,qword ptr [param2    ]  ; r9  = B0
  mov         r10,qword ptr [param2+8  ]  ; r10 = B1
  mov         r11,qword ptr [param2+10h]  ; r11 = B2
  mov         r12,qword ptr [param2+18h]  ; r12 = B3
+ lea         rsi,[param1+18h] ; rsi = A3
 
 ;-------------------------------------------------------------------
 ;- partie 1 -- multiplications 2 a 2 de toutes les parties 64 bits -

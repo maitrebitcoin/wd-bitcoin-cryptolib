@@ -51,13 +51,15 @@ procedure_set :
       +RC + sLigneOrigine
       //trace(sErr)
       
+      <COMPILE SI Configuration<>"Exécutable Linux 64 bits">
       TestVérifie( faux, sErr )
+      <FIN>
      type : 458752
    -
      name : VerifieOpérationUnaire
      procedure_id : 1963293816607223186
      type_code : 15
-     code : |1+
+     code : |1-
       PROCÉDURE VerifieOpérationUnaire( opération est procédure, AFormaHexA est chaine, RésultatFormaHexa est chaine)
       
       nombreA est Entier256( AFormaHexA  )
@@ -77,6 +79,7 @@ procedure_set :
       // récup de la ligne du test qui nous a lancé
       sLigneOrigine est chaine = ExtraitChaîne( dbgInfo(dbgPile),1,rc,DepuisFin)
       
+      <COMPILE SI Configuration<>"Exécutable Linux 64 bits">
       //ERR
       TestVérifie( faux, ...
       	"Erreur de calcul. On devrait trouver X et on a Y"  ...
@@ -85,16 +88,16 @@ procedure_set :
       	+RC + "Opérandes : " ...
       	+RC + "A= " + nombreA.VersChaineHexa() ...
       	+RC + sLigneOrigine )
+      <FIN>
      type : 458752
    -
      name : VerifieOpérationBinaire_Int
      procedure_id : 1963299077942598979
      type_code : 15
-     code : |1+
+     code : |1-
       PROCÉDURE VerifieOpérationBinaire_Int( opération est procédure, AFormaHexA est chaine, nB est un entier sans signe sur 8, RésultatFormaHexa est chaine)
       
       nombreA est Entier256( AFormaHexA  )
-      nombreB est Entier256( nB )
       ResultatAttendu est Entier256(  RésultatFormaHexa )
       
       // calcul de R = A (op) B
@@ -109,6 +112,8 @@ procedure_set :
       // récup de la ligne du test qui nous a lancé
       sLigneOrigine est chaine = ExtraitChaîne( dbgInfo(dbgPile),1,rc,DepuisFin)
       
+      <COMPILE SI Configuration<>"Exécutable Linux 64 bits">
+      //nombreB est Entier256( nB )
       //ERR
       TestVérifie( faux, ...
       	"Erreur de calcul. On devrait trouver X et on a Y"  ...
@@ -118,6 +123,7 @@ procedure_set :
       	+RC + "A= " + nombreA.VersChaineHexa() ...
       	+RC + "B= " + nombreB.VersChaineHexa() ...
       	+RC + sLigneOrigine)
+      <FIN>
      type : 458752
    -
      name : VerifieSoustraction_Corps
@@ -151,8 +157,102 @@ procedure_set :
       +RC + "B= " + nombreB.VersChaineHexa() ...
       +RC + sLigneOrigine
       //trace(sErr)
+      <COMPILE SI Configuration<>"Exécutable Linux 64 bits">
+      	TestVérifie( faux, sErr )
+      <FIN>
+     type : 458752
+   -
+     name : mini_auto_test
+     procedure_id : 2197634185840615890
+     type_code : 15
+     code : |1-
+      // test mini pour vérifier que les fonctions de base fonctionnent
+      PROCEDURE mini_auto_test() : booléen
       
-      TestVérifie( faux, sErr )
+      procédure interne _LOG( texte )
+      	si EnModeLinux() ALORS
+      		dbgSortieStandard( texte )
+      	sinon
+      		trace( texte )
+      	FIN
+      FIN
+      
+      _LOG("Auto tests...")
+      
+      courbeTemp est un CourbeElliptique_secp256k1
+      
+      
+      _A est entier256("0x1111222233334444")
+      _B est entier256("0x079ABCD201005007")
+      _C est entier256("0x0081C8D40D2967D4876DC1FBAFBC1DDC")	
+      _LOG("arithmetique.multiplication256x256_512 = 0x"+ EntierVersHexa(arithmetique.addrprocMult256x256_512_ASM,16 ))
+      //_LOG("courbeTemp.corps_ordre.addrprocMult256x256Modulo = 0x"+ EntierVersHexa(courbeTemp.corps_ordre.addrprocMult256x256Modulo,16 ))
+      //_R256  est entier256 = courbeTemp.corps_ordre.multiplicationModulo(_A,_B)
+      _R512  est entier512 = arithmetique.multiplication256x256_512(_A,_B)
+      si pas _R512.valPoidsFaible.estEgalA(	_C) ALORS
+      	_LOG(".multiplicationModulo  FAILED ")
+      	_LOG("C attendu  ="+_C.VersChaineHexa())
+      	_LOG("C obtenu   ="+ _R512.valPoidsFaible.VersChaineHexa())
+      	renvoyer faux
+      FIN
+      
+      // clé privée : 
+      gcléPrivée			est Entier256("b268cc0de4043c486df8598938abdc5e99d06fd1b92b12f50daaa9224654872c")
+      _LOG("gcléPrivée="+gcléPrivée.VersChaineHexa()+RC)
+      _LOG("multiplication256x256_512 = b *0x" + EntierVersHexa( courbeTemp.corps_ordre.addrprocMult256x256Modulo ,16))
+      // clé publique (pour test)
+      gCléPubliquePourTest	est Point256	//= CrytoLib.DériveCléPubliqueDepuisCléPrivée( ClePrivee )
+      gCléPubliquePourTest.x.affecteAvecChaineHexa("55384c8e1a81d0068d0016eb9623032e1ae865e9fb0802d4e6bb84fe8626bc5a")
+      gCléPubliquePourTest.y.affecteAvecChaineHexa("1eb6728bd2c2949eef92acf5375ea08ab65c6cc85b56cb512aeffb00330bcf91")	
+      
+      _T est entier sur 8 sans signe = HexaVersEntier("1000003D")
+      _LOG("T="+ EntierVersHexa(_T , 16 ))
+      
+      
+      MM		est    Entier256("0x240cc98a4efb0423883ffce6cf1cd9e180491248ffef420b8aac9540a1ea67a0")
+      //X   est    Entier256("0x55384c8e1a81d0068d0016eb9623032e1ae865e9fb0802d4e6bb84fe8626bc5a")
+      _2S		est    Entier256("0xe0cde402846113558a0500c7c8a5e588ff89061a77eaa063d7d76386e86645d9")
+      _X_OK	est Entier256("0x433ee587ca99f0cdfe3afc1f0676f45880c00c2e8804a1a7b2d531b8b9841df6")
+      _LOG("addrprocSoustractionModulo = b *0x" + EntierVersHexa( courbeTemp.corps_coord.addrprocSoustractionModulo,16))
+      _X_test est Entier256  =courbeTemp.corps_coord.soustractionModulo( MM, _2S )
+      SI PAS _X_test.estEgalA( _X_OK ) ALORS
+      	_LOG("soustractionModulo FAILED")
+      	_LOG("MS_X_test ="+_X_test.VersChaineHexa())
+      	_LOG("MS_X_OK   ="+_X_OK.VersChaineHexa())
+      	renvoyer faux
+      FIN
+      
+      _LOG("addrprocMult256x64Modulo = b*0x" + EntierVersHexa( courbeTemp.corps_coord.addrprocMult256x64Modulo,16))//	cp_fois2 est Entier256 = courbeTemp.corps_coord.multiplication_255x8_Modulo(gCléPubliquePourTest.x,2)
+      _inv2 est Entier256 = courbeTemp.corps_ordre.inverseModulo(gcléPrivée)
+      _LOG("1/2 mod P ="+_inv2.VersChaineHexa()+RC)
+      
+      
+      pointGenFois2_J est Point256_3D
+      pointGenFois2_J.VersJacobi(gCléPubliquePourTest)
+      _LOG("VersJacobi. done." +RC)
+      _LOG("pfPointDouble_Jacobi_ASM  = 0x"+ EntierVersHexa( courbeTemp.pfPointDouble_Jacobi_ASM, 16 ) +RC)
+      
+      pointGenFois2_J =	courbeTemp.pointDouble_Jacobi( pointGenFois2_J )
+      _LOG("Xj="+ pointGenFois2_J.x.VersChaineHexa() )	
+      _LOG("Yj="+ pointGenFois2_J.y.VersChaineHexa() )	
+      _LOG("Zj="+ pointGenFois2_J.Z.VersChaineHexa() )		
+      soit pointGenFois2 =  courbeTemp._JacobiVersPoint(pointGenFois2_J)
+      _LOG("X="+ pointGenFois2.x.VersChaineHexa() )	
+      _LOG("Y="+ pointGenFois2.y.VersChaineHexa() )	
+      
+      // 1 test a blanc et vérif
+      
+      gCléPubliqueDérivée est Point256  = dériveCléPubliqueDepuisCléPrivée( gcléPrivée )
+      _LOG("X="+ gCléPubliqueDérivée.x.VersChaineHexa() )	
+      _LOG("Y="+ gCléPubliqueDérivée.y.VersChaineHexa() )		
+      SI PAS gCléPubliqueDérivée.PointestEgalA(gCléPubliquePourTest)  ALORS
+      	_LOG("gCléPubliqueDérivée.PointestEgalA FAILED ")
+      	renvoyer  faux
+      FIN
+      
+      // success
+      _LOG("OK")
+      renvoyer vrai
      type : 458752
   procedure_templates : []
   property_templates : []
