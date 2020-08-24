@@ -14,6 +14,6 @@ API principales :
  
  Génère un composant utilisable en 32 ou 64 bits dans un projet WINDEV 25.
  
- Le code assembleur est intégré via le compoant WD-Assembleur : https://github.com/maitrebitcoin/wd-assembly
+ Le code assembleur est intégré via le composant WD-Assembleur : https://github.com/maitrebitcoin/wd-assembly
 
 ![HC exemple](/HC_Demo.png)
