@@ -102,12 +102,12 @@ class :
      procedure_id : 2177216912031057306
      type_code : 12
      code : |1+
-      // version plus rapide de ma multiplication modulaire si le modulo est 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
+      // version plus rapide de La multiplication modulaire si le modulo est 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
       PROCÉDURE virtuelle multiplicationModulo(  nombreA Entier256, nombreB Entier256) : Entier256 
       
-      // résultat R
+      // résultat R = A * B modulo N
       resultat est Entier256
-      //si on un routine asm dispo (64 bits)
+      // utilise une routine en assembleur optimisée
       API(addrprocMult256x256Modulo, &nombreA, &nombreB, &resultat )
       RENVOYER resultat
      type : 458752
