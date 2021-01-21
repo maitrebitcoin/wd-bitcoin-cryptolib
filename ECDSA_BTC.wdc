@@ -94,7 +94,7 @@ class :
       
       // conversion de <chaineASigner> en entier256 par hash
       NombreASigner est Entier256 
-      NombreASigner.affecteAvecBuffer( HashChaîne(HA_HMAC_SHA_256_DOUBLE, chaineASigner) )
+      NombreASigner.affecteAvecBuffer( HashChaîne(HA_SHA_256_DOUBLE, chaineASigner) )
       // rebond version entier
       renvoyer SigneNombre( NombreASigner, cléPrivée )
       
@@ -106,13 +106,13 @@ class :
      code : |1+
       // vérifie la signature 
       // renvoie ( singarture OK, Message si erreur )
-      procédure vérifieSignatureBuffer( chaineSignée est buffer , CléPublique Point256, signature SignatureEcdsa  ) : (booléen, chaine )
+      procédure vérifieSignatureBuffer( chaineSignée est buffer , cléPublique Point256, signature SignatureEcdsa  ) : (booléen, chaine )
       
       // conversion de <chaineASigner> en entier256 par hash
       NombreSigné est Entier256 
-      NombreSigné.affecteAvecBuffer( HashChaîne(HA_HMAC_SHA_256_DOUBLE, chaineSignée) )
+      NombreSigné.affecteAvecBuffer( HashChaîne(HA_SHA_256_DOUBLE, chaineSignée) )
       // rebond version entier
-      RENVOYER vérifieSignatureNombre( NombreSigné, CléPublique, signature  )
+      RENVOYER vérifieSignatureNombre( NombreSigné, cléPublique, signature  )
       
      type : 458752
    -
